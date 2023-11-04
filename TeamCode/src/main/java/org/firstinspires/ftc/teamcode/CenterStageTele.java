@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -12,24 +12,24 @@ public class CenterStageTele extends OpMode{
     DcMotor lf;
     DcMotor rb;
     DcMotor lb;
-    DcMotor ls;
-    DcMotor rs;
     DcMotor intake;
+  /*  DcMotor ls;
+    DcMotor rs;
     Servo armRight;
     Servo armLeft;
     Servo pRight;
     Servo pLeft;
     Servo intakeRight;
-    Servo intakeLeft;
+    Servo intakeLeft; */
     @Override
     public void init(){
         rf = hardwareMap.get(DcMotor.class, "motorRF");
         lf = hardwareMap.get(DcMotor.class, "motorLF");
         rb = hardwareMap.get(DcMotor.class, "motorRB");
         lb = hardwareMap.get(DcMotor.class, "motorLB");
-        ls = hardwareMap.get(DcMotor.class, "motorLS");
-        rs = hardwareMap.get(DcMotor.class, "motorRS");
         intake = hardwareMap.get(DcMotor.class, "motorIntake");
+       /* ls = hardwareMap.get(DcMotor.class, "motorLS");
+        rs = hardwareMap.get(DcMotor.class, "motorRS");
 
         armLeft = hardwareMap.get(Servo.class, "armLeft");
         armRight = hardwareMap.get(Servo.class, "armRight");
@@ -39,7 +39,7 @@ public class CenterStageTele extends OpMode{
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
 
         intakeLeft.setPosition(0.0);
-        intakeRight.setPosition(0.0);
+        intakeRight.setPosition(0.0); */
 
 //        rf.setDirection(DcMotorSimple.Direction.REVERSE);
 //        rb.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -51,7 +51,7 @@ public class CenterStageTele extends OpMode{
     public void loop(){
 
         double y = -gamepad1.left_stick_x; //vertical
-        double x = -gamepad1.left_stick_y; //horizontal
+        double x = -gamepad1.left_stick_y*1.1; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
 
         boolean turtle = false;
@@ -82,25 +82,28 @@ public class CenterStageTele extends OpMode{
         double postRB = preRB/max;
         double postLB = preLB/max;
 
-        if(gamepad2.b){
+       /* if(gamepad2.b){
             armRight.setPosition(0.0);
             armLeft.setPosition(0.0);
         }
 
         if(gamepad2.x){
-            armRight.setPosition(0.8);
-            armLeft.setPosition(0.8);
+            armRight.setPosition(0.4);
+            armLeft.setPosition(0.4);
         }
-
-        intake.setPower((gamepad2.left_bumper)? 0.5 : 0);
+        */
+        intake.setPower((gamepad2.right_bumper)? -0.95 : 0);
+        intake.setPower((gamepad2.left_bumper)? 0.6 : 0);
 
         telemetry.addData("rf", postRF);
         telemetry.addData("lf", postLF);
         telemetry.addData("rb", postRB);
         telemetry.addData("lb", postLB);
-        telemetry.addData("armRight", armRight.getPosition());
-        telemetry.addData("armLeft", armLeft.getPosition());
+
         telemetry.addData("intake", intake.getPower());
+       /* telemetry.addData("armRight", armRight.getPosition());
+        telemetry.addData("armLeft", armLeft.getPosition());
+         */
         telemetry.update();
     }
 
@@ -111,5 +114,6 @@ public class CenterStageTele extends OpMode{
         lf.setPower(0);
         rb.setPower(0);
         lb.setPower(0);
+        intake.setPower(0);
     }
 }
