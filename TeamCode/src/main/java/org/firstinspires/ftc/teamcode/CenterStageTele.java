@@ -13,8 +13,21 @@ public class CenterStageTele extends OpMode{
     DcMotor rb;
     DcMotor lb;
     DcMotor intake;
-  /*  DcMotor ls;
+
+    double slidePositionTarget = 0.0;
+    double previousLeftError = 0.0;
+    double previousRightError = 0.0;
+    double leftInt = 0.0;
+    double rightInt = 0.0;
+
+    // Gains for slides, to be tuned
+    double kP = 1.0;
+    double kI = 1.0;
+    double kD = 1.0;
+
+    DcMotor ls;
     DcMotor rs;
+    /*
     Servo armRight;
     Servo armLeft;
     Servo pRight;
@@ -28,9 +41,9 @@ public class CenterStageTele extends OpMode{
         rb = hardwareMap.get(DcMotor.class, "motorRB");
         lb = hardwareMap.get(DcMotor.class, "motorLB");
         intake = hardwareMap.get(DcMotor.class, "motorIntake");
-       /* ls = hardwareMap.get(DcMotor.class, "motorLS");
+        ls = hardwareMap.get(DcMotor.class, "motorLS");
         rs = hardwareMap.get(DcMotor.class, "motorRS");
-
+/*
         armLeft = hardwareMap.get(Servo.class, "armLeft");
         armRight = hardwareMap.get(Servo.class, "armRight");
         pRight = hardwareMap.get(Servo.class, "plungerRight");
@@ -53,6 +66,28 @@ public class CenterStageTele extends OpMode{
         double y = -gamepad1.left_stick_x; //vertical
         double x = -gamepad1.left_stick_y*1.1; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
+
+        double slidesScalar = 1.0; // factor for motor power
+        slidePositionTarget += slidesScalar * gamepad2.right_stick_y;
+        telemetry.addData("Slide target: ", slidePositionTarget);
+
+        // this calculates error for both slides and assigns a value to the duration of each loop cycle
+        double leftError = slidePositionTarget - 0.0; //<-- PLACEHOLDER, THIS SHOULD BE KNOWN FROM AN ENCODER, also could be the opposite of this
+        double rightError = slidePositionTarget - 0.0; //<-- PLACEHOLDER, THIS SHOULD BE KNOWN FROM AN ENCODER, also could be the opposite of this
+        double loopDuration = 1.0; //<-- PLACEHOLDER, I DON'T KNOW HOW WE GET THIS
+
+        // this should calculate the P I and D values based on error, but should be checked
+        double propL =  leftError;
+        double derivL = leftError - previousLeftError / loopDuration;
+        leftInt+=leftError * loopDuration;
+        double propR =  rightError;
+        double derivR = rightError - previousRightError / loopDuration;
+        rightInt+=rightError * loopDuration;
+
+        // power slide motors
+        ls.setPower(kP*propL + kD*derivL + kI*leftInt);
+        rs.setPower(kP*propR + kD*derivR + kI*rightInt);
+
 
         boolean turtle = false;
         if(gamepad1.left_trigger > 0.5 || gamepad1.right_trigger > 0.5){
