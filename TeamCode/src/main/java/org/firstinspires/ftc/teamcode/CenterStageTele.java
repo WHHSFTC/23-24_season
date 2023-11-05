@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -17,9 +18,9 @@ public class CenterStageTele extends OpMode{
 
     double slidePositionTarget = 0.0;
     // Gains for slides, to be tuned
-    double kP = 1.0;
-    double kI = 1.0;
-    double kD = 1.0;
+    double kP = 0.0;
+    double kI = 0;
+    double kD = 0;
     double integralSum = 0.0;
     private double lastError = 0.0;
     ElapsedTime timer = new ElapsedTime();
@@ -48,8 +49,8 @@ public class CenterStageTele extends OpMode{
         pRight = hardwareMap.get(Servo.class, "plungerRight");
         pLeft = hardwareMap.get(Servo.class, "plungerLeft");
 
-        ls.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rs.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ls.setDirection(DcMotorSimple.Direction.FORWARD);
+        rs.setDirection(DcMotorSimple.Direction.REVERSE);
 
         /* intakeRight = hardwareMap.get(Servo.class, "intakeRight");
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
@@ -65,18 +66,31 @@ public class CenterStageTele extends OpMode{
 
     @Override
     public void loop(){
-
         double y = -gamepad1.left_stick_x; //vertical
         double x = -gamepad1.left_stick_y*1.1; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
 
-        double slidesScalar = 1.0; // factor for motor power
-        slidePositionTarget += slidesScalar * gamepad2.left_stick_y;
+        //double slidesScalar = 0.01; // factor for motor power
+        //slidePositionTarget += Math.max(0, slidesScalar * gamepad2.left_stick_y);
         telemetry.addData("Slide target: ", slidePositionTarget);
 
-        ls.setPower(PIDControl(slidePositionTarget, ls.getCurrentPosition()));
-        rs.setPower(PIDControl(slidePositionTarget, rs.getCurrentPosition()));
+        //ls.setPower(PIDControl(slidePositionTarget, ls.getCurrentPosition()));
+        //rs.setPower(PIDControl(slidePositionTarget, rs.getCurrentPosition()));
 
+        ls.setPower(gamepad2.left_stick_y/8);
+        rs.setPower(gamepad2.left_stick_y/8);
+        ls.setTargetPosition(600);
+        rs.setTargetPosition(600);
+
+        ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        if((gamepad2.left_stick_y/8) < 0){
+            ls.setTargetPosition(0);
+            rs.setTargetPosition(0);
+            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
         boolean turtle = false;
         if(gamepad1.left_trigger > 0.5 || gamepad1.right_trigger > 0.5){
             turtle = true;
@@ -113,14 +127,14 @@ public class CenterStageTele extends OpMode{
 
         //arm swings out
         if(gamepad2.x){
-            armRight.setPosition(0.4);
-            armLeft.setPosition(0.4);
+            armRight.setPosition(0.1);
+            armLeft.setPosition(0.1);
         }
 
         //plunger open
         if(gamepad2.left_bumper){
-            pRight.setPosition(0.2);
-            pLeft.setPosition(0.2);
+            pRight.setPosition(0.0001);
+            pLeft.setPosition(0.0001);
         }
 
         //plunger close
@@ -154,10 +168,12 @@ public class CenterStageTele extends OpMode{
         telemetry.addData("armLeft", "Position: " + armLeft.getPosition());
         telemetry.addData("pRight", "Position: " + pRight.getPosition());
         telemetry.addData("pLeft", "Position: " + pLeft.getPosition());
+        telemetry.addData("rs", "Power: " + rs.getPower() + "Position: " + rs.getCurrentPosition());
+        telemetry.addData("ls", "Power: " + ls.getPower() + "Position: " + ls.getCurrentPosition());
         telemetry.update();
     }
 
-    public double PIDControl(double reference, double state){
+    /*public double PIDControl(double reference, double state){
         double error = reference - state;
         integralSum += error * timer.seconds();
         double derivative = (error-lastError) / timer.seconds();
@@ -165,8 +181,8 @@ public class CenterStageTele extends OpMode{
         timer.reset();
 
         double power = (error * kP) + (derivative * kD) + (integralSum*kI);
-        return power;
-    }
+        return Math.tanh(error);
+    }*/
     @Override
     public void stop(){
         super.stop();
