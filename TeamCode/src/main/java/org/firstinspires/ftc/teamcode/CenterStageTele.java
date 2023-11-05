@@ -48,6 +48,8 @@ public class CenterStageTele extends OpMode{
         pRight = hardwareMap.get(Servo.class, "plungerRight");
         pLeft = hardwareMap.get(Servo.class, "plungerLeft");
 
+        ls.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rs.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         /* intakeRight = hardwareMap.get(Servo.class, "intakeRight");
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
 
@@ -112,6 +114,24 @@ public class CenterStageTele extends OpMode{
             armLeft.setPosition(0.4);
         }
 
+        if(gamepad2.left_bumper){
+            pRight.setPosition(0.2);
+            pLeft.setPosition(0.2);
+        }
+
+        if(gamepad2.right_bumper){
+            pRight.setPosition(0.0);
+            pLeft.setPosition(0.0);
+        }
+
+        if(gamepad2.left_trigger > 0.2){
+            intake.setPower(-0.95);
+        }
+
+        if(gamepad2.right_trigger > 0.2){
+            intake.setPower(0.6);
+        }
+
         intake.setPower((gamepad2.right_bumper)? -0.95 : 0);
         intake.setPower((gamepad2.left_bumper)? 0.6 : 0);
 
@@ -123,6 +143,8 @@ public class CenterStageTele extends OpMode{
         telemetry.addData("intake", intake.getPower());
         telemetry.addData("armRight", "Position: " + armRight.getPosition());
         telemetry.addData("armLeft", "Position: " + armLeft.getPosition());
+        telemetry.addData("pRight", "Position: " + pRight.getPosition());
+        telemetry.addData("pLeft", "Position: " + pLeft.getPosition());
         telemetry.update();
     }
 
@@ -144,5 +166,7 @@ public class CenterStageTele extends OpMode{
         rb.setPower(0);
         lb.setPower(0);
         intake.setPower(0);
+        ls.setPower(0);
+        rs.setPower(0);
     }
 }
