@@ -132,8 +132,10 @@ public class CenterStageTele extends OpMode{
             intake.setPower(0.6);
         }
 
+        /*
         intake.setPower((gamepad2.right_bumper)? -0.95 : 0);
         intake.setPower((gamepad2.left_bumper)? 0.6 : 0);
+         */
 
         telemetry.addData("rf", postRF);
         telemetry.addData("lf", postLF);
