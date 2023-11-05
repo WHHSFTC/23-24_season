@@ -50,6 +50,7 @@ public class CenterStageTele extends OpMode{
 
         ls.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rs.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         /* intakeRight = hardwareMap.get(Servo.class, "intakeRight");
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
 
@@ -104,32 +105,38 @@ public class CenterStageTele extends OpMode{
         double postRB = preRB/max;
         double postLB = preLB/max;
 
+        //arm swings back in
         if(gamepad2.b){
             armRight.setPosition(0.0);
             armLeft.setPosition(0.0);
         }
 
+        //arm swings out
         if(gamepad2.x){
             armRight.setPosition(0.4);
             armLeft.setPosition(0.4);
         }
 
+        //plunger open
         if(gamepad2.left_bumper){
             pRight.setPosition(0.2);
             pLeft.setPosition(0.2);
         }
 
+        //plunger close
         if(gamepad2.right_bumper){
             pRight.setPosition(0.0);
             pLeft.setPosition(0.0);
         }
 
+        //intake backwards
         if(gamepad2.left_trigger > 0.2){
-            intake.setPower(-0.95);
+            intake.setPower(0.6);
         }
 
+        //intake normal
         if(gamepad2.right_trigger > 0.2){
-            intake.setPower(0.6);
+            intake.setPower(-0.95);
         }
 
         /*
