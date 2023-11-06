@@ -77,8 +77,8 @@ public class CenterStageTele extends OpMode{
         //ls.setPower(PIDControl(slidePositionTarget, ls.getCurrentPosition()));
         //rs.setPower(PIDControl(slidePositionTarget, rs.getCurrentPosition()));
 
-        ls.setPower(gamepad2.left_stick_y/8);
-        rs.setPower(gamepad2.left_stick_y/8);
+        ls.setPower(gamepad2.left_stick_y/5);
+        rs.setPower(gamepad2.left_stick_y/5);
         ls.setTargetPosition(600);
         rs.setTargetPosition(600);
 
@@ -127,32 +127,34 @@ public class CenterStageTele extends OpMode{
 
         //arm swings out
         if(gamepad2.x){
-            armRight.setPosition(0.1);
-            armLeft.setPosition(0.1);
+            armRight.setPosition(0.25);
+            armLeft.setPosition(0.25);
         }
 
         //plunger open
-        if(gamepad2.left_bumper){
-            pRight.setPosition(0.0001);
-            pLeft.setPosition(0.0001);
+        if(gamepad2.y){
+           // pRight.setPosition(0.8);
+            pLeft.setPosition(0.55);
         }
 
         //plunger close
-        if(gamepad2.right_bumper){
-            pRight.setPosition(0.0);
-            pLeft.setPosition(0.0);
+        if(gamepad2.a){
+            //pRight.setPosition(0.65);
+            pLeft.setPosition(0.65);
         }
 
-        //intake backwards
+        //intake
         if(gamepad2.left_trigger > 0.2){
-            intake.setPower(0.6);
+            intake.setPower(0.95);
+        } else {
+            intake.setPower(0.0);
         }
 
-        //intake normal
         if(gamepad2.right_trigger > 0.2){
-            intake.setPower(-0.95);
+            intake.setPower(-0.6);
+        }else{
+            intake.setPower(0.0);
         }
-
         /*
         intake.setPower((gamepad2.right_bumper)? -0.95 : 0);
         intake.setPower((gamepad2.left_bumper)? 0.6 : 0);
