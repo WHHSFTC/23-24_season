@@ -31,9 +31,8 @@ public class CenterStageTele extends OpMode{
     Servo armLeft;
     Servo pRight;
     Servo pLeft;
-    /*
     Servo intakeRight;
-    Servo intakeLeft; */
+    Servo intakeLeft;
     @Override
     public void init(){
         rf = hardwareMap.get(DcMotor.class, "motorRF");
@@ -52,13 +51,13 @@ public class CenterStageTele extends OpMode{
         ls.setDirection(DcMotorSimple.Direction.FORWARD);
         rs.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        /* intakeRight = hardwareMap.get(Servo.class, "intakeRight");
+        intakeRight = hardwareMap.get(Servo.class, "intakeRight");
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
 
         intakeLeft.setPosition(0.0);
         intakeRight.setPosition(0.0);
 
-        rf.setDirection(DcMotorSimple.Direction.REVERSE);
+        /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
         lb.setDirection(DcMotorSimple.Direction.REVERSE);
         lf.setDirection(DcMotorSimple.Direction.REVERSE); */
@@ -77,15 +76,15 @@ public class CenterStageTele extends OpMode{
         //ls.setPower(PIDControl(slidePositionTarget, ls.getCurrentPosition()));
         //rs.setPower(PIDControl(slidePositionTarget, rs.getCurrentPosition()));
 
-        ls.setPower(gamepad2.left_stick_y/5);
-        rs.setPower(gamepad2.left_stick_y/5);
+        ls.setPower(gamepad2.left_stick_y/3);
+        rs.setPower(gamepad2.left_stick_y/3);
         ls.setTargetPosition(600);
         rs.setTargetPosition(600);
 
         ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        if((gamepad2.left_stick_y/8) < 0){
+        if((gamepad2.left_stick_y/3) < 0){
             ls.setTargetPosition(0);
             rs.setTargetPosition(0);
             ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -155,10 +154,16 @@ public class CenterStageTele extends OpMode{
         }else{
             intake.setPower(0.0);
         }
-        /*
-        intake.setPower((gamepad2.right_bumper)? -0.95 : 0);
-        intake.setPower((gamepad2.left_bumper)? 0.6 : 0);
-         */
+
+        if(gamepad2.dpad_up){
+            intakeRight.setPosition(0.2);
+            intakeLeft.setPosition(0.2);
+        }
+
+        if(gamepad2.dpad_down){
+            intakeRight.setPosition(0.0);
+            intakeLeft.setPosition(0.0);
+        }
 
         telemetry.addData("rf", postRF);
         telemetry.addData("lf", postLF);
@@ -170,6 +175,8 @@ public class CenterStageTele extends OpMode{
         telemetry.addData("armLeft", "Position: " + armLeft.getPosition());
         telemetry.addData("pRight", "Position: " + pRight.getPosition());
         telemetry.addData("pLeft", "Position: " + pLeft.getPosition());
+        telemetry.addData("intakeRight", "Position: " + intakeRight.getPosition());
+        telemetry.addData("intakeLeft", "Position: " + intakeLeft.getPosition());
         telemetry.addData("rs", "Power: " + rs.getPower() + "Position: " + rs.getCurrentPosition());
         telemetry.addData("ls", "Power: " + ls.getPower() + "Position: " + ls.getCurrentPosition());
         telemetry.update();
