@@ -65,7 +65,7 @@ public class CenterStageTele extends OpMode{
 
     @Override
     public void loop(){
-        double y = -gamepad1.left_stick_x; //vertical
+        double y = -gamepad1.left_stick_x; //verticals
         double x = -gamepad1.left_stick_y*1.1; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
 
