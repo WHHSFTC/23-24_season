@@ -78,8 +78,8 @@ public class CenterStageTele extends OpMode{
 
         ls.setPower(gamepad2.left_stick_y/3);
         rs.setPower(gamepad2.left_stick_y/3);
-        ls.setTargetPosition(600);
-        rs.setTargetPosition(600);
+        ls.setTargetPosition(1200);
+        rs.setTargetPosition(1200);
 
         ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -155,11 +155,13 @@ public class CenterStageTele extends OpMode{
             intake.setPower(0.0);
         }
 
+        //swinging intake to init position
         if(gamepad2.dpad_up){
             intakeRight.setPosition(0.2);
             intakeLeft.setPosition(0.2);
         }
 
+        //swinging intake out
         if(gamepad2.dpad_down){
             intakeRight.setPosition(0.0);
             intakeLeft.setPosition(0.0);
