@@ -56,10 +56,22 @@ public class CenterStageTele extends OpMode{
 
         intakeRight.setDirection(Servo.Direction.REVERSE);
 
-        //intakeLeft.scaleRange(0.0, 0.55);
-        intakeRight.scaleRange(0.0, 0.55);
-        //intakeLeft.setPosition(1.0);
-        intakeRight.setPosition(0.0);
+        intakeLeft.scaleRange(0.0, 0.55);
+        intakeRight.scaleRange(0.22, 1);
+
+        intakeLeft.setPosition(1.0);
+        intakeRight.setPosition(1.0);
+
+        armLeft.scaleRange(0.0, 0.24);
+        armRight.scaleRange(0.0, 0.24);
+
+        armLeft.setPosition(0.0);
+
+        pRight.scaleRange(0.71, 0.74);
+        pLeft.scaleRange(0.61,0.67);
+
+        pRight.setPosition(1.0);
+        pLeft.setPosition(1.0);
 
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -70,7 +82,7 @@ public class CenterStageTele extends OpMode{
     @Override
     public void loop(){
         double y = -gamepad1.left_stick_x; //verticals
-        double x = -gamepad1.left_stick_y*1.1; //horizontal
+        double x = -gamepad1.left_stick_y*1.3; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
 
         //double slidesScalar = 0.01; // factor for motor power
@@ -80,20 +92,20 @@ public class CenterStageTele extends OpMode{
         //ls.setPower(PIDControl(slidePositionTarget, ls.getCurrentPosition()));
         //rs.setPower(PIDControl(slidePositionTarget, rs.getCurrentPosition()));
 
-        ls.setPower(gamepad2.left_stick_y/3);
-        rs.setPower(gamepad2.left_stick_y/3);
-        ls.setTargetPosition(1200);
-        rs.setTargetPosition(1200);
+        ls.setPower(gamepad2.left_stick_y*1.2);
+        rs.setPower(gamepad2.left_stick_y*1.2);
+
+        if ((gamepad2.left_stick_y*1.2) < 0){
+            ls.setTargetPosition(1600);
+            rs.setTargetPosition(1600);
+        } else {
+            ls.setTargetPosition(0);
+            rs.setTargetPosition(0);
+        }
 
         ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        if((gamepad2.left_stick_y/3) < 0){
-            ls.setTargetPosition(0);
-            rs.setTargetPosition(0);
-            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
         boolean turtle = false;
         if(gamepad1.left_trigger > 0.5 || gamepad1.right_trigger > 0.5){
             turtle = true;
@@ -122,28 +134,28 @@ public class CenterStageTele extends OpMode{
         double postRB = preRB/max;
         double postLB = preLB/max;
 
-        //arm swings back in
-        if(gamepad2.b){
+        //arm swings out
+        if(gamepad2.x){
             armRight.setPosition(0.0);
             armLeft.setPosition(0.0);
         }
 
-        //arm swings out
-        if(gamepad2.x){
-            armRight.setPosition(0.25);
-            armLeft.setPosition(0.25);
+        //arm swings in
+        if(gamepad2.b){
+            armRight.setPosition(1.0);
+            armLeft.setPosition(1.0);
         }
 
         //plunger open
         if(gamepad2.y){
-           // pRight.setPosition(0.8);
-            pLeft.setPosition(0.55);
+            pRight.setPosition(0.0);
+            pLeft.setPosition(0.0);
         }
 
         //plunger close
         if(gamepad2.a){
-            //pRight.setPosition(0.65);
-            pLeft.setPosition(0.65);
+            pRight.setPosition(1.0);
+            pLeft.setPosition(1.0);
         }
 
         //intake
@@ -154,7 +166,7 @@ public class CenterStageTele extends OpMode{
         }
 
         if(gamepad2.right_trigger > 0.2){
-            intake.setPower(-0.6);
+            intake.setPower(-0.95);
         }else{
             intake.setPower(0.0);
         }
@@ -162,13 +174,19 @@ public class CenterStageTele extends OpMode{
         //swinging intake to init position
         if(gamepad2.dpad_up){
             intakeRight.setPosition(1.0);
-            //intakeLeft.setPosition(1.0);
+            intakeLeft.setPosition(1.0);
         }
 
         //swinging intake out
         if(gamepad2.dpad_down){
             intakeRight.setPosition(0.0);
-            //intakeLeft.setPosition(0.0);
+            intakeLeft.setPosition(0.0);
+        }
+
+        //stack position intake
+        if(gamepad2.dpad_right){
+            intakeRight.setPosition(0.2);
+            intakeLeft.setPosition(0.2);
         }
 
         telemetry.addData("rf", postRF);
