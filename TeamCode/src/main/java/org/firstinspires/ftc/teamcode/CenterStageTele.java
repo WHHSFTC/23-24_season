@@ -54,7 +54,11 @@ public class CenterStageTele extends OpMode{
         intakeRight = hardwareMap.get(Servo.class, "intakeRight");
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
 
-        intakeLeft.setPosition(0.0);
+        intakeRight.setDirection(Servo.Direction.REVERSE);
+
+        //intakeLeft.scaleRange(0.0, 0.55);
+        intakeRight.scaleRange(0.0, 0.55);
+        //intakeLeft.setPosition(1.0);
         intakeRight.setPosition(0.0);
 
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -157,14 +161,14 @@ public class CenterStageTele extends OpMode{
 
         //swinging intake to init position
         if(gamepad2.dpad_up){
-            intakeRight.setPosition(0.2);
-            intakeLeft.setPosition(0.2);
+            intakeRight.setPosition(1.0);
+            //intakeLeft.setPosition(1.0);
         }
 
         //swinging intake out
         if(gamepad2.dpad_down){
             intakeRight.setPosition(0.0);
-            intakeLeft.setPosition(0.0);
+            //intakeLeft.setPosition(0.0);
         }
 
         telemetry.addData("rf", postRF);
