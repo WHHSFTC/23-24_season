@@ -62,13 +62,13 @@ public class CenterStageTele extends OpMode{
         intakeLeft.setPosition(1.0);
         intakeRight.setPosition(1.0);
 
-        armLeft.scaleRange(0.0, 0.24);
-        armRight.scaleRange(0.0, 0.24);
+        armLeft.scaleRange(0.0, 0.245);
+        armRight.scaleRange(0.0, 0.245);
 
         armLeft.setPosition(0.0);
 
-        pRight.scaleRange(0.71, 0.74);
-        pLeft.scaleRange(0.61,0.67);
+        pRight.scaleRange(0.72, 0.77);
+        pLeft.scaleRange(0.60,0.67);
 
         pRight.setPosition(1.0);
         pLeft.setPosition(1.0);
@@ -167,7 +167,7 @@ public class CenterStageTele extends OpMode{
 
         if(gamepad2.right_trigger > 0.2){
             intake.setPower(-0.95);
-        }else{
+        } else {
             intake.setPower(0.0);
         }
 
