@@ -33,6 +33,8 @@ public class CenterStageTele extends OpMode{
     Servo pLeft;
     Servo intakeRight;
     Servo intakeLeft;
+    Servo droneLauncher;
+
     @Override
     public void init(){
         rf = hardwareMap.get(DcMotor.class, "motorRF");
@@ -47,6 +49,7 @@ public class CenterStageTele extends OpMode{
         armRight = hardwareMap.get(Servo.class, "armRight");
         pRight = hardwareMap.get(Servo.class, "plungerRight");
         pLeft = hardwareMap.get(Servo.class, "plungerLeft");
+        droneLauncher = hardwareMap.get(Servo.class, "drone");
 
         ls.setDirection(DcMotorSimple.Direction.FORWARD);
         rs.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -59,8 +62,8 @@ public class CenterStageTele extends OpMode{
         intakeLeft.scaleRange(0.0, 0.55);
         intakeRight.scaleRange(0.22, 1);
 
-        intakeLeft.setPosition(1.0);
-        intakeRight.setPosition(1.0);
+        // intakeLeft.setPosition(1.0);
+        // intakeRight.setPosition(1.0);
 
         armLeft.scaleRange(0.0, 0.245);
         armRight.scaleRange(0.0, 0.245);
@@ -72,6 +75,8 @@ public class CenterStageTele extends OpMode{
 
         pRight.setPosition(1.0);
         pLeft.setPosition(1.0);
+
+        droneLauncher.setPosition(0.0);
 
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -189,6 +194,11 @@ public class CenterStageTele extends OpMode{
             intakeLeft.setPosition(0.2);
         }
 
+        // drone launcher
+        if(gamepad2.back){
+            droneLauncher.setPosition(0.6);
+        }
+
 
         telemetry.addData("rf", postRF);
         telemetry.addData("lf", postLF);
@@ -204,6 +214,7 @@ public class CenterStageTele extends OpMode{
         telemetry.addData("intakeLeft", "Position: " + intakeLeft.getPosition());
         telemetry.addData("rs", "Power: " + rs.getPower() + "Position: " + rs.getCurrentPosition());
         telemetry.addData("ls", "Power: " + ls.getPower() + "Position: " + ls.getCurrentPosition());
+        telemetry.addData("drone", "Position: " + droneLauncher.getPosition());
         telemetry.update();
     }
 
