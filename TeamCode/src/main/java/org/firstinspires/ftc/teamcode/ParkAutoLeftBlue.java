@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous
+@Autonomous (preselectTeleOp = "CenterStageTele")
 public class ParkAutoLeftBlue extends OpMode{
 
     DcMotor rf;
