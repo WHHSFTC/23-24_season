@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous
-public class ParkAutoLeftBlue extends OpMode{
+public class ParkAutoRightRed extends OpMode{
 
     DcMotor rf;
     DcMotor lf;
@@ -58,10 +58,10 @@ public class ParkAutoLeftBlue extends OpMode{
     @Override
     public void loop(){
         if(runtime.seconds() < 0.3){
-            rf.setPower(0.5);
-            lf.setPower(0.5);
-            rb.setPower(-0.5);
-            lb.setPower(-0.5);
+            rf.setPower(-0.5);
+            lf.setPower(-0.5);
+            rb.setPower(0.5);
+            lb.setPower(0.5);
         } else if(runtime.seconds() >= 0.3  && runtime.seconds() < 1.8){
             rf.setPower(-0.5);
             lf.setPower(0.5);

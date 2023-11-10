@@ -189,6 +189,7 @@ public class CenterStageTele extends OpMode{
             intakeLeft.setPosition(0.2);
         }
 
+
         telemetry.addData("rf", postRF);
         telemetry.addData("lf", postLF);
         telemetry.addData("rb", postRB);
