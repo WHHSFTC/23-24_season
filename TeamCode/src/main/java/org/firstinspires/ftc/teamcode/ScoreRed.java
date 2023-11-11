@@ -72,7 +72,7 @@ public class ScoreRed extends OpMode{
         intakeLeft.setPosition(1.0);
         intakeRight.setPosition(1.0);
 
-        runtime.reset();
+        runtime.reset(); //
     }
 
     @Override
