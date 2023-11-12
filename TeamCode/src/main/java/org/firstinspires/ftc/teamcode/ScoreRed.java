@@ -11,7 +11,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 
-
+//
 
 @Autonomous (preselectTeleOp = "CenterStageTele")
 public class ScoreRed extends OpMode{
@@ -53,6 +53,9 @@ public class ScoreRed extends OpMode{
         armRight = hardwareMap.get(Servo.class, "armRight");
         armLeft = hardwareMap.get(Servo.class, "armLeft");
 
+        ls.setDirection(DcMotorSimple.Direction.FORWARD);
+        rs.setDirection(DcMotorSimple.Direction.REVERSE);
+
         rf.setPower(0.0);
         lf.setPower(0.0);
         rb.setPower(0.0);
@@ -72,7 +75,7 @@ public class ScoreRed extends OpMode{
         intakeLeft.setPosition(1.0);
         intakeRight.setPosition(1.0);
 
-        runtime.reset(); //
+        runtime.reset();
     }
 
     @Override
@@ -81,10 +84,84 @@ public class ScoreRed extends OpMode{
     }
     @Override
     public void loop(){
-
+        if(runtime.seconds() < 1.0 ){
+            rf.setPower(-0.5);
+            lf.setPower(-0.5);
+            rb.setPower(0.5);
+            lb.setPower(0.5);
+        } else if(runtime.seconds() >= 1.0  && runtime.seconds() < 2.0){
+            rf.setPower(-0.5);
+            lf.setPower(0.5);
+            rb.setPower(-0.5);
+            lb.setPower(0.5);
+        } else if (runtime.seconds() >= 2.0 && runtime.seconds() < 3.0){
+            pRight.setPosition(0.0);
+            pLeft.setPosition(0.0);
+        }
+        else if(runtime.seconds() >= 3.0 && runtime.seconds() < 6.0){
+            rs.setTargetPosition(800);
+            ls.setTargetPosition(800);
+            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            ls.setPower(0.4);
+            rs.setPower(0.4);
+        }
+        else if(runtime.seconds() >= 6.0 && runtime.seconds() < 8.0){
+            armRight.setPosition(0.0);
+            armLeft.setPosition(0.0);
+        }
+        else if(runtime.seconds() >= 8.0 && runtime.seconds() < 8.2){
+            rf.setPower(-0.2);
+            lf.setPower(0.2);
+            rb.setPower(-0.2);
+            lb.setPower(0.2);
+        }
+        else if(runtime.seconds() >= 8.2 && runtime.seconds() < 9.5){
+            pRight.setPosition(1.0);
+            pLeft.setPosition(1.0);
+        }
+        else if(runtime.seconds() >= 9.5 && runtime.seconds() < 10.5){
+            rf.setPower(0.1);
+            rb.setPower(0.1);
+            lf.setPower(-0.1);
+            lb.setPower(-0.1);
+        }
+        else if(runtime.seconds() >= 10.5 && runtime.seconds() < 12.0){
+            rs.setTargetPosition(0);
+            ls.setTargetPosition(0);
+            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            ls.setPower(0.4);
+            rs.setPower(0.4);
+        }
+        else if(runtime.seconds() >= 12 && runtime.seconds() < 12.7){
+            rf.setPower(0.5);
+            rb.setPower(-0.5);
+            lf.setPower(0.5);
+            lb.setPower(-0.5);
+        }
+        else if(runtime.seconds() >= 12.7 && runtime.seconds() < 13.1){
+            rf.setPower(-0.5);
+            lf.setPower(0.5);
+            rb.setPower(-0.5);
+            lb.setPower(0.5);
+        }
+        else{
+            rf.setPower(0.0);
+            lf.setPower(0.0);
+            rb.setPower(0.0);
+            lb.setPower(0.0);
+            ls.setPower(0.0);
+            rs.setPower(0.0);
+        }
     }
-
     public void stop(){
-
+        super.stop();
+        rf.setPower(0);
+        lf.setPower(0);
+        rb.setPower(0);
+        lb.setPower(0);
+        ls.setPower(0);
+        rs.setPower(0);
     }
 }
