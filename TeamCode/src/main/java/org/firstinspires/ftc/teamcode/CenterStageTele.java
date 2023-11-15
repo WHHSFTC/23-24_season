@@ -59,8 +59,8 @@ public class CenterStageTele extends OpMode{
 
         intakeRight.setDirection(Servo.Direction.REVERSE);
 
-        intakeLeft.scaleRange(0.0, 0.55);
-        intakeRight.scaleRange(0.22, 1);
+        intakeLeft.scaleRange(0.07, 0.55);
+        intakeRight.scaleRange(0.29, 1);
 
         // intakeLeft.setPosition(1.0);
         // intakeRight.setPosition(1.0);
@@ -165,13 +165,13 @@ public class CenterStageTele extends OpMode{
 
         //intake
         if(gamepad2.left_trigger > 0.2){
-            intake.setPower(0.95);
+            intake.setPower(-0.95);
         } else {
             intake.setPower(0.0);
         }
 
         if(gamepad2.right_trigger > 0.2){
-            intake.setPower(-0.95);
+            intake.setPower(0.95);
         } else {
             intake.setPower(0.0);
         }

@@ -9,10 +9,27 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.path.PathContinuityViolationException;
+import com.acmerobotics.roadrunner.profile.MotionProfile;
+import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
+import com.acmerobotics.roadrunner.profile.MotionState;
+import com.acmerobotics.roadrunner.trajectory.DisplacementMarker;
+import com.acmerobotics.roadrunner.trajectory.DisplacementProducer;
+import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
+import com.acmerobotics.roadrunner.trajectory.SpatialMarker;
+import com.acmerobotics.roadrunner.trajectory.TemporalMarker;
+import com.acmerobotics.roadrunner.trajectory.TimeProducer;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.acmerobotics.roadrunner.util.Angle;
 
 @Autonomous (preselectTeleOp = "CenterStageTele")
-public class ScoreBlue extends OpMode{
+public class RRScoreRed extends OpMode{
 
     DcMotor rf;
     DcMotor lf;
@@ -82,76 +99,7 @@ public class ScoreBlue extends OpMode{
     }
     @Override
     public void loop(){
-        if(runtime.seconds() < 1.0 ){
-            rf.setPower(0.5);
-            lf.setPower(0.5);
-            rb.setPower(-0.5);
-            lb.setPower(-0.5);
-        } else if(runtime.seconds() >= 1.0  && runtime.seconds() < 2.0){
-            rf.setPower(-0.5);
-            lf.setPower(0.5);
-            rb.setPower(-0.5);
-            lb.setPower(0.5);
-        } else if (runtime.seconds() >= 2.0 && runtime.seconds() < 3.0){
-            pRight.setPosition(0.0);
-            pLeft.setPosition(0.0);
-        }
-        else if(runtime.seconds() >= 3.0 && runtime.seconds() < 6.0){
-            rs.setTargetPosition(800);
-            ls.setTargetPosition(800);
-            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            ls.setPower(0.4);
-            rs.setPower(0.4);
-        }
-        else if(runtime.seconds() >= 6.0 && runtime.seconds() < 8.0){
-            armRight.setPosition(0.0);
-            armLeft.setPosition(0.0);
-        }
-        else if(runtime.seconds() >= 8.0 && runtime.seconds() < 8.2){
-            rf.setPower(-0.2);
-            lf.setPower(0.2);
-            rb.setPower(-0.2);
-            lb.setPower(0.2);
-        }
-        else if(runtime.seconds() >= 8.2 && runtime.seconds() < 9.5){
-            pRight.setPosition(1.0);
-            pLeft.setPosition(1.0);
-        }
-        else if(runtime.seconds() >= 9.5 && runtime.seconds() < 10.5){
-            rf.setPower(0.1);
-            rb.setPower(0.1);
-            lf.setPower(-0.1);
-            lb.setPower(-0.1);
-        }
-        else if(runtime.seconds() >= 10.5 && runtime.seconds() < 12.0){
-            rs.setTargetPosition(0);
-            ls.setTargetPosition(0);
-            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            ls.setPower(0.4);
-            rs.setPower(0.4);
-        }
-        else if(runtime.seconds() >= 12 && runtime.seconds() < 12.7){
-            rf.setPower(-0.5);
-            rb.setPower(0.5);
-            lf.setPower(-0.5);
-            lb.setPower(0.5);
-        }
-        else if(runtime.seconds() >= 12.7 && runtime.seconds() < 13.1){
-            rf.setPower(-0.5);
-            lf.setPower(0.5);
-            rb.setPower(-0.5);
-            lb.setPower(0.5);
-        }
-        else{
-            rf.setPower(0.0);
-            lf.setPower(0.0);
-            rb.setPower(0.0);
-            lb.setPower(0.0);
-            ls.setPower(0.0);
-            rs.setPower(0.0);
-        }
+
     }
     public void stop(){
         super.stop();
