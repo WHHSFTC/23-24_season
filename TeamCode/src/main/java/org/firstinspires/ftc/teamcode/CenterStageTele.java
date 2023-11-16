@@ -65,13 +65,16 @@ public class CenterStageTele extends OpMode{
         // intakeLeft.setPosition(1.0);
         // intakeRight.setPosition(1.0);
 
-        armLeft.scaleRange(0.0, 0.245);
-        armRight.scaleRange(0.0, 0.245);
+        armRight.setDirection(Servo.Direction.REVERSE);
+
+        armLeft.scaleRange(0.0, 0.24);
+        armRight.scaleRange(0.0, 0.24);
 
         armLeft.setPosition(0.0);
+        armRight.setPosition(0.0);
 
-        pRight.scaleRange(0.72, 0.77);
-        pLeft.scaleRange(0.60,0.67);
+        pRight.scaleRange(0.70, 0.77);
+        pLeft.scaleRange(0.59,0.67);
 
         pRight.setPosition(1.0);
         pLeft.setPosition(1.0);
@@ -101,8 +104,8 @@ public class CenterStageTele extends OpMode{
         rs.setPower(gamepad2.left_stick_y*1.2);
 
         if ((gamepad2.left_stick_y*1.2) < 0){
-            ls.setTargetPosition(1600);
-            rs.setTargetPosition(1600);
+            ls.setTargetPosition(2400);
+            rs.setTargetPosition(2400);
         } else {
             ls.setTargetPosition(0);
             rs.setTargetPosition(0);
