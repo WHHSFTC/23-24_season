@@ -1,6 +1,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.drive.MecanumDrive;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,9 +12,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-
-
-//
 
 @Autonomous (preselectTeleOp = "CenterStageTele")
 public class ScoreBlue extends OpMode{
@@ -30,7 +30,7 @@ public class ScoreBlue extends OpMode{
     Servo armRight;
     Servo armLeft;
 
-    private ElapsedTime runtime = new ElapsedTime();
+    //private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void init(){
@@ -75,16 +75,18 @@ public class ScoreBlue extends OpMode{
         intakeLeft.setPosition(1.0);
         intakeRight.setPosition(1.0);
 
-        runtime.reset();
+        //runtime.reset();
     }
 
     @Override
     public void start(){
-        runtime.reset();
+
+        //runtime.reset();
     }
     @Override
     public void loop(){
-        if(runtime.seconds() < 1.0 ){
+
+        /*if(runtime.seconds() < 1.0 ){
             rf.setPower(0.5);
             lf.setPower(0.5);
             rb.setPower(-0.5);
@@ -153,7 +155,7 @@ public class ScoreBlue extends OpMode{
             lb.setPower(0.0);
             ls.setPower(0.0);
             rs.setPower(0.0);
-        }
+        }*/
     }
     public void stop(){
         super.stop();
