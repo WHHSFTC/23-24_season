@@ -41,7 +41,7 @@ public class ParkAutoRightRed extends OpMode{
         lf.setPower(0);
         rb.setPower(0);
         lb.setPower(0);
-
+//
         intakeRight.setDirection(Servo.Direction.REVERSE);
 
         intakeLeft.scaleRange(0.0, 0.55);

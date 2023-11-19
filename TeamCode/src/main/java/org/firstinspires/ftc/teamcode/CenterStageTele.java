@@ -16,7 +16,7 @@ import java.util.ArrayList;
 @Config
 @TeleOp
 public class CenterStageTele extends OpMode{
-
+//
     FtcDashboard dashboard;
     TelemetryPacket packet;
     //public static MultipleTelemetry dashTelemetry = new MultipleTelemetry();
