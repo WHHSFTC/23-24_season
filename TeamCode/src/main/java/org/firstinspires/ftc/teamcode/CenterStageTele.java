@@ -17,8 +17,8 @@ import java.util.ArrayList;
 @TeleOp
 public class CenterStageTele extends OpMode{
 
-    FtcDashboard dashboard = FtcDashboard.getInstance();
-    TelemetryPacket packet = new TelemetryPacket();
+    FtcDashboard dashboard;
+    TelemetryPacket packet;
     //public static MultipleTelemetry dashTelemetry = new MultipleTelemetry();
 
     DcMotor rf;
@@ -31,14 +31,8 @@ public class CenterStageTele extends OpMode{
 
     double slidePositionTarget = 0.0;
 
-    public static double dronePos1 = 0.0;
-    public static double dronePos2 = 0.3;
-    // Gains for slides, to be tuned
-    double kP = 0.0;
-    double kI = 0;
-    double kD = 0;
-    double integralSum = 0.0;
-    private double lastError = 0.0;
+    public static double dronePos1 = 0.2;
+    public static double dronePos2 = 0.6;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     double timegap;
 
@@ -53,6 +47,10 @@ public class CenterStageTele extends OpMode{
 
     @Override
     public void init(){
+
+        dashboard = FtcDashboard.getInstance();
+        packet = new TelemetryPacket();
+
         rf = hardwareMap.get(DcMotor.class, "motorRF");
         lf = hardwareMap.get(DcMotor.class, "motorLF");
         rb = hardwareMap.get(DcMotor.class, "motorRB");
@@ -101,7 +99,6 @@ public class CenterStageTele extends OpMode{
         pLeft.setPosition(1.0);
 
         droneLauncher.scaleRange(dronePos1, dronePos2);
-        droneLauncher.setPosition(0.0);
 
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -112,45 +109,70 @@ public class CenterStageTele extends OpMode{
     @Override
     public void loop(){
         //find timegapr
-        timegap = timer.milliseconds();
-        timer.reset();
+        /*timegap = timer.milliseconds();
+        timer.reset();*/
 
         double y = -gamepad1.left_stick_x; //verticals
         double x = -gamepad1.left_stick_y*1.3; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
 
-        if (gamepad1.back) {
+        /*if (gamepad1.back) {
             ls.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rs.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        } else {
+        }else{
             ls.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             rs.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
+        }*/
 
-        //if (Math.abs(gamepad2.left_stick_y) > 0.05) {
-            slidePositionTarget -= (10 * gamepad2.left_stick_y);
+        /*if (gamepad2.left_stick_y > 0.0) {
+            slidePositionTarget -= (15 * gamepad2.left_stick_y);
+            if(slidePositionTarget < -170){
+                slidePositionTarget = -170;
+            }}
+
+        if (gamepad2.left_stick_y < 0.0){
+                slidePositionTarget += (-10 * gamepad2.left_stick_y);
+                if(slidePositionTarget > 2300){
+                slidePositionTarget = 2300;
+            }
+            }
+
             telemetry.addData("Slide target: ", slidePositionTarget);
+            telemetry.addData("Error RS", "Error LS: " + (slidePositionTarget - rs.getCurrentPosition()));
+            telemetry.addData("Error LS", "Error LS " + (slidePositionTarget - ls.getCurrentPosition()));
 
             ls.setPower(SlidesPID.calculatePower(slidePositionTarget, ls.getCurrentPosition(), timegap));
             rs.setPower(SlidesPID.calculatePower(slidePositionTarget, rs.getCurrentPosition(), timegap));
-        //} else {
-        //    ls.setPower(0.0);
-        //    rs.setPower(0.0);
-        //}
-
-        /*
-        ls.setPower(0.0);
-        rs.setPower(0.0);
-
-        if ((gamepad2.left_stick_y*1.2) < 0){
-            ls.setTargetPosition(1600);
-            rs.setTargetPosition(1600);
-        } else {
-            ls.setTargetPosition(0);
-            rs.setTargetPosition(0);
-        }
         */
 
+        if ((gamepad2.left_stick_y*1.2) < 0){
+            ls.setTargetPosition(2200);
+            rs.setTargetPosition(2200);
+
+            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            ls.setPower(0.5);
+            rs.setPower(0.5);
+        } else if(gamepad2.left_stick_y*1.2 > 0){
+            ls.setTargetPosition(0);
+            rs.setTargetPosition(0);
+
+            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            ls.setPower(0.4);
+            rs.setPower(0.4);
+        }else{
+            ls.setTargetPosition(ls.getCurrentPosition());
+            rs.setTargetPosition(ls.getCurrentPosition());
+
+            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            ls.setPower(0.5);
+            rs.setPower(0.5);
+        }
 
         boolean turtle = false;
         if(gamepad1.left_trigger > 0.5 || gamepad1.right_trigger > 0.5){
@@ -159,7 +181,7 @@ public class CenterStageTele extends OpMode{
 
         double scalar;
         if(turtle){
-            scalar = 0.25;
+            scalar = 0.40;
         }else{
             scalar = 1.0;
         }
@@ -212,7 +234,7 @@ public class CenterStageTele extends OpMode{
         }
 
         if(gamepad2.right_trigger > 0.2){
-            intake.setPower(0.95);
+            intake.setPower(0.98);
         } else {
             intake.setPower(0.0);
         }
@@ -231,8 +253,8 @@ public class CenterStageTele extends OpMode{
 
         //stack position intake
         if(gamepad2.dpad_right){
-            intakeRight.setPosition(0.17);
-            intakeLeft.setPosition(0.17);
+            intakeRight.setPosition(0.25);
+            intakeLeft.setPosition(0.25);
         }
 
         // drone launcher
@@ -240,7 +262,6 @@ public class CenterStageTele extends OpMode{
             droneLauncher.setPosition(1.0);
         }
         //droneLauncher.setPosition(dronePos2);
-
 
         telemetry.addData("rf", postRF);
         telemetry.addData("lf", postLF);
@@ -254,21 +275,18 @@ public class CenterStageTele extends OpMode{
         telemetry.addData("pLeft", "Position: " + pLeft.getPosition());
         telemetry.addData("intakeRight", "Position: " + intakeRight.getPosition());
         telemetry.addData("intakeLeft", "Position: " + intakeLeft.getPosition());
-        telemetry.addData("rs", "Power: " + rs.getPower() + "Position: " + rs.getCurrentPosition());
-        telemetry.addData("ls", "Power: " + ls.getPower() + "Position: " + ls.getCurrentPosition());
+        telemetry.addData("rs", "Power: " + rs.getPower());
+        telemetry.addData("ls", "Power: " + ls.getPower());
         telemetry.addData("drone", "Position: " + droneLauncher.getPosition());
-        telemetry.addData("slides target", "target: " + slidePositionTarget);
-        telemetry.addData("slides position rs", "current rs pos: " + rs.getCurrentPosition());
-        telemetry.addData("slides position ls", "current ls pos: " + ls.getCurrentPosition());
+        //telemetry.addData("slides target", "target: " + slidePositionTarget);
+        telemetry.addData("slides position rs: ", "current rs pos: " + rs.getCurrentPosition());
+        telemetry.addData("slides position ls: ", "current ls pos: " + ls.getCurrentPosition());
         telemetry.update();
 
-        packet.put("slides target", slidePositionTarget);
+        /*packet.put("slides target", slidePositionTarget);
         packet.put("slides position rs", "current rs pos: " + rs.getCurrentPosition());
         packet.put("slides position ls", "current ls pos: " + ls.getCurrentPosition());
-        dashboard.sendTelemetryPacket(packet);
-        //dashTelemetry.addData("slides target", "target: " + slidePositionTarget);
-        //dashTelemetry.addData("slides position rs", "current rs pos: " + rs.getCurrentPosition());
-        //dashTelemetry.addData("slides position ls", "current ls pos: " + ls.getCurrentPosition());
+        dashboard.sendTelemetryPacket(packet);*/
     }
 
     /*public double PIDControl(double reference, double state){

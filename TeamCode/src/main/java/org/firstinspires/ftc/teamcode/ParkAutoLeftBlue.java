@@ -18,6 +18,7 @@ public class ParkAutoLeftBlue extends OpMode{
 
     Servo intakeRight;
     Servo intakeLeft;
+    Servo droneLauncher;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -35,6 +36,7 @@ public class ParkAutoLeftBlue extends OpMode{
 
         intakeRight = hardwareMap.get(Servo.class, "intakeRight");
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
+        droneLauncher = hardwareMap.get(Servo.class, "drone");
 
         rf.setPower(0);
         lf.setPower(0);
@@ -43,11 +45,13 @@ public class ParkAutoLeftBlue extends OpMode{
 
         intakeRight.setDirection(Servo.Direction.REVERSE);
 
+        droneLauncher.scaleRange(0.2,0.6);
         intakeLeft.scaleRange(0.0, 0.55);
         intakeRight.scaleRange(0.22, 1);
 
         intakeLeft.setPosition(1.0);
         intakeRight.setPosition(1.0);
+        droneLauncher.setPosition(0);
         runtime.reset();
     }
 
