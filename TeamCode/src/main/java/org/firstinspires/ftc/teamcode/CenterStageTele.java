@@ -145,34 +145,22 @@ public class CenterStageTele extends OpMode{
             rs.setPower(SlidesPID.calculatePower(slidePositionTarget, rs.getCurrentPosition(), timegap));
         */
 
+        ls.setPower(gamepad2.left_stick_y*1.2);
+        rs.setPower(gamepad2.left_stick_y*1.2);
+
         if ((gamepad2.left_stick_y*1.2) < 0){
-            ls.setTargetPosition(2200);
-            rs.setTargetPosition(2200);
-
-            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            ls.setPower(0.5);
-            rs.setPower(0.5);
+            ls.setTargetPosition(2300);
+            rs.setTargetPosition(2300);
         } else if(gamepad2.left_stick_y*1.2 > 0){
             ls.setTargetPosition(0);
             rs.setTargetPosition(0);
-
-            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            ls.setPower(0.4);
-            rs.setPower(0.4);
         }else{
             ls.setTargetPosition(ls.getCurrentPosition());
             rs.setTargetPosition(ls.getCurrentPosition());
-
-            ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            ls.setPower(0.5);
-            rs.setPower(0.5);
         }
+
+        ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         boolean turtle = false;
         if(gamepad1.left_trigger > 0.5 || gamepad1.right_trigger > 0.5){
