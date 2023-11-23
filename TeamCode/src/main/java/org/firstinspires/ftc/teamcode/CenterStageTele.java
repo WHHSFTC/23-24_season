@@ -9,11 +9,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorTouch;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.ArrayList;
 
@@ -33,7 +35,9 @@ public class CenterStageTele extends OpMode{
     DcMotor ls;
     DcMotor rs;
 
-    boolean turtle;
+    boolean slidesTurtle;
+    boolean dtTurtle;
+    boolean intakeOnGround;
     public static double slidePositionTarget = 0.0;
     public static double slidesff = 0.0;
     public static double slideTargetGain = 100.0;
@@ -65,6 +69,7 @@ public class CenterStageTele extends OpMode{
     Servo droneLauncher;
 
     TouchSensor slidesLimit;
+    DistanceSensor distFromDrop;
 
     @Override
     public void init(){
@@ -87,7 +92,7 @@ public class CenterStageTele extends OpMode{
         droneLauncher = hardwareMap.get(Servo.class, "drone");
 
         slidesLimit = hardwareMap.get(TouchSensor.class, "slidesLimit");
-
+        distFromDrop = hardwareMap.get(DistanceSensor.class, "backdrop distance");
 
         ls.setDirection(DcMotorSimple.Direction.FORWARD);
         rs.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -171,24 +176,24 @@ public class CenterStageTele extends OpMode{
                 slidePositionTarget = slideMax;
             }
             if (slidePositionTarget > 20) {
-                turtle = true;
+                slidesTurtle = true;
             }
         }
 
         telemetry.addData("Slide target: ", slidePositionTarget);
-        telemetry.addData("Error RS", "Error LS: " + (slidePositionTarget - rs.getCurrentPosition()));
-        telemetry.addData("Error LS", "Error LS " + (slidePositionTarget - ls.getCurrentPosition()));
+        telemetry.addData("Error RS", (slidePositionTarget - rs.getCurrentPosition()));
+        telemetry.addData("Error LS", (slidePositionTarget - ls.getCurrentPosition()));
 
         ls.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, ls.getCurrentPosition(), timegap));
         rs.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, rs.getCurrentPosition(), timegap));
 
 
-        if(gamepad1.left_trigger > 0.5){
-            turtle = true;
+        if(gamepad1.left_trigger > 0.25 || gamepad1.right_trigger > 0.25){
+            dtTurtle = true;
         }
 
         double scalar;
-        if (turtle) {
+        if (dtTurtle) {
             scalar = 0.2;
         } else {
             scalar = 1.0;
@@ -209,6 +214,8 @@ public class CenterStageTele extends OpMode{
         double postLF = preLF/max;
         double postRB = preRB/max;
         double postLB = preLB/max;
+
+        double distBackdrop = distFromDrop.getDistance(DistanceUnit.INCH);
 
         //arm swings out
         if(gamepad2.x){
@@ -248,9 +255,9 @@ public class CenterStageTele extends OpMode{
         }
 
         //intake
-        if (gamepad1.left_bumper && (gamepad1.right_bumper || gamepad1.a)){
+        if (gamepad1.left_bumper && intakeOnGround){
             intake.setPower(-0.5); //reverse
-        } else if (gamepad1.right_trigger > 0.2 && (gamepad1.right_bumper || gamepad1.a)){
+        } else if (gamepad1.right_trigger > 0.2 && intakeOnGround){
             intake.setPower(0.98); //forward
             slidePositionTarget = 150.0;
         } else {
@@ -261,13 +268,18 @@ public class CenterStageTele extends OpMode{
         if(gamepad1.right_bumper){
             intakeRight.setPosition(intakeDownPos);
             intakeLeft.setPosition(intakeDownPos);
+            intakeOnGround = true;
         } else {
+            intakeOnGround = false;
             intakeRight.setPosition(intakeUpPos);
             intakeLeft.setPosition(intakeUpPos);
         }
 
         //stack position intake
         if(gamepad1.a){
+            if(!intakeOnGround){
+                intakeOnGround = true;
+            }
             intakeRight.setPosition(intakeStackPos);
             intakeLeft.setPosition(intakeStackPos);
         }
