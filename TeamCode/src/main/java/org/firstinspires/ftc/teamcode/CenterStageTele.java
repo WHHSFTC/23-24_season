@@ -6,10 +6,14 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorTouch;
 
 import java.util.ArrayList;
 
@@ -29,10 +33,25 @@ public class CenterStageTele extends OpMode{
     DcMotor ls;
     DcMotor rs;
 
-    double slidePositionTarget = 0.0;
+    boolean turtle;
+    public static double slidePositionTarget = 0.0;
+    public static double slidesff = 0.0;
+    public static double slideTargetGain = 100.0;
+    public static double slideMin = 0.0;
+    public static double slideMax = 1800.0;
+    boolean whetherSlidesPressed;
+    double slideSavedPosition = 900.0;
 
+    public static double intakeUpPos = 1.0;
+    public static double intakeDownPos = 0.05;
+    public static double intakeStackPos = 0.25;
+
+    public static double armOutPos = 0.1;
+    public static double armInPos = 1.0;
+    public static double plungerGrabPos = 0.0;
+    public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.2;
-    public static double dronePos2 = 0.6;
+    public static double dronePos2 = 0.9;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     double timegap;
 
@@ -44,6 +63,8 @@ public class CenterStageTele extends OpMode{
     Servo intakeRight;
     Servo intakeLeft;
     Servo droneLauncher;
+
+    TouchSensor slidesLimit;
 
     @Override
     public void init(){
@@ -65,16 +86,23 @@ public class CenterStageTele extends OpMode{
         pLeft = hardwareMap.get(Servo.class, "plungerLeft");
         droneLauncher = hardwareMap.get(Servo.class, "drone");
 
+        slidesLimit = hardwareMap.get(TouchSensor.class, "slidesLimit");
+
 
         ls.setDirection(DcMotorSimple.Direction.FORWARD);
         rs.setDirection(DcMotorSimple.Direction.REVERSE);
         ls.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rs.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        ls.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rs.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         intakeRight = hardwareMap.get(Servo.class, "intakeRight");
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
@@ -92,13 +120,14 @@ public class CenterStageTele extends OpMode{
 
         armLeft.setPosition(0.0);
 
-        pRight.scaleRange(0.72, 0.77);
-        pLeft.scaleRange(0.60,0.67);
+        pRight.scaleRange(0.68, 0.77);
+        pLeft.scaleRange(0.57,0.67);
 
         pRight.setPosition(1.0);
         pLeft.setPosition(1.0);
 
         droneLauncher.scaleRange(dronePos1, dronePos2);
+        droneLauncher.setPosition(0);
 
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -108,69 +137,60 @@ public class CenterStageTele extends OpMode{
 
     @Override
     public void loop(){
-        //find timegapr
-        /*timegap = timer.milliseconds();
-        timer.reset();*/
+        //find timegap
+        timegap = timer.milliseconds();
+        timer.reset();
 
         double y = -gamepad1.left_stick_x; //verticals
         double x = -gamepad1.left_stick_y*1.3; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
 
-        /*if (gamepad1.back) {
-            ls.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rs.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }else{
-            ls.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rs.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }*/
 
-        /*if (gamepad2.left_stick_y > 0.0) {
-            slidePositionTarget -= (15 * gamepad2.left_stick_y);
-            if(slidePositionTarget < -170){
-                slidePositionTarget = -170;
-            }}
+        //slides
+        ls.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rs.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        if (gamepad2.left_stick_y < 0.0){
-                slidePositionTarget += (-10 * gamepad2.left_stick_y);
-                if(slidePositionTarget > 2300){
-                slidePositionTarget = 2300;
+        if (slidesLimit.isPressed()) {
+            if (!whetherSlidesPressed) {
+                ls.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rs.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
-            }
-
-            telemetry.addData("Slide target: ", slidePositionTarget);
-            telemetry.addData("Error RS", "Error LS: " + (slidePositionTarget - rs.getCurrentPosition()));
-            telemetry.addData("Error LS", "Error LS " + (slidePositionTarget - ls.getCurrentPosition()));
-
-            ls.setPower(SlidesPID.calculatePower(slidePositionTarget, ls.getCurrentPosition(), timegap));
-            rs.setPower(SlidesPID.calculatePower(slidePositionTarget, rs.getCurrentPosition(), timegap));
-        */
-
-        ls.setPower(gamepad2.left_stick_y*1.2);
-        rs.setPower(gamepad2.left_stick_y*1.2);
-
-        if ((gamepad2.left_stick_y*1.2) < 0){
-            ls.setTargetPosition(2300);
-            rs.setTargetPosition(2300);
-        } else if(gamepad2.left_stick_y*1.2 > 0){
-            ls.setTargetPosition(0);
-            rs.setTargetPosition(0);
-        }else{
-            ls.setTargetPosition(ls.getCurrentPosition());
-            rs.setTargetPosition(ls.getCurrentPosition());
+            whetherSlidesPressed = true;
+        } else {
+            whetherSlidesPressed = false;
         }
 
-        ls.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rs.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (Math.abs(gamepad2.left_stick_y) > 0.01) {
 
-        boolean turtle = false;
-        if(gamepad1.left_trigger > 0.5 || gamepad1.right_trigger > 0.5){
+            slidePositionTarget -= slideTargetGain * gamepad2.left_stick_y;
+
+            if (slidePositionTarget < slideMin) {
+                slidePositionTarget = slideMin;
+            }
+            if (slidePositionTarget > slideMax) {
+                slidePositionTarget = slideMax;
+            }
+            if (slidePositionTarget > 20) {
+                turtle = true;
+            }
+        }
+
+        telemetry.addData("Slide target: ", slidePositionTarget);
+        telemetry.addData("Error RS", "Error LS: " + (slidePositionTarget - rs.getCurrentPosition()));
+        telemetry.addData("Error LS", "Error LS " + (slidePositionTarget - ls.getCurrentPosition()));
+
+        ls.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, ls.getCurrentPosition(), timegap));
+        rs.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, rs.getCurrentPosition(), timegap));
+
+
+        if(gamepad1.left_trigger > 0.5){
             turtle = true;
         }
 
         double scalar;
-        if(turtle){
-            scalar = 0.40;
-        }else{
+        if (turtle) {
+            scalar = 0.2;
+        } else {
             scalar = 1.0;
         }
         double preRF = (r+(y+x))*scalar;
@@ -193,56 +213,63 @@ public class CenterStageTele extends OpMode{
         //arm swings out
         if(gamepad2.x){
             //armRight.setPosition(0.0);
-            armLeft.setPosition(0.0);
+            armLeft.setPosition(armOutPos);
         }
 
         //arm swings in
         if(gamepad2.b){
             //armRight.setPosition(1.0);
-            armLeft.setPosition(1.0);
+            armLeft.setPosition(armInPos);
         }
 
         //plunger open
         if(gamepad2.y){
-            pRight.setPosition(0.0);
-            pLeft.setPosition(0.0);
+            pRight.setPosition(plungerGrabPos);
+            pLeft.setPosition(plungerGrabPos);
         }
 
         //plunger close
         if(gamepad2.a){
-            pRight.setPosition(1.0);
-            pLeft.setPosition(1.0);
+            pRight.setPosition(plungerReleasePos);
+            pLeft.setPosition(plungerReleasePos);
+        }
+
+        if(gamepad2.dpad_right){
+            slidePositionTarget = slideSavedPosition;
+        }
+
+        if(gamepad2.dpad_down){
+            slideSavedPosition = slidePositionTarget;
+            slidePositionTarget = slideMin;
+        }
+
+        if(gamepad2.dpad_up) {
+            slidePositionTarget = slideMax;
         }
 
         //intake
-        if(gamepad2.left_trigger > 0.2){
-            intake.setPower(-0.95);
+        if (gamepad1.left_bumper && (gamepad1.right_bumper || gamepad1.a)){
+            intake.setPower(-0.5); //reverse
+        } else if (gamepad1.right_trigger > 0.2 && (gamepad1.right_bumper || gamepad1.a)){
+            intake.setPower(0.98); //forward
+            slidePositionTarget = 150.0;
         } else {
             intake.setPower(0.0);
-        }
-
-        if(gamepad2.right_trigger > 0.2){
-            intake.setPower(0.98);
-        } else {
-            intake.setPower(0.0);
-        }
-
-        //swinging intake to init position
-        if(gamepad2.dpad_up){
-            intakeRight.setPosition(1.0);
-            intakeLeft.setPosition(1.0);
         }
 
         //swinging intake out
-        if(gamepad2.dpad_down){
-            intakeRight.setPosition(0.0);
-            intakeLeft.setPosition(0.0);
+        if(gamepad1.right_bumper){
+            intakeRight.setPosition(intakeDownPos);
+            intakeLeft.setPosition(intakeDownPos);
+        } else {
+            intakeRight.setPosition(intakeUpPos);
+            intakeLeft.setPosition(intakeUpPos);
         }
 
         //stack position intake
-        if(gamepad2.dpad_right){
-            intakeRight.setPosition(0.25);
-            intakeLeft.setPosition(0.25);
+        if(gamepad1.a){
+            intakeRight.setPosition(intakeStackPos);
+            intakeLeft.setPosition(intakeStackPos);
         }
 
         // drone launcher
@@ -271,10 +298,14 @@ public class CenterStageTele extends OpMode{
         telemetry.addData("slides position ls: ", "current ls pos: " + ls.getCurrentPosition());
         telemetry.update();
 
-        /*packet.put("slides target", slidePositionTarget);
-        packet.put("slides position rs", "current rs pos: " + rs.getCurrentPosition());
-        packet.put("slides position ls", "current ls pos: " + ls.getCurrentPosition());
-        dashboard.sendTelemetryPacket(packet);*/
+        packet.put("slides target", slidePositionTarget);
+        packet.put("slides position rs", rs.getCurrentPosition());
+        packet.put("slides position ls", ls.getCurrentPosition());
+        packet.put("slides power rs", rs.getPower());
+        packet.put("slides power ls", ls.getPower());
+        packet.put("slides power ls", slidesLimit.isPressed());
+        packet.put("slide saved position", slideSavedPosition);
+        dashboard.sendTelemetryPacket(packet);
     }
 
     /*public double PIDControl(double reference, double state){

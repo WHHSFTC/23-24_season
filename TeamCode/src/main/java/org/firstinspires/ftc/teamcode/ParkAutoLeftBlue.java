@@ -45,13 +45,12 @@ public class ParkAutoLeftBlue extends OpMode{
 
         intakeRight.setDirection(Servo.Direction.REVERSE);
 
-        droneLauncher.scaleRange(0.2,0.6);
+        // droneLauncher.scaleRange(0.2,0.6);
         intakeLeft.scaleRange(0.0, 0.55);
         intakeRight.scaleRange(0.22, 1);
 
         intakeLeft.setPosition(1.0);
         intakeRight.setPosition(1.0);
-        droneLauncher.setPosition(0);
         runtime.reset();
     }
 
