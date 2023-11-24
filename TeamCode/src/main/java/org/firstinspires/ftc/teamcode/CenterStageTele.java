@@ -33,17 +33,17 @@ public class CenterStageTele extends OpMode{
     DcMotor ls;
     DcMotor rs;
 
-    boolean turtle;
     public static double slidePositionTarget = 0.0;
     public static double slidesff = 0.0;
     public static double slideTargetGain = 100.0;
     public static double slideMin = 0.0;
     public static double slideMax = 1800.0;
-    boolean whetherSlidesPressed;
+    boolean dlidesPressed;
+    boolean dpadDownPressed;
     double slideSavedPosition = 900.0;
 
     public static double intakeUpPos = 1.0;
-    public static double intakeDownPos = 0.05;
+    public static double intakeDownPos = 0.12;
     public static double intakeStackPos = 0.25;
 
     public static double armOutPos = 0.1;
@@ -141,6 +141,8 @@ public class CenterStageTele extends OpMode{
         timegap = timer.milliseconds();
         timer.reset();
 
+        double scalar = 1.0;
+
         double y = -gamepad1.left_stick_x; //verticals
         double x = -gamepad1.left_stick_y*1.3; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
@@ -151,18 +153,18 @@ public class CenterStageTele extends OpMode{
         rs.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         if (slidesLimit.isPressed()) {
-            if (!whetherSlidesPressed) {
+            if (!dlidesPressed) {
                 ls.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 rs.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
-            whetherSlidesPressed = true;
+            dlidesPressed = true;
         } else {
-            whetherSlidesPressed = false;
+            dlidesPressed = false;
         }
 
-        if (Math.abs(gamepad2.left_stick_y) > 0.01) {
+        //if (Math.abs(gamepad2.left_stick_y) > 0.01) {
 
-            slidePositionTarget -= slideTargetGain * gamepad2.left_stick_y;
+            if (gamepad1.dpad_up) {slidePositionTarget -= slideTargetGain * gamepad1.right_stick_y;}
 
             if (slidePositionTarget < slideMin) {
                 slidePositionTarget = slideMin;
@@ -170,33 +172,27 @@ public class CenterStageTele extends OpMode{
             if (slidePositionTarget > slideMax) {
                 slidePositionTarget = slideMax;
             }
-            if (slidePositionTarget > 20) {
-                turtle = true;
+            if (slidePositionTarget > 200.0) {
+                scalar = 1.0 - Math.sqrt(slidePositionTarget/slideMax)/1.25;
             }
-        }
+        //}
 
         telemetry.addData("Slide target: ", slidePositionTarget);
-        telemetry.addData("Error RS", "Error LS: " + (slidePositionTarget - rs.getCurrentPosition()));
-        telemetry.addData("Error LS", "Error LS " + (slidePositionTarget - ls.getCurrentPosition()));
+        telemetry.addData("Error RS", "Error RS: " + (slidePositionTarget - rs.getCurrentPosition()));
+        telemetry.addData("Error LS", "Error LS: " + (slidePositionTarget - ls.getCurrentPosition()));
 
         ls.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, ls.getCurrentPosition(), timegap));
         rs.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, rs.getCurrentPosition(), timegap));
 
 
-        if(gamepad1.left_trigger > 0.5){
-            turtle = true;
+        if (gamepad1.left_trigger > 0.5 && scalar > 0.3){
+            scalar = 0.3;
         }
 
-        double scalar;
-        if (turtle) {
-            scalar = 0.2;
-        } else {
-            scalar = 1.0;
-        }
-        double preRF = (r+(y+x))*scalar;
-        double preLF = (r+(y-x))*scalar;
-        double preRB = (r+(-y+x))*scalar;
-        double preLB = (r+(-y-x))*scalar;
+        double preRF = r*Math.sqrt(scalar) + y*Math.cbrt(scalar) + x*scalar;
+        double preLF = r*Math.sqrt(scalar) + y*Math.cbrt(scalar) - x*scalar;
+        double preRB = r*Math.sqrt(scalar) - y*Math.cbrt(scalar) + x*scalar;
+        double preLB = r*Math.sqrt(scalar) - y*Math.cbrt(scalar) - x*scalar;
 
         double max = Math.max(Math.max(Math.max(Math.max(preRF,preRB), preLB), preLF), 1);
 
@@ -211,54 +207,59 @@ public class CenterStageTele extends OpMode{
         double postLB = preLB/max;
 
         //arm swings out
-        if(gamepad2.x){
+        if (gamepad1.x) {
             //armRight.setPosition(0.0);
             armLeft.setPosition(armOutPos);
         }
 
         //arm swings in
-        if(gamepad2.b){
+        if (gamepad1.b) {
             //armRight.setPosition(1.0);
             armLeft.setPosition(armInPos);
         }
 
         //plunger open
-        if(gamepad2.y){
+        if (gamepad1.y) {
             pRight.setPosition(plungerGrabPos);
             pLeft.setPosition(plungerGrabPos);
         }
 
         //plunger close
-        if(gamepad2.a){
+        if (gamepad1.a) {
             pRight.setPosition(plungerReleasePos);
             pLeft.setPosition(plungerReleasePos);
         }
 
-        if(gamepad2.dpad_right){
+        if (gamepad1.dpad_right) {
             slidePositionTarget = slideSavedPosition;
         }
 
-        if(gamepad2.dpad_down){
-            slideSavedPosition = slidePositionTarget;
-            slidePositionTarget = slideMin;
+        if (gamepad1.dpad_down) {
+            if (!dpadDownPressed) {
+                slideSavedPosition = slidePositionTarget;
+                slidePositionTarget = slideMin;
+            }
+            dpadDownPressed = true;
+        } else {
+            dpadDownPressed = false;
         }
 
-        if(gamepad2.dpad_up) {
-            slidePositionTarget = slideMax;
-        }
+        //if (gamepad1.dpad_up) {
+        //    slidePositionTarget = slideMax;
+        //}
 
         //intake
-        if (gamepad1.left_bumper && (gamepad1.right_bumper || gamepad1.a)){
-            intake.setPower(-0.5); //reverse
-        } else if (gamepad1.right_trigger > 0.2 && (gamepad1.right_bumper || gamepad1.a)){
-            intake.setPower(0.98); //forward
+        if (gamepad1.left_bumper && (gamepad1.right_bumper || gamepad1.dpad_left)) {
+            intake.setPower(-0.25); //reverse
+        } else if (gamepad1.right_trigger > 0.2 && (gamepad1.right_bumper || gamepad1.dpad_left)) {
+            intake.setPower(0.90); //forward
             slidePositionTarget = 150.0;
         } else {
             intake.setPower(0.0);
         }
 
         //swinging intake out
-        if(gamepad1.right_bumper){
+        if (gamepad1.right_bumper) {
             intakeRight.setPosition(intakeDownPos);
             intakeLeft.setPosition(intakeDownPos);
         } else {
@@ -267,13 +268,13 @@ public class CenterStageTele extends OpMode{
         }
 
         //stack position intake
-        if(gamepad1.a){
+        if (gamepad1.dpad_left) {
             intakeRight.setPosition(intakeStackPos);
             intakeLeft.setPosition(intakeStackPos);
         }
 
         // drone launcher
-        if(gamepad2.back){
+        if (gamepad1.back) {
             droneLauncher.setPosition(1.0);
         }
         //droneLauncher.setPosition(dronePos2);
@@ -303,8 +304,9 @@ public class CenterStageTele extends OpMode{
         packet.put("slides position ls", ls.getCurrentPosition());
         packet.put("slides power rs", rs.getPower());
         packet.put("slides power ls", ls.getPower());
-        packet.put("slides power ls", slidesLimit.isPressed());
+        packet.put("slides limit pressed", slidesLimit.isPressed());
         packet.put("slide saved position", slideSavedPosition);
+        packet.put("scalar", scalar);
         dashboard.sendTelemetryPacket(packet);
     }
 
