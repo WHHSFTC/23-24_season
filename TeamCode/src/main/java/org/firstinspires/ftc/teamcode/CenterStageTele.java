@@ -6,16 +6,12 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorTouch;
-
-import java.util.ArrayList;
 
 @Config
 @TeleOp
@@ -38,7 +34,7 @@ public class CenterStageTele extends OpMode{
     public static double slideTargetGain = 100.0;
     public static double slideMin = 0.0;
     public static double slideMax = 1800.0;
-    boolean dlidesPressed;
+    boolean slidesPressed;
     boolean dpadDownPressed;
     double slideSavedPosition = 900.0;
 
@@ -52,8 +48,9 @@ public class CenterStageTele extends OpMode{
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.2;
     public static double dronePos2 = 0.9;
+    public static double strafing = 0.2;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    double timegap;
+    double timeGap;
 
 
     //Servo armRight;
@@ -137,14 +134,14 @@ public class CenterStageTele extends OpMode{
 
     @Override
     public void loop(){
-        //find timegap
-        timegap = timer.milliseconds();
+        //find timeGap
+        timeGap = timer.milliseconds();
         timer.reset();
 
         double scalar = 1.0;
 
         double y = -gamepad1.left_stick_x; //verticals
-        double x = -gamepad1.left_stick_y*1.3; //horizontal
+        double x = -gamepad1.left_stick_y*strafing; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
 
 
@@ -153,13 +150,13 @@ public class CenterStageTele extends OpMode{
         rs.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         if (slidesLimit.isPressed()) {
-            if (!dlidesPressed) {
+            if (!slidesPressed) {
                 ls.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 rs.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
-            dlidesPressed = true;
+            slidesPressed = true;
         } else {
-            dlidesPressed = false;
+            slidesPressed = false;
         }
 
         //if (Math.abs(gamepad2.left_stick_y) > 0.01) {
@@ -181,8 +178,8 @@ public class CenterStageTele extends OpMode{
         telemetry.addData("Error RS", "Error RS: " + (slidePositionTarget - rs.getCurrentPosition()));
         telemetry.addData("Error LS", "Error LS: " + (slidePositionTarget - ls.getCurrentPosition()));
 
-        ls.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, ls.getCurrentPosition(), timegap));
-        rs.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, rs.getCurrentPosition(), timegap));
+        ls.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, ls.getCurrentPosition(), timeGap));
+        rs.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, rs.getCurrentPosition(), timeGap));
 
 
         if (gamepad1.left_trigger > 0.5 && scalar > 0.3){
@@ -310,16 +307,6 @@ public class CenterStageTele extends OpMode{
         dashboard.sendTelemetryPacket(packet);
     }
 
-    /*public double PIDControl(double reference, double state){
-        double error = reference - state;
-        integralSum += error * timer.seconds();
-        double derivative = (error-lastError) / timer.seconds();
-        lastError = error;
-        timer.reset();
-
-        double power = (error * kP) + (derivative * kD) + (integralSum*kI);
-        return Math.tanh(error);
-    }*/
     @Override
     public void stop(){
         super.stop();
