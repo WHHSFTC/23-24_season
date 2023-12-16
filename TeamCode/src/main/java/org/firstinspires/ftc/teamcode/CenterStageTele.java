@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 @TeleOp
 public class CenterStageTele extends OpMode{
-//
+
     FtcDashboard dashboard;
     TelemetryPacket packet;
     //public static MultipleTelemetry dashTelemetry = new MultipleTelemetry();
@@ -33,10 +33,10 @@ public class CenterStageTele extends OpMode{
     public static double slidesff = 0.0;
     public static double slideTargetGain = 100.0;
     public static double slideMin = 0.0;
-    public static double slideMax = 1800.0;
+    public static double slideMax = 2200.0;
     boolean slidesPressed;
     boolean dpadDownPressed;
-    double slideSavedPosition = 900.0;
+    double slideSavedPosition = 1100.0;
 
     public static double intakeUpPos = 1.0;
     public static double intakeDownPos = 0.12;
@@ -48,7 +48,6 @@ public class CenterStageTele extends OpMode{
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.2;
     public static double dronePos2 = 0.9;
-    public static double strafing = 0.2;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     double timeGap;
 
@@ -141,7 +140,7 @@ public class CenterStageTele extends OpMode{
         double scalar = 1.0;
 
         double y = -gamepad1.left_stick_x; //verticals
-        double x = -gamepad1.left_stick_y*strafing; //horizontal
+        double x = -gamepad1.left_stick_y*1.3; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
 
 
@@ -170,7 +169,7 @@ public class CenterStageTele extends OpMode{
                 slidePositionTarget = slideMax;
             }
             if (slidePositionTarget > 200.0) {
-                scalar = 1.0 - Math.sqrt(slidePositionTarget/slideMax)/1.25;
+                scalar = 1.0 - (Math.sqrt(slidePositionTarget/slideMax)/1.25);
             }
         //}
 
