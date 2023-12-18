@@ -38,9 +38,9 @@ public class CenterStageTele extends OpMode{
     boolean dpadDownPressed;
     double slideSavedPosition = 1100.0;
 
-    public static double intakeUpPos = 1.0;
-    public static double intakeDownPos = 0.12;
-    public static double intakeStackPos = 0.25;
+    public static double intakeUpPos = 0.64;
+    public static double intakeDownPos = 0.07;
+    public static double intakeStackPos = 0.18;
 
     public static double armOutPos = 0.1;
     public static double armInPos = 1.0;
@@ -103,7 +103,7 @@ public class CenterStageTele extends OpMode{
         intakeRight = hardwareMap.get(Servo.class, "intakeRight");
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
 
-        intakeLeft.scaleRange(0.0, 0.65);
+        intakeLeft.scaleRange(0.0, 1.0);
         intakeRight.scaleRange(0.0, 1.0);
 
         intakeRight.setDirection(Servo.Direction.REVERSE);
