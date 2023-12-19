@@ -275,6 +275,31 @@ public class CenterStageTele extends OpMode{
         }
         //droneLauncher.setPosition(dronePos2);
 
+        //output automation
+        /*if(gamepad2.y){
+            pRight.setPosition(plungerReleasePos);
+            pLeft.setPosition(plungerReleasePos);
+            armLeft.setPosition(armInPos);
+            try {
+                wait(250);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            slideSavedPosition = slidePositionTarget;
+            slidePositionTarget = 100.0;
+        }
+        if(gamepad2.x){
+            slideSavedPosition = slidePositionTarget;
+            slidePositionTarget = slideMin;
+            if(slidesPressed){
+                pRight.setPosition(plungerGrabPos);
+                pLeft.setPosition(plungerGrabPos);
+            }
+        }
+        if(gamepad2.left_stick_y < 0.2 && (rs.getCurrentPosition() > 100.0 && ls.getCurrentPosition() > 100.0) && (armLeft.getPosition() > 0.9){
+            armLeft.setPosition(armOutPos);
+        }*/
+
         telemetry.addData("rf", postRF);
         telemetry.addData("lf", postLF);
         telemetry.addData("rb", postRB);
