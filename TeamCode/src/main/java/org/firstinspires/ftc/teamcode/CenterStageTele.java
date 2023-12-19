@@ -46,8 +46,8 @@ public class CenterStageTele extends OpMode{
     public static double armInPos = 1.0;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
-    public static double dronePos1 = 0.2;
-    public static double dronePos2 = 0.9;
+    public static double dronePos1 = 0.76;
+    public static double dronePos2 = 0.89;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     double timeGap;
 
@@ -122,8 +122,8 @@ public class CenterStageTele extends OpMode{
         pRight.setPosition(1.0);
         pLeft.setPosition(1.0);
 
-        droneLauncher.scaleRange(dronePos1, dronePos2);
-        droneLauncher.setPosition(0);
+        //droneLauncher.scaleRange(dronePos1, dronePos2);
+        droneLauncher.setPosition(1);
 
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -270,8 +270,10 @@ public class CenterStageTele extends OpMode{
         }
 
         // drone launcher
-        if (gamepad1.back) {
-            droneLauncher.setPosition(1.0);
+        if (gamepad2.back) {
+            droneLauncher.setPosition(dronePos1);
+        } else {
+            droneLauncher.setPosition(dronePos2);
         }
         //droneLauncher.setPosition(dronePos2);
 
