@@ -50,7 +50,7 @@ public class CenterStageTele extends OpMode{
     public static double dronePos2 = 0.89;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     double timeGap;
-
+    boolean intakeOnGround;
 
     //Servo armRight;
     Servo armLeft;
@@ -124,7 +124,7 @@ public class CenterStageTele extends OpMode{
 
         //droneLauncher.scaleRange(dronePos1, dronePos2);
         droneLauncher.setPosition(1);
-
+        intakeOnGround = false;
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
         lb.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -140,7 +140,7 @@ public class CenterStageTele extends OpMode{
         double scalar = 1.0;
 
         double y = -gamepad1.left_stick_x; //verticals
-        double x = -gamepad1.left_stick_y*1.3; //horizontal
+        double x = -gamepad1.left_stick_y*1.1; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
 
 
@@ -160,7 +160,7 @@ public class CenterStageTele extends OpMode{
 
         //if (Math.abs(gamepad2.left_stick_y) > 0.01) {
 
-            if (gamepad1.dpad_up) {slidePositionTarget -= slideTargetGain * gamepad1.right_stick_y;}
+            if (Math.abs(gamepad2.left_stick_y) > 0.01) {slidePositionTarget -= slideTargetGain * gamepad2.left_stick_y;}
 
             if (slidePositionTarget < slideMin) {
                 slidePositionTarget = slideMin;
@@ -203,34 +203,34 @@ public class CenterStageTele extends OpMode{
         double postLB = preLB/max;
 
         //arm swings out
-        if (gamepad1.x) {
+        if (gamepad2.x) {
             //armRight.setPosition(0.0);
             armLeft.setPosition(armOutPos);
         }
 
         //arm swings in
-        if (gamepad1.b) {
+        if (gamepad2.b) {
             //armRight.setPosition(1.0);
             armLeft.setPosition(armInPos);
         }
 
         //plunger open
-        if (gamepad1.y) {
+        if (gamepad2.y) {
             pRight.setPosition(plungerGrabPos);
             pLeft.setPosition(plungerGrabPos);
         }
 
         //plunger close
-        if (gamepad1.a) {
+        if (gamepad2.a) {
             pRight.setPosition(plungerReleasePos);
             pLeft.setPosition(plungerReleasePos);
         }
 
-        if (gamepad1.dpad_right) {
+        if (gamepad2.dpad_right) {
             slidePositionTarget = slideSavedPosition;
         }
 
-        if (gamepad1.dpad_down) {
+        if (gamepad2.dpad_down) {
             if (!dpadDownPressed) {
                 slideSavedPosition = slidePositionTarget;
                 slidePositionTarget = slideMin;
@@ -245,26 +245,31 @@ public class CenterStageTele extends OpMode{
         //}
 
         //intake
-        if (gamepad1.left_bumper && (gamepad1.right_bumper || gamepad1.dpad_left)) {
+        if (gamepad1.b && intakeOnGround) {
             intake.setPower(-0.25); //reverse
-        } else if (gamepad1.right_trigger > 0.2 && (gamepad1.right_bumper || gamepad1.dpad_left)) {
+        } else if (gamepad1.right_trigger > 0.2 && intakeOnGround) {
             intake.setPower(0.90); //forward
             slidePositionTarget = 150.0;
         } else {
-            intake.setPower(0.0);
+            if(gamepad1.right_bumper){
+                intakeRight.setPosition(intakeDownPos);
+                intakeLeft.setPosition(intakeDownPos);
+                intakeOnGround = true;
+            }
         }
 
-        //swinging intake out
-        if (gamepad1.right_bumper) {
-            intakeRight.setPosition(intakeDownPos);
-            intakeLeft.setPosition(intakeDownPos);
-        } else {
+        //swinging intake up (init position)
+        if (gamepad1.left_bumper) {
             intakeRight.setPosition(intakeUpPos);
             intakeLeft.setPosition(intakeUpPos);
+            intakeOnGround = false;
         }
 
         //stack position intake
-        if (gamepad1.dpad_left) {
+        if (gamepad1.dpad_right) {
+            if(!intakeOnGround){
+                intakeOnGround = true;
+            }
             intakeRight.setPosition(intakeStackPos);
             intakeLeft.setPosition(intakeStackPos);
         }
