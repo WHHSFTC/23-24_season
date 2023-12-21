@@ -12,6 +12,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.acmerobotics.dashboard.config.Config;
+
+import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -33,7 +35,7 @@ public class RRBlueBackdrop extends OpMode{
     DcMotor ls;
     DcMotor rs;
 
-    public static double slidePositionTarget = 0.0;
+    public static int slidePositionTarget = 300;
     public static double slidesff = 0.0;
     public static double slideTargetGain = 100.0;
     public static double slideMin = 0.0;
@@ -50,9 +52,9 @@ public class RRBlueBackdrop extends OpMode{
     public static double armInPos = 1.0;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
-    public static int vision;
+    public static int vision = 1;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    double timeGap;
+    double timeGap = 0.0;
     boolean intakeOnGround;
 
     //Servo armRight;
@@ -65,6 +67,16 @@ public class RRBlueBackdrop extends OpMode{
     TouchSensor slidesLimit;
     DistanceSensor rightDS;
     DistanceSensor leftDS;
+    SampleMecanumDrive drive;
+    Trajectory purplePixel1;
+    Trajectory purplePixel2;
+    Trajectory purplePixel3;
+    Trajectory yellowPixel1;
+    Trajectory yellowPixel2;
+    Trajectory yellowPixel3;
+    Trajectory park1;
+    Trajectory park2;
+    Trajectory park3;
 
     @Override
     public void init(){
@@ -120,36 +132,91 @@ public class RRBlueBackdrop extends OpMode{
         pRight.scaleRange(0.68, 0.77);
         pLeft.scaleRange(0.57,0.67);
 
-        intakeLeft.setPosition(intakeUpPos);
-        intakeRight.setPosition(intakeUpPos);
-
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(12, 60,Math.toRadians(90));
-        drive.setPoseEstimate(startPose);
-
-        vision = 1;
-
-        Trajectory purplePixel1 = drive.trajectoryBuilder(new Pose2d())
-                .back(28)
-                .build();
-
-        Trajectory purplePixel2 = drive.trajectoryBuilder(new Pose2d())
-                .splineTo(new Vector2d(12, 36), Math.toRadians(180))
-                .build();
-
-        Trajectory purplePixel3 = drive.trajectoryBuilder(new Pose2d())
-                .splineTo(new Vector2d(12,36), Math.toRadians(0))
-                .build();
-
-
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
         lb.setDirection(DcMotorSimple.Direction.REVERSE);
         lf.setDirection(DcMotorSimple.Direction.REVERSE); */
+        drive = new SampleMecanumDrive(hardwareMap);
+        Pose2d startPose = new Pose2d(16.4, 63.25,Math.toRadians(90));
+        drive.setPoseEstimate(startPose);
+
+        purplePixel1 = drive.trajectoryBuilder(startPose)
+                .lineTo(new Vector2d(23.5, 33.5),
+                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
+
+        purplePixel2 = drive.trajectoryBuilder(startPose, true)
+                .lineTo(new Vector2d(9,31.5),
+                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
+
+        purplePixel3 = drive.trajectoryBuilder(startPose, true)
+                .lineToLinearHeading(new Pose2d(4.8,32.71, Math.toRadians(60)),
+                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
+
+        yellowPixel3 = drive.trajectoryBuilder(purplePixel3.end())
+                .lineToSplineHeading(new Pose2d(50.2,44, Math.toRadians(184)),
+                        SampleMecanumDrive.getVelocityConstraint(48, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(0.5,0, () ->{
+                    pLeft.setPosition(plungerGrabPos);
+                    pRight.setPosition(plungerGrabPos);
+                })
+                .addDisplacementMarker(() ->{
+                    //rs.setPower(SlidesPID.calculatePower());
+                    //ls.setPower(SlidesPID.calculatePower());
+                })
+                .addDisplacementMarker(() ->{
+                    armLeft.setPosition(armOutPos);
+                })
+                .addDisplacementMarker(() ->{
+                    pLeft.setPosition(plungerReleasePos);
+                    pRight.setPosition(plungerReleasePos);
+                })
+                .build();
+
+                park3 = drive.trajectoryBuilder(yellowPixel3.end())
+                        .lineToLinearHeading(new Pose2d(43.2,44, Math.toRadians(180)),
+                                SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                        )
+                        .addDisplacementMarker(()->{
+                            armLeft.setPosition(armInPos);
+                        })
+                        .addDisplacementMarker(()->{
+                            //bring slides all the way down
+                        })
+                        .splineToConstantHeading(new Vector2d(60.7,12.3),0)
+                        .build();
+
+        intakeLeft.setPosition(intakeUpPos);
+        intakeRight.setPosition(intakeUpPos);
     }
 
     @Override
     public void start(){
+
+        switch (vision) {
+            case 1:
+            drive.followTrajectory(purplePixel1);
+            break;
+            case 2:
+            drive.followTrajectory(purplePixel2);
+            break;
+            case 3:
+            drive.followTrajectory(purplePixel3);
+            drive.followTrajectory(yellowPixel3);
+            drive.followTrajectory(park3);
+            break;
+        }
         //runtime.reset();
     }
     @Override
