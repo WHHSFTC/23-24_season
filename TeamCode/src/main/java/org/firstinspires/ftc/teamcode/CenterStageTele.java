@@ -244,25 +244,28 @@ public class CenterStageTele extends OpMode{
         //    slidePositionTarget = slideMax;
         //}
 
-        //intake
-        if (gamepad1.b && intakeOnGround) {
+        //intake spinning
+        if (gamepad1.left_bumper && intakeOnGround) {
             intake.setPower(-0.25); //reverse
-        } else if (gamepad1.right_trigger > 0.2 && intakeOnGround) {
-            intake.setPower(0.90); //forward
-            slidePositionTarget = 150.0;
-        } else {
-            if(gamepad1.right_bumper){
-                intakeRight.setPosition(intakeDownPos);
-                intakeLeft.setPosition(intakeDownPos);
-                intakeOnGround = true;
-            }
         }
 
-        //swinging intake up (init position)
-        if (gamepad1.left_bumper) {
-            intakeRight.setPosition(intakeUpPos);
-            intakeLeft.setPosition(intakeUpPos);
-            intakeOnGround = false;
+        if (gamepad1.right_trigger > 0.2 && intakeOnGround) {
+            intake.setPower(0.90); //forward
+            slidePositionTarget = 150.0;
+        }
+
+        //intake swinging out and swinging in
+        if(gamepad1.right_bumper){
+                if(intakeOnGround){
+                    intakeRight.setPosition(intakeUpPos);
+                    intakeLeft.setPosition(intakeUpPos);
+                    intakeOnGround = false;
+                }
+                if(!intakeOnGround){
+                    intakeRight.setPosition(intakeDownPos);
+                    intakeLeft.setPosition(intakeDownPos);
+                    intakeOnGround = true;
+                }
         }
 
         //stack position intake
