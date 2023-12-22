@@ -49,6 +49,8 @@ public class CenterStageTele extends OpMode{
     public static double dronePos1 = 0.76;
     public static double dronePos2 = 0.89;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    SlidesPID slidesPidRight;
+    SlidesPID slidesPidLeft;
     double timeGap;
     boolean intakeOnGround;
 
@@ -67,6 +69,8 @@ public class CenterStageTele extends OpMode{
 
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket();
+        slidesPidRight = new SlidesPID();
+        slidesPidLeft = new SlidesPID();
 
         rf = hardwareMap.get(DcMotor.class, "motorRF");
         lf = hardwareMap.get(DcMotor.class, "motorLF");
@@ -133,6 +137,8 @@ public class CenterStageTele extends OpMode{
 
     @Override
     public void loop(){
+        slidesPidRight.update(rs.getCurrentPosition(), timeGap);
+        slidesPidLeft.update(ls.getCurrentPosition(), timeGap);
         //find timeGap
         timeGap = timer.milliseconds();
         timer.reset();
@@ -177,9 +183,8 @@ public class CenterStageTele extends OpMode{
         telemetry.addData("Error RS", "Error RS: " + (slidePositionTarget - rs.getCurrentPosition()));
         telemetry.addData("Error LS", "Error LS: " + (slidePositionTarget - ls.getCurrentPosition()));
 
-        ls.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, ls.getCurrentPosition(), timeGap));
-        rs.setPower(slidesff + SlidesPID.calculatePower(slidePositionTarget, rs.getCurrentPosition(), timeGap));
-
+        rs.setPower(slidesff + slidesPidRight.calculatePower(slidePositionTarget));
+        ls.setPower(slidesff + slidesPidLeft.calculatePower(slidePositionTarget));
 
         if (gamepad1.left_trigger > 0.5 && scalar > 0.3){
             scalar = 0.3;

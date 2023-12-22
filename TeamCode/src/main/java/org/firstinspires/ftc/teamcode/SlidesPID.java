@@ -9,10 +9,19 @@ public class SlidesPID {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     public static double Kp = 0.005;
     public static double Ki = 0.0;
-    public static double Kd = 0.0;//
-    private static double integral = 0.0;
-    private static double prevError = 0.0;
-    public static double calculatePower(double target, double state, double runTime) {
+    public static double Kd = 0.0;
+    private double integral = 0.0;
+    private double prevError = 0.0;
+    private double state = 0.0;
+    private double runTime = 0.0;
+
+
+    void update(double state, double runTime) {
+        this.state = state;
+        this.runTime = runTime;
+    }
+
+    double calculatePower(double target) {
         double error = target-state;
         double power = 0.0;
         integral += (error-prevError)*runTime;
@@ -21,5 +30,4 @@ public class SlidesPID {
         prevError = error;
         return power;
     }
-    //
 }

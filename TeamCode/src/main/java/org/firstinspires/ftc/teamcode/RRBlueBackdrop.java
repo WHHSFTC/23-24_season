@@ -54,6 +54,8 @@ public class RRBlueBackdrop extends OpMode{
     public static double plungerReleasePos = 1.0;
     public static int vision = 1;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    SlidesPID slidesPidRight;
+    SlidesPID slidesPidLeft;
     double timeGap = 0.0;
     boolean intakeOnGround;
 
@@ -159,6 +161,9 @@ public class RRBlueBackdrop extends OpMode{
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker( () -> {
+                    drive.followTrajectory(yellowPixel3);
+                })
                 .build();
 
         yellowPixel3 = drive.trajectoryBuilder(purplePixel3.end())
@@ -181,6 +186,9 @@ public class RRBlueBackdrop extends OpMode{
                     pLeft.setPosition(plungerReleasePos);
                     pRight.setPosition(plungerReleasePos);
                 })
+                .addDisplacementMarker(() ->{
+                    drive.followTrajectory(park3);
+                })
                 .build();
 
                 park3 = drive.trajectoryBuilder(yellowPixel3.end())
@@ -199,29 +207,32 @@ public class RRBlueBackdrop extends OpMode{
 
         intakeLeft.setPosition(intakeUpPos);
         intakeRight.setPosition(intakeUpPos);
+
+        switch (vision) {
+            case 1:
+                drive.followTrajectoryAsync(purplePixel1);
+                break;
+            case 2:
+                drive.followTrajectoryAsync(purplePixel2);
+                break;
+            case 3:
+                drive.followTrajectoryAsync(purplePixel3);
+
+                drive.followTrajectoryAsync(park3);
+                break;
+        }
     }
 
     @Override
     public void start(){
 
-        switch (vision) {
-            case 1:
-            drive.followTrajectory(purplePixel1);
-            break;
-            case 2:
-            drive.followTrajectory(purplePixel2);
-            break;
-            case 3:
-            drive.followTrajectory(purplePixel3);
-            drive.followTrajectory(yellowPixel3);
-            drive.followTrajectory(park3);
-            break;
-        }
-        //runtime.reset();
     }
     @Override
     public void loop(){
-
+        timeGap = timer.milliseconds();
+        timer.reset();
+        slidesPidRight.update(rs.getCurrentPosition(), timeGap);
+        slidesPidLeft.update(ls.getCurrentPosition(), timeGap);
     }
     public void stop(){
         super.stop();
