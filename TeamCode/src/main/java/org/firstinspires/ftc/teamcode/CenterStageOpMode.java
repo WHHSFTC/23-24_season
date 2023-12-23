@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -50,14 +51,16 @@ abstract public class CenterStageOpMode extends OpMode {
     Servo droneLauncher;
 
     TouchSensor slidesLimit;
+    DistanceSensor rightDS;
+    DistanceSensor leftDS;
 
     @Override
     public void init() {
         bothHubs = hardwareMap.getAll(LynxModule.class);
-
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket();
 
+        //DC Motors
         rf = hardwareMap.get(DcMotor.class, "motorRF");
         lf = hardwareMap.get(DcMotor.class, "motorLF");
         rb = hardwareMap.get(DcMotor.class, "motorRB");
@@ -66,13 +69,17 @@ abstract public class CenterStageOpMode extends OpMode {
         ls = hardwareMap.get(DcMotor.class, "motorLS");
         rs = hardwareMap.get(DcMotor.class, "motorRS");
 
+        //Servos
         armLeft = hardwareMap.get(Servo.class, "armLeft");
         //armRight = hardwareMap.get(Servo.class, "armRight");
         pRight = hardwareMap.get(Servo.class, "plungerRight");
         pLeft = hardwareMap.get(Servo.class, "plungerLeft");
         droneLauncher = hardwareMap.get(Servo.class, "drone");
 
+        //Sensors
         slidesLimit = hardwareMap.get(TouchSensor.class, "slidesLimit");
+        rightDS = hardwareMap.get(DistanceSensor.class, "rightDS");
+        leftDS = hardwareMap.get(DistanceSensor.class, "leftDS");
 
         for(LynxModule hub : bothHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);

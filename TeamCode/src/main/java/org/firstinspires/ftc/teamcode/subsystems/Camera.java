@@ -1,5 +1,8 @@
-//----------------------------------------------------------------- Camera.java -----------------------------------------------------------------
-import org.opencv.core.*; // TODO: make sure imports are right
+package org.firstinspires.ftc.teamcode.subsystems;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.openftc.easyopencv.*;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Camera {
 
@@ -7,7 +10,7 @@ public class Camera {
   private HardwareMap hardwareMap;
   private VisionPipeline teamPropPipeline;
 
-  public Camera(HardwareMap hw, boolean isRedAlliance, boolean isOutputSideCamera) { // hardware map from the base class is a parameter
+  public Camera(HardwareMap hw, boolean isRedAlliance, boolean isOutputSideCamera, String name) { // hardware map from the base class is a parameter
     teamPropPipeline = new VisionPipeline(isRedAlliance, isOutputSideCamera); 
 
     this.hardwareMap = hw; //Configure the Camera in hardwaremap
@@ -17,10 +20,9 @@ public class Camera {
             .getResources()
             .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()); // TODO: replace with actual id
 
-    // TODO: get camera from hardware map, replace "camera" with what is in controlhub
     webcam =
         OpenCvCameraFactory.getInstance()
-            .createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
+            .createWebcam(hardwareMap.get(WebcamName.class, name), cameraMonitorViewId);
     
     webcam.setPipeline(teamPropPipeline); // Setting the intial pipeline
     
