@@ -332,7 +332,7 @@ public class RRBlueBackdrop extends OpMode{
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .addDisplacementMarker(()->{
-                    rf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    rf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);//
                     lf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     lb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     rb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
