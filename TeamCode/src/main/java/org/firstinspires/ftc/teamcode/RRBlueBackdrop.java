@@ -35,7 +35,7 @@ public class RRBlueBackdrop extends OpMode{
     DcMotor ls;
     DcMotor rs;
 
-    public static int slidePositionTarget = 300;
+    public static double slidePositionTarget = 100.0;
     public static double slidesff = 0.0;
     public static double slideTargetGain = 100.0;
     public static double slideMin = 0.0;
@@ -54,6 +54,8 @@ public class RRBlueBackdrop extends OpMode{
     public static double plungerReleasePos = 1.0;
     public static int vision = 1;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    SlidesPID slidesPidRight;
+    SlidesPID slidesPidLeft;
     double timeGap = 0.0;
     boolean intakeOnGround;
 
@@ -71,9 +73,14 @@ public class RRBlueBackdrop extends OpMode{
     Trajectory purplePixel1;
     Trajectory purplePixel2;
     Trajectory purplePixel3;
+    Trajectory moveUp1;
+    Trajectory moveUp2;
     Trajectory yellowPixel1;
     Trajectory yellowPixel2;
     Trajectory yellowPixel3;
+    Trajectory reset1;
+    Trajectory reset2;
+    Trajectory reset3;
     Trajectory park1;
     Trajectory park2;
     Trajectory park3;
@@ -82,6 +89,8 @@ public class RRBlueBackdrop extends OpMode{
     public void init(){
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket();
+        slidesPidRight = new SlidesPID();
+        slidesPidLeft = new SlidesPID();
 
         rf = hardwareMap.get(DcMotor.class, "motorRF");
         lf = hardwareMap.get(DcMotor.class, "motorLF");
@@ -123,11 +132,7 @@ public class RRBlueBackdrop extends OpMode{
 
         intakeRight.setDirection(Servo.Direction.REVERSE);
 
-        // intakeLeft.setPosition(1.0);
-        // intakeRight.setPosition(1.0);
-
         armLeft.scaleRange(0.0, 0.245);
-        //armRight.scaleRange(0.0, 0.245);
 
         pRight.scaleRange(0.68, 0.77);
         pLeft.scaleRange(0.57,0.67);
@@ -140,39 +145,70 @@ public class RRBlueBackdrop extends OpMode{
         Pose2d startPose = new Pose2d(16.4, 63.25,Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
+        //purple pixels
         purplePixel1 = drive.trajectoryBuilder(startPose)
                 .lineTo(new Vector2d(23.5, 33.5),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(moveUp1);
+                })
                 .build();
 
         purplePixel2 = drive.trajectoryBuilder(startPose, true)
-                .lineTo(new Vector2d(9,31.5),
+                .lineTo(new Vector2d(9,32),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(moveUp2);
+                })
                 .build();
 
         purplePixel3 = drive.trajectoryBuilder(startPose, true)
                 .lineToLinearHeading(new Pose2d(4.8,32.71, Math.toRadians(60)),
-                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(yellowPixel3);
+                })
                 .build();
 
-        yellowPixel3 = drive.trajectoryBuilder(purplePixel3.end())
-                .lineToSplineHeading(new Pose2d(50.2,44, Math.toRadians(184)),
-                        SampleMecanumDrive.getVelocityConstraint(48, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+        //move up
+        moveUp1 = drive.trajectoryBuilder(purplePixel1.end())
+                .forward(5,
+                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(yellowPixel1);
+                })
+                .build();
+
+        moveUp2 = drive.trajectoryBuilder(purplePixel2.end())
+                .forward(5, SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(yellowPixel2);
+                })
+                .build();
+
+        //yellow pixels
+        yellowPixel1 = drive.trajectoryBuilder(moveUp1.end())
+                .lineToLinearHeading(new Pose2d(50.2,32, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .addDisplacementMarker(0.5,0, () ->{
                     pLeft.setPosition(plungerGrabPos);
                     pRight.setPosition(plungerGrabPos);
                 })
-                .addDisplacementMarker(() ->{
-                    //rs.setPower(SlidesPID.calculatePower());
-                    //ls.setPower(SlidesPID.calculatePower());
+                .addDisplacementMarker(()->{
+                    rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
+                    ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
                 })
                 .addDisplacementMarker(() ->{
                     armLeft.setPosition(armOutPos);
@@ -181,47 +217,212 @@ public class RRBlueBackdrop extends OpMode{
                     pLeft.setPosition(plungerReleasePos);
                     pRight.setPosition(plungerReleasePos);
                 })
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(reset1);
+                })
                 .build();
 
-                park3 = drive.trajectoryBuilder(yellowPixel3.end())
-                        .lineToLinearHeading(new Pose2d(43.2,44, Math.toRadians(180)),
-                                SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+        yellowPixel2 = drive.trajectoryBuilder(moveUp2.end())
+                .lineToLinearHeading(new Pose2d(50.2,38, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(0.5,0, () ->{
+                    pLeft.setPosition(plungerGrabPos);
+                    pRight.setPosition(plungerGrabPos);
+                })
+                .addDisplacementMarker(() ->{
+                    rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
+                    ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
+                })
+                .addDisplacementMarker(() ->{
+                    armLeft.setPosition(armOutPos);
+                })
+                .addDisplacementMarker(() ->{
+                    pLeft.setPosition(plungerReleasePos);
+                    pRight.setPosition(plungerReleasePos);
+                })
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(reset2);
+                })
+                .build();
+
+        yellowPixel3 = drive.trajectoryBuilder(purplePixel3.end())
+                .lineToSplineHeading(new Pose2d(50.2,44, Math.toRadians(184)),
+                        SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(0.5,0, () ->{
+                    pLeft.setPosition(plungerGrabPos);
+                    pRight.setPosition(plungerGrabPos);
+                })
+                .addDisplacementMarker(() ->{
+                    rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
+                    ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
+                })
+                .addDisplacementMarker(() ->{
+                    armLeft.setPosition(armOutPos);
+                })
+                .addDisplacementMarker(() ->{
+                    pLeft.setPosition(plungerReleasePos);
+                    pRight.setPosition(plungerReleasePos);
+                })
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(reset3);
+                })
+                .build();
+
+                //resets
+                reset1 = drive.trajectoryBuilder(yellowPixel1.end())
+                        .forward(10,
+                                SampleMecanumDrive.getVelocityConstraint(8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                        )
+                        .addDisplacementMarker(()->{
+                            armLeft.setPosition(armInPos);
+                        })
+
+                        .addDisplacementMarker(()->{
+                            rs.setPower(slidesPidRight.calculatePower(0.0));
+                            ls.setPower(slidesPidLeft.calculatePower(0.0));
+                        })
+                        .addDisplacementMarker(()->{
+                            drive.followTrajectory(park1);
+                        })
+                        .build();
+
+                reset2 = drive.trajectoryBuilder(yellowPixel2.end())
+                        .forward(10,
+                                SampleMecanumDrive.getVelocityConstraint(8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                         )
                         .addDisplacementMarker(()->{
                             armLeft.setPosition(armInPos);
                         })
                         .addDisplacementMarker(()->{
-                            //bring slides all the way down
+                            rs.setPower(slidesPidRight.calculatePower(0.0));
+                            ls.setPower(slidesPidLeft.calculatePower(0.0));
                         })
-                        .splineToConstantHeading(new Vector2d(60.7,12.3),0)
+                        .addDisplacementMarker(()->{
+                            drive.followTrajectory(park2);
+                        })
                         .build();
+
+                reset3 = drive.trajectoryBuilder(yellowPixel3.end())
+                        .forward(10,
+                                SampleMecanumDrive.getVelocityConstraint(8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                        )
+                        .addDisplacementMarker(()->{
+                            armLeft.setPosition(armInPos);
+                        })
+                        .addDisplacementMarker(()->{
+                            rs.setPower(slidesPidRight.calculatePower(0.0));
+                            ls.setPower(slidesPidLeft.calculatePower(0.0));
+                        })
+                        .addDisplacementMarker(()->{
+                            drive.followTrajectory(park3);
+                        })
+                        .build();
+
+                        //parks
+        park1 = drive.trajectoryBuilder(reset1.end())
+                .splineToConstantHeading(new Vector2d(58.7,11),0,
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(()->{
+                    rf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    lf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    lb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    rb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    rf.setPower(0);
+                    lf.setPower(0);
+                    rb.setPower(0);
+                    lb.setPower(0);
+                    ls.setPower(0);
+                    rs.setPower(0);
+                    intake.setPower(0);
+                })
+                .build();
+
+        park2 = drive.trajectoryBuilder(reset2.end())
+                .splineToConstantHeading(new Vector2d(58.7,11),0,
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(()->{
+                    rf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    lf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    lb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    rb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    rf.setPower(0);
+                    lf.setPower(0);
+                    rb.setPower(0);
+                    lb.setPower(0);
+                    ls.setPower(0);
+                    rs.setPower(0);
+                    intake.setPower(0);
+                })
+                .build();
+
+        park3 = drive.trajectoryBuilder(reset3.end())
+                .splineToConstantHeading(new Vector2d(58.7,11),0,
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(()->{
+                    rf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    lf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    lb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    rb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    rf.setPower(0);
+                    lf.setPower(0);
+                    rb.setPower(0);
+                    lb.setPower(0);
+                    ls.setPower(0);
+                    rs.setPower(0);
+                    intake.setPower(0);
+                })
+                .build();
 
         intakeLeft.setPosition(intakeUpPos);
         intakeRight.setPosition(intakeUpPos);
-    }
-
-    @Override
-    public void start(){
 
         switch (vision) {
             case 1:
-            drive.followTrajectory(purplePixel1);
+            drive.followTrajectoryAsync(purplePixel1);
             break;
             case 2:
-            drive.followTrajectory(purplePixel2);
+            drive.followTrajectoryAsync(purplePixel2);
             break;
             case 3:
-            drive.followTrajectory(purplePixel3);
-            drive.followTrajectory(yellowPixel3);
-            drive.followTrajectory(park3);
+            drive.followTrajectoryAsync(purplePixel3);
             break;
         }
-        //runtime.reset();
+    }
+    @Override
+    public void start(){
+        ls.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rs.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     @Override
     public void loop(){
+        timeGap = timer.milliseconds();
+        timer.reset();
+        slidesPidRight.update(rs.getCurrentPosition(), timeGap);
+        slidesPidLeft.update(ls.getCurrentPosition(), timeGap);
+        drive.update();
 
+        telemetry.addData("idkkkkkkk",slidesPidLeft.calculatePower(slidePositionTarget));
+        telemetry.addData("pRight", "Position: " + pRight.getPosition());
+        telemetry.addData("pLeft", "Position: " + pLeft.getPosition());
+        telemetry.addData("armLeft", "Position: " + armLeft.getPosition());
+        telemetry.addData("slides position rs: ", "current rs pos: " + rs.getCurrentPosition());
+        telemetry.addData("slides position ls: ", "current ls pos: " + ls.getCurrentPosition());
+        telemetry.addData("slides power rs: ", "current rs power: " + rs.getPower());
+        telemetry.addData("slides power ls: ", "current ls power: " + ls.getPower());
+        telemetry.update();
     }
     public void stop(){
         super.stop();
@@ -231,5 +432,6 @@ public class RRBlueBackdrop extends OpMode{
         lb.setPower(0);
         ls.setPower(0);
         rs.setPower(0);
+        intake.setPower(0);
     }
 }
