@@ -66,6 +66,9 @@ public class VisionPipeline extends OpenCvPipeline {
       } else if(means[1] > means[2]) {
         output = 1;
       }
+      else if(means[2] > means[1]){
+        output = 2;
+      }
 
     } else {
       // frame processing for aligning to stack
