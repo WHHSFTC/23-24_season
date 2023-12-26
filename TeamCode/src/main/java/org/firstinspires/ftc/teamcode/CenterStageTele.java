@@ -152,7 +152,7 @@ public class CenterStageTele extends OpMode{
         imu.resetYaw();
         gamepad1prev = new Gamepad();
         gamepad1prev.copy(gamepad1);
-    }
+    }//
 
     @Override
     public void loop(){
