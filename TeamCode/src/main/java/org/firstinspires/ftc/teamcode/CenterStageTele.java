@@ -8,9 +8,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 @Config
@@ -20,7 +26,9 @@ public class CenterStageTele extends OpMode{
     FtcDashboard dashboard;
     TelemetryPacket packet;
     //public static MultipleTelemetry dashTelemetry = new MultipleTelemetry();
+    Gamepad gamepad1prev;
 
+    IMU imu;
     DcMotor rf;
     DcMotor lf;
     DcMotor rb;
@@ -34,6 +42,8 @@ public class CenterStageTele extends OpMode{
     public static double slideTargetGain = 100.0;
     public static double slideMin = 0.0;
     public static double slideMax = 2200.0;
+    double distancePower;
+    double anglePower;
     boolean slidesPressed;
     boolean dpadDownPressed;
     double slideSavedPosition = 1100.0;
@@ -42,12 +52,13 @@ public class CenterStageTele extends OpMode{
     public static double intakeDownPos = 0.07;
     public static double intakeStackPos = 0.18;
 
-    public static double armOutPos = 0.1;
-    public static double armInPos = 1.0;
+    public static double armOutPos = 0.01;
+    public static double armInPos = 0.920;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
+    public static double distBackdrop = 6.00;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     SlidesPID slidesPidRight;
     SlidesPID slidesPidLeft;
@@ -63,6 +74,8 @@ public class CenterStageTele extends OpMode{
     Servo droneLauncher;
 
     TouchSensor slidesLimit;
+    DistanceSensor rightDS;
+    DistanceSensor leftDS;
 
     @Override
     public void init(){
@@ -72,6 +85,7 @@ public class CenterStageTele extends OpMode{
         slidesPidRight = new SlidesPID();
         slidesPidLeft = new SlidesPID();
 
+        imu = hardwareMap.get(IMU.class, "imu");
         rf = hardwareMap.get(DcMotor.class, "motorRF");
         lf = hardwareMap.get(DcMotor.class, "motorLF");
         rb = hardwareMap.get(DcMotor.class, "motorRB");
@@ -87,7 +101,8 @@ public class CenterStageTele extends OpMode{
         droneLauncher = hardwareMap.get(Servo.class, "drone");
 
         slidesLimit = hardwareMap.get(TouchSensor.class, "slidesLimit");
-
+        leftDS = hardwareMap.get(DistanceSensor.class, "leftDS");
+        rightDS = hardwareMap.get(DistanceSensor.class, "rightDS");
 
         ls.setDirection(DcMotorSimple.Direction.FORWARD);
         rs.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -133,6 +148,10 @@ public class CenterStageTele extends OpMode{
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
         lb.setDirection(DcMotorSimple.Direction.REVERSE);
         lf.setDirection(DcMotorSimple.Direction.REVERSE); */
+
+        imu.resetYaw();
+        gamepad1prev = new Gamepad();
+        gamepad1prev.copy(gamepad1);
     }
 
     @Override
@@ -149,6 +168,16 @@ public class CenterStageTele extends OpMode{
         double x = -gamepad1.left_stick_y*1.1; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
 
+        if(gamepad1.a){
+            distancePower = DSpid.distancePID(rightDS.getDistance(DistanceUnit.INCH), leftDS.getDistance(DistanceUnit.INCH), timeGap, distBackdrop);
+            anglePower = DSpid.anglePID(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), timeGap, Math.toRadians(0));
+            x = x>0.55 ? x : -distancePower;
+            r = -anglePower;
+            scalar = 0.5;
+        }
+        telemetry.addData("Pitch", imu.getRobotYawPitchRollAngles().getPitch(AngleUnit.RADIANS));
+        telemetry.addData("Roll", imu.getRobotYawPitchRollAngles().getRoll(AngleUnit.RADIANS));
+        telemetry.addData("Yaw", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
         //slides
         ls.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -164,7 +193,7 @@ public class CenterStageTele extends OpMode{
             slidesPressed = false;
         }
 
-        //if (Math.abs(gamepad2.left_stick_y) > 0.01) {
+        if (Math.abs(gamepad2.left_stick_y) > 0.01) {
 
             if (Math.abs(gamepad2.left_stick_y) > 0.01) {slidePositionTarget -= slideTargetGain * gamepad2.left_stick_y;}
 
@@ -174,10 +203,10 @@ public class CenterStageTele extends OpMode{
             if (slidePositionTarget > slideMax) {
                 slidePositionTarget = slideMax;
             }
-            //if (slidePositionTarget > 600.0) {
-                //scalar = 1.0 - (Math.sqrt(slidePositionTarget/slideMax)/1.25);
-           // }
-        //}
+            if (slidePositionTarget > 600.0) {
+                scalar = 1.0 - (Math.sqrt(slidePositionTarget/slideMax)/1.25);
+            }
+        }
 
         telemetry.addData("Slide target: ", slidePositionTarget);
         telemetry.addData("Error RS", "Error RS: " + (slidePositionTarget - rs.getCurrentPosition()));
@@ -195,12 +224,14 @@ public class CenterStageTele extends OpMode{
         double preRB = r*Math.sqrt(scalar) - y*Math.cbrt(scalar) + x*scalar;
         double preLB = r*Math.sqrt(scalar) - y*Math.cbrt(scalar) - x*scalar;
 
+
         double max = Math.max(Math.max(Math.max(Math.max(preRF,preRB), preLB), preLF), 1);
 
-        rf.setPower(preRF/max);
-        lf.setPower(preLF/max);
-        rb.setPower(preRB/max);
-        lb.setPower(preLB/max);
+
+            rf.setPower(preRF/max);
+            lf.setPower(preLF/max);
+            rb.setPower(preRB/max);
+            lb.setPower(preLB/max);
 
         double postRF = preRF/max;
         double postLF = preLF/max;
@@ -263,7 +294,7 @@ public class CenterStageTele extends OpMode{
 
 
         //intake swinging out and swinging in
-        if(gamepad1.right_bumper){
+        if(gamepad1.right_bumper && !gamepad1prev.right_bumper){
                 if(intakeOnGround){
                     intakeRight.setPosition(intakeUpPos);
                     intakeLeft.setPosition(intakeUpPos);
@@ -283,6 +314,8 @@ public class CenterStageTele extends OpMode{
             intakeRight.setPosition(intakeStackPos);
             intakeLeft.setPosition(intakeStackPos);
         }
+
+
 
         // drone launcher
         if (gamepad2.back) {
@@ -315,7 +348,10 @@ public class CenterStageTele extends OpMode{
         }
         if(gamepad2.left_stick_y < 0.2 && (rs.getCurrentPosition() > 100.0 && ls.getCurrentPosition() > 100.0) && (armLeft.getPosition() > 0.9){
             armLeft.setPosition(armOutPos);
-        }*/
+        }
+         */
+
+        gamepad1prev.copy(gamepad1);
 
         telemetry.addData("rf", postRF);
         telemetry.addData("lf", postLF);
@@ -335,6 +371,8 @@ public class CenterStageTele extends OpMode{
         //telemetry.addData("slides target", "target: " + slidePositionTarget);
         telemetry.addData("slides position rs: ", "current rs pos: " + rs.getCurrentPosition());
         telemetry.addData("slides position ls: ", "current ls pos: " + ls.getCurrentPosition());
+        telemetry.addData("leftDS", "Distance B from backdrop: " + leftDS.getDistance(DistanceUnit.INCH));
+        telemetry.addData("rightDS", "Distance A from backdrop: " + rightDS.getDistance(DistanceUnit.INCH));
         telemetry.update();
 
         packet.put("slides target", slidePositionTarget);
@@ -345,6 +383,9 @@ public class CenterStageTele extends OpMode{
         packet.put("slides limit pressed", slidesLimit.isPressed());
         packet.put("slide saved position", slideSavedPosition);
         packet.put("scalar", scalar);
+        packet.put("target distanceBackdrop", distBackdrop);
+        packet.put("leftDistBackdrop", leftDS.getDistance(DistanceUnit.INCH));
+        packet.put("rightDistBackdrop", rightDS.getDistance(DistanceUnit.INCH));
         dashboard.sendTelemetryPacket(packet);
     }
 

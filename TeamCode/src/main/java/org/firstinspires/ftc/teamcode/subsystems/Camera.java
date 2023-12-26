@@ -7,24 +7,24 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Camera {
 
   private OpenCvWebcam webcam;
-  private HardwareMap hardwareMap;
-  private VisionPipeline teamPropPipeline;
+  private HardwareMap harrdwareMap;
+  public VisionPipeline teamPropPipeline;
 
   public Camera(HardwareMap hw, boolean isRedAlliance, boolean isOutputSideCamera, String name) { // hardware map from the base class is a parameter
     teamPropPipeline = new VisionPipeline(isRedAlliance, isOutputSideCamera); 
 
-    this.hardwareMap = hw; //Configure the Camera in hardwaremap
+    this.harrdwareMap = hw; //Configure the Camera in hardwaremap
     int cameraMonitorViewId =
-        hardwareMap
+        harrdwareMap
             .appContext
             .getResources()
-            .getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()); // TODO: replace with actual id
+            .getIdentifier("cameraMonitorViewId", "id", harrdwareMap.appContext.getPackageName()); // TODO: replace with actual id
 
     webcam =
         OpenCvCameraFactory.getInstance()
-            .createWebcam(hardwareMap.get(WebcamName.class, name), cameraMonitorViewId);
+            .createWebcam(harrdwareMap.get(WebcamName.class, name), cameraMonitorViewId);
     
-    webcam.setPipeline(teamPropPipeline); // Setting the intial pipeline
+    webcam.setPipeline(teamPropPipeline); // Setting the initial pipeline
     
     webcam.setMillisecondsPermissionTimeout(2500);
     

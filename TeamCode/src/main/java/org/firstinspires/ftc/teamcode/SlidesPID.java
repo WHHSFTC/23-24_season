@@ -10,6 +10,8 @@ public class SlidesPID {
     public static double Kp = 0.005;
     public static double Ki = 0.0;
     public static double Kd = 0.0;
+    public static double kGrav = 0.1;
+    public static double kFric = 1.1;
     private double integral = 0.0;
     private double prevError = 0.0;
     private double state = 0.0;
@@ -23,8 +25,8 @@ public class SlidesPID {
     double calculatePower(double target) {
         double error = target-state;
         double power = 0.0;
-        integral += (error-prevError)*runTime;
-        power = error*Kp + integral*Ki + ((prevError - error)/runTime)*Kd;
+        integral += error*runTime;
+        power = (error*Kp + integral*Ki + ((error - prevError)/runTime)*Kd) * kFric + kGrav;
         prevError = error;
         return power;
     }

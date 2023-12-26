@@ -15,6 +15,9 @@ import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.Camera;
+import org.opencv.core.Mat;
+
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -52,12 +55,14 @@ public class RRBlueBackdrop extends OpMode{
     public static double armInPos = 1.0;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
-    public static int vision = 1;
+    public static int vision;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     SlidesPID slidesPidRight;
     SlidesPID slidesPidLeft;
     double timeGap = 0.0;
     boolean intakeOnGround;
+
+    Camera teamPropCam;
 
     //Servo armRight;
     Servo armLeft;
@@ -91,6 +96,7 @@ public class RRBlueBackdrop extends OpMode{
         packet = new TelemetryPacket();
         slidesPidRight = new SlidesPID();
         slidesPidLeft = new SlidesPID();
+        teamPropCam = new Camera(hardwareMap, false, true, "outputCamera");
 
         rf = hardwareMap.get(DcMotor.class, "motorRF");
         lf = hardwareMap.get(DcMotor.class, "motorLF");
@@ -123,7 +129,6 @@ public class RRBlueBackdrop extends OpMode{
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
         intakeRight = hardwareMap.get(Servo.class, "intakeRight");
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
 
@@ -136,6 +141,10 @@ public class RRBlueBackdrop extends OpMode{
 
         pRight.scaleRange(0.68, 0.77);
         pLeft.scaleRange(0.57,0.67);
+
+        teamPropCam.teamPropPipeline.processFrame(new Mat());
+        vision = teamPropCam.getPipelineOutput();
+        telemetry.addData("vision randomization", vision);
 
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
