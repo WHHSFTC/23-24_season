@@ -76,7 +76,7 @@ public class VisionPipeline extends OpenCvPipeline {
     }
 
     // TODO: finish frame processing here and set output
-    return input;
+    return threshold;
   }
 
   public int getOutput() {

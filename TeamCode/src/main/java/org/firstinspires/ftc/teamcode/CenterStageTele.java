@@ -252,19 +252,15 @@ public class CenterStageTele extends OpMode{
         //intake spinning
         if (gamepad1.left_bumper && intakeOnGround) {
             intake.setPower(-0.25); //reverse
-        }
-        else{
-            intake.setPower(0.0);
-        }
-
-        if (gamepad1.right_trigger > 0.2 && intakeOnGround) {
+        } else if (gamepad1.right_trigger > 0.2 && intakeOnGround) {
             intake.setPower(0.90); //forward
             if (slidePositionTarget < 150.0) {
                 slidePositionTarget = 150.0;
             }
-        }else{
+        } else {
             intake.setPower(0.0);
         }
+
 
         //intake swinging out and swinging in
         if(gamepad1.right_bumper){

@@ -11,7 +11,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.List;
 
@@ -24,23 +27,23 @@ abstract public class CenterStageOpMode extends OpMode {
     static TelemetryPacket packet;
     List<LynxModule> bothHubs;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    public double timePerLoop;
-    public double loopCumulativeTime = 0.0;
-    public double loopCounter = 0.0;
+    double timePerLoop;
+    double loopCumulativeTime = 0.0;
+    double loopCounter = 0.0;
 
     DcMotor rf;
-    public double rfPosition;
+    double rfPosition;
     DcMotor lf;
-    public double lfPosition;
+    double lfPosition;
     DcMotor rb;
-    public double rbPosition;
+    double rbPosition;
     DcMotor lb;
-    public double lbPosition;
+    double lbPosition;
     DcMotor intake;
     DcMotor ls;
-    public double lsPosition;
+    double lsPosition;
     DcMotor rs;
-    public double rsPosition;
+    double rsPosition;
 
     //Servo armRight;
     Servo armLeft;
@@ -51,8 +54,13 @@ abstract public class CenterStageOpMode extends OpMode {
     Servo droneLauncher;
 
     TouchSensor slidesLimit;
+    boolean slidesLimitValue;
     DistanceSensor rightDS;
+    double rightDSValue;
     DistanceSensor leftDS;
+    double leftDSValue;
+
+    VoltageSensor voltageSensor;
 
     @Override
     public void init() {
@@ -80,6 +88,7 @@ abstract public class CenterStageOpMode extends OpMode {
         slidesLimit = hardwareMap.get(TouchSensor.class, "slidesLimit");
         rightDS = hardwareMap.get(DistanceSensor.class, "rightDS");
         leftDS = hardwareMap.get(DistanceSensor.class, "leftDS");
+        voltageSensor=hardwareMap.voltageSensor.iterator().next();
 
         for(LynxModule hub : bothHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
@@ -145,13 +154,14 @@ abstract public class CenterStageOpMode extends OpMode {
         for (LynxModule hub : bothHubs) {
             hub.clearBulkCache();
         }
-
+        //bulk read
         rfPosition = rf.getCurrentPosition();
         lfPosition = lf.getCurrentPosition();
         rbPosition = rb.getCurrentPosition();
         lbPosition = lb.getCurrentPosition();
         lsPosition = ls.getCurrentPosition();
         rsPosition = rs.getCurrentPosition();
+        slidesLimitValue = slidesLimit.isPressed();
 
     }
 
