@@ -50,11 +50,12 @@ public class RRBlueBackdrop extends OpMode{
     public static double intakeUpPos = 0.64;
     public static double intakeDownPos = 0.07;
     public static double intakeStackPos = 0.18;
-
     public static double armOutPos = 0.1;
     public static double armInPos = 1.0;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
+    public static double dronePos1 = 0.35;
+    public static double dronePos2 = 0.95;
     public static int vision;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     SlidesPID slidesPidRight;
@@ -62,7 +63,7 @@ public class RRBlueBackdrop extends OpMode{
     double timeGap = 0.0;
     boolean intakeOnGround;
 
-    Camera teamPropCam;
+    //Camera teamPropCam;
 
     //Servo armRight;
     Servo armLeft;
@@ -70,7 +71,7 @@ public class RRBlueBackdrop extends OpMode{
     Servo pLeft;
     Servo intakeRight;
     Servo intakeLeft;
-
+    Servo droneLauncher;
     TouchSensor slidesLimit;
     DistanceSensor rightDS;
     DistanceSensor leftDS;
@@ -80,6 +81,7 @@ public class RRBlueBackdrop extends OpMode{
     Trajectory purplePixel3;
     Trajectory moveUp1;
     Trajectory moveUp2;
+    Trajectory moveUp3;
     Trajectory yellowPixel1;
     Trajectory yellowPixel2;
     Trajectory yellowPixel3;
@@ -96,7 +98,7 @@ public class RRBlueBackdrop extends OpMode{
         packet = new TelemetryPacket();
         slidesPidRight = new SlidesPID();
         slidesPidLeft = new SlidesPID();
-        teamPropCam = new Camera(hardwareMap, false, true, "outputCamera");
+        //teamPropCam = new Camera(hardwareMap, false, true, "outputCamera");
 
         rf = hardwareMap.get(DcMotor.class, "motorRF");
         lf = hardwareMap.get(DcMotor.class, "motorLF");
@@ -110,6 +112,7 @@ public class RRBlueBackdrop extends OpMode{
         //armRight = hardwareMap.get(Servo.class, "armRight");
         pRight = hardwareMap.get(Servo.class, "plungerRight");
         pLeft = hardwareMap.get(Servo.class, "plungerLeft");
+        //droneLauncher = hardwareMap.get(Servo.class, "drone");
 
         slidesLimit = hardwareMap.get(TouchSensor.class, "slidesLimit");
         rightDS = hardwareMap.get(DistanceSensor.class, "rightDS");
@@ -142,8 +145,8 @@ public class RRBlueBackdrop extends OpMode{
         pRight.scaleRange(0.68, 0.77);
         pLeft.scaleRange(0.57,0.67);
 
-        teamPropCam.teamPropPipeline.processFrame(new Mat());
-        vision = teamPropCam.getPipelineOutput();
+        //teamPropCam.teamPropPipeline.processFrame(new Mat());
+        vision = (int)((Math.random()*3)+1);
         telemetry.addData("vision randomization", vision);
 
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -160,9 +163,9 @@ public class RRBlueBackdrop extends OpMode{
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
+               /* .addDisplacementMarker(()->{
                     drive.followTrajectory(moveUp1);
-                })
+                })*/
                 .build();
 
         purplePixel2 = drive.trajectoryBuilder(startPose, true)
@@ -170,9 +173,9 @@ public class RRBlueBackdrop extends OpMode{
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
+                /*.addDisplacementMarker(()->{
                     drive.followTrajectory(moveUp2);
-                })
+                })*/
                 .build();
 
         purplePixel3 = drive.trajectoryBuilder(startPose, true)
@@ -180,9 +183,9 @@ public class RRBlueBackdrop extends OpMode{
                         SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
+               /* .addDisplacementMarker(()->{
                     drive.followTrajectory(yellowPixel3);
-                })
+                })*/
                 .build();
 
         //move up
@@ -205,8 +208,16 @@ public class RRBlueBackdrop extends OpMode{
                 })
                 .build();
 
+        moveUp3 = drive.trajectoryBuilder(purplePixel3.end())
+                .forward(10, SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(yellowPixel2);
+                })
+                .build();
         //yellow pixels
-        yellowPixel1 = drive.trajectoryBuilder(moveUp1.end())
+        /*yellowPixel1 = drive.trajectoryBuilder(moveUp1.end())
                 .lineToLinearHeading(new Pose2d(50.2,32, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
@@ -332,15 +343,15 @@ public class RRBlueBackdrop extends OpMode{
                         .addDisplacementMarker(()->{
                             drive.followTrajectory(park3);
                         })
-                        .build();
+                        .build();*/
 
                         //parks
-        park1 = drive.trajectoryBuilder(reset1.end())
-                .splineToConstantHeading(new Vector2d(58.7,11),0,
+        park1 = drive.trajectoryBuilder(moveUp1.end())
+                .splineToLinearHeading(new Pose2d(51.7,20, Math.toRadians(182)),Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
+               /* .addDisplacementMarker(()->{
                     rf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);//
                     lf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     lb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -352,15 +363,15 @@ public class RRBlueBackdrop extends OpMode{
                     ls.setPower(0);
                     rs.setPower(0);
                     intake.setPower(0);
-                })
+                })*/
                 .build();
 
-        park2 = drive.trajectoryBuilder(reset2.end())
-                .splineToConstantHeading(new Vector2d(58.7,11),0,
+        park2 = drive.trajectoryBuilder(moveUp2.end())
+                .splineToLinearHeading(new Pose2d(51.7,20, Math.toRadians(182)),Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
+               /* .addDisplacementMarker(()->{
                     rf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     lf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     lb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -372,15 +383,15 @@ public class RRBlueBackdrop extends OpMode{
                     ls.setPower(0);
                     rs.setPower(0);
                     intake.setPower(0);
-                })
+                })*/
                 .build();
 
-        park3 = drive.trajectoryBuilder(reset3.end())
-                .splineToConstantHeading(new Vector2d(58.7,11),0,
+        park3 = drive.trajectoryBuilder(purplePixel3.end())
+                .splineToLinearHeading(new Pose2d(51.7,20, Math.toRadians(182)),Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
+                /*.addDisplacementMarker(()->{
                     rf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     lf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     lb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -392,32 +403,45 @@ public class RRBlueBackdrop extends OpMode{
                     ls.setPower(0);
                     rs.setPower(0);
                     intake.setPower(0);
-                })
+                })*/
                 .build();
 
         intakeLeft.setPosition(intakeUpPos);
         intakeRight.setPosition(intakeUpPos);
-
-        switch (vision) {
-            case 1:
-            drive.followTrajectoryAsync(purplePixel1);
-            break;
-            case 2:
-            drive.followTrajectoryAsync(purplePixel2);
-            break;
-            case 3:
-            drive.followTrajectoryAsync(purplePixel3);
-            break;
-        }
+        //droneLauncher.setPosition(dronePos2);
     }
     @Override
     public void start(){
-        ls.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rs.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        /*ls.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rs.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);*/
+
+        switch (vision) {
+            case 1:
+                drive.followTrajectory(purplePixel1);
+                drive.followTrajectory(moveUp1);
+                drive.followTrajectory(park1);
+                intakeLeft.setPosition(intakeDownPos);
+                intakeRight.setPosition(intakeDownPos);
+                break;
+            case 2:
+                drive.followTrajectory(purplePixel2);
+                drive.followTrajectory(moveUp2);
+                drive.followTrajectory(park2);
+                intakeLeft.setPosition(intakeDownPos);
+                intakeRight.setPosition(intakeDownPos);
+                break;
+            case 3:
+                drive.followTrajectory(purplePixel3);
+                drive.followTrajectory(moveUp3);
+                drive.followTrajectory(park3);
+                intakeLeft.setPosition(intakeDownPos);
+                intakeRight.setPosition(intakeDownPos);
+                break;
+        }
     }
     @Override
     public void loop(){
-        timeGap = timer.milliseconds();
+        /*timeGap = timer.milliseconds();
         timer.reset();
         slidesPidRight.update(rs.getCurrentPosition(), timeGap);
         slidesPidLeft.update(ls.getCurrentPosition(), timeGap);
@@ -431,7 +455,7 @@ public class RRBlueBackdrop extends OpMode{
         telemetry.addData("slides position ls: ", "current ls pos: " + ls.getCurrentPosition());
         telemetry.addData("slides power rs: ", "current rs power: " + rs.getPower());
         telemetry.addData("slides power ls: ", "current ls power: " + ls.getPower());
-        telemetry.update();
+        telemetry.update();*/
     }
     public void stop(){
         super.stop();

@@ -143,8 +143,8 @@ public class CenterStageTele extends OpMode{
         pLeft.setPosition(1.0);
 
         //droneLauncher.scaleRange(dronePos1, dronePos2);
-        droneLauncher.setPosition(1);
-        intakeOnGround = false;
+        //droneLauncher.setPosition(1.0);
+        intakeOnGround = true;
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
         lb.setDirection(DcMotorSimple.Direction.REVERSE);
