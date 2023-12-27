@@ -26,7 +26,8 @@ public class CenterStageTele extends OpMode{
     FtcDashboard dashboard;
     TelemetryPacket packet;
     //public static MultipleTelemetry dashTelemetry = new MultipleTelemetry();
-    Gamepad gamepad1prev;
+    Gamepad gamepad1prev = new Gamepad();
+    Gamepad gamepad2prev = new Gamepad();
 
     IMU imu;
     DcMotor rf;
@@ -150,8 +151,9 @@ public class CenterStageTele extends OpMode{
         lf.setDirection(DcMotorSimple.Direction.REVERSE); */
 
         imu.resetYaw();
-        gamepad1prev = new Gamepad();
+
         gamepad1prev.copy(gamepad1);
+        gamepad2prev.copy(gamepad2);
     }//
 
     @Override
@@ -212,10 +214,10 @@ public class CenterStageTele extends OpMode{
         telemetry.addData("Error RS", "Error RS: " + (slidePositionTarget - rs.getCurrentPosition()));
         telemetry.addData("Error LS", "Error LS: " + (slidePositionTarget - ls.getCurrentPosition()));
 
-        rs.setPower(slidesff + slidesPidRight.calculatePower(slidePositionTarget));
-        ls.setPower(slidesff + slidesPidLeft.calculatePower(slidePositionTarget));
+        rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
+        ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
 
-        if (gamepad1.left_trigger > 0.5 && scalar > 0.3){
+        if (gamepad1.left_bumper && scalar > 0.3){
             scalar = 0.3;
         }
 
@@ -281,10 +283,10 @@ public class CenterStageTele extends OpMode{
         //}
 
         //intake spinning
-        if (gamepad1.left_bumper && intakeOnGround) {
-            intake.setPower(-0.25); //reverse
+        if (gamepad1.left_trigger > 0.2 && intakeOnGround) {
+            intake.setPower(-0.3 * gamepad1.left_trigger); //reverse
         } else if (gamepad1.right_trigger > 0.2 && intakeOnGround) {
-            intake.setPower(0.90); //forward
+            intake.setPower(gamepad1.right_trigger); //forward
             if (slidePositionTarget < 150.0) {
                 slidePositionTarget = 150.0;
             }
@@ -352,6 +354,7 @@ public class CenterStageTele extends OpMode{
          */
 
         gamepad1prev.copy(gamepad1);
+        gamepad2prev.copy(gamepad2);
 
         telemetry.addData("rf", postRF);
         telemetry.addData("lf", postLF);

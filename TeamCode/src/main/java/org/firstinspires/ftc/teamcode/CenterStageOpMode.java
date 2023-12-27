@@ -155,13 +155,13 @@ abstract public class CenterStageOpMode extends OpMode {
             hub.clearBulkCache();
         }
         //bulk read
-        rfPosition = rf.getCurrentPosition();
-        lfPosition = lf.getCurrentPosition();
-        rbPosition = rb.getCurrentPosition();
-        lbPosition = lb.getCurrentPosition();
-        lsPosition = ls.getCurrentPosition();
-        rsPosition = rs.getCurrentPosition();
-        slidesLimitValue = slidesLimit.isPressed();
+        rf.getCurrentPosition();
+        lf.getCurrentPosition();
+        rb.getCurrentPosition();
+        lb.getCurrentPosition();
+        ls.getCurrentPosition();
+        rs.getCurrentPosition();
+        slidesLimit.isPressed();
 
     }
 
