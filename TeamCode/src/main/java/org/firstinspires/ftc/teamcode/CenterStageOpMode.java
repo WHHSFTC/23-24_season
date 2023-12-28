@@ -14,7 +14,17 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.subsystems.VisionPipeline;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvWebcam;
+
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 
 import java.util.List;
 
@@ -22,7 +32,9 @@ import java.util.List;
 @Disabled
 @TeleOp
 abstract public class CenterStageOpMode extends OpMode {
+    boolean red;
 
+    SampleMecanumDrive drive;
     FtcDashboard dashboard;
     static TelemetryPacket packet;
     List<LynxModule> bothHubs;
@@ -61,6 +73,8 @@ abstract public class CenterStageOpMode extends OpMode {
     double leftDSValue;
 
     VoltageSensor voltageSensor;
+
+    OpenCvWebcam webcam;
 
     @Override
     public void init() {
@@ -133,10 +147,15 @@ abstract public class CenterStageOpMode extends OpMode {
 
         droneLauncher.scaleRange(0.3, 0.9);
         droneLauncher.setPosition(0);
+
+        //camera
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "outputCamera"), cameraMonitorViewId);
+        webcam.setMillisecondsPermissionTimeout(5000);
     }
 
     @Override
-    public void loop() {
+    final public void loop() {
 
         //timing stuff
         timePerLoop = timer.milliseconds();
@@ -163,6 +182,9 @@ abstract public class CenterStageOpMode extends OpMode {
         rs.getCurrentPosition();
         slidesLimit.isPressed();
 
+        childLoop();
+
+        telemetry.update();
     }
 
     @Override
@@ -175,5 +197,9 @@ abstract public class CenterStageOpMode extends OpMode {
         intake.setPower(0);
         ls.setPower(0);
         rs.setPower(0);
+    }
+
+    public void childLoop() {
+
     }
 }

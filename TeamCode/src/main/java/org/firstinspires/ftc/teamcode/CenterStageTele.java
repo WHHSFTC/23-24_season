@@ -40,7 +40,7 @@ public class CenterStageTele extends OpMode{
 
     public static double slidePositionTarget = 0.0;
     public static double slidesff = 0.0;
-    public static double slideTargetGain = 100.0;
+    public static double slideTargetGain = 300.0;
     public static double slideMin = 0.0;
     public static double slideMax = 2200.0;
     double distancePower;
@@ -65,6 +65,8 @@ public class CenterStageTele extends OpMode{
     SlidesPID slidesPidLeft;
     double timeGap;
     boolean intakeOnGround;
+    boolean plungerLClosed;
+    boolean plungerRClosed;
 
     //Servo armRight;
     Servo armLeft;
@@ -145,6 +147,9 @@ public class CenterStageTele extends OpMode{
         //droneLauncher.scaleRange(dronePos1, dronePos2);
         //droneLauncher.setPosition(1.0);
         intakeOnGround = true;
+        plungerLClosed = true;
+        plungerRClosed = true;
+
         /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
         lb.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -175,7 +180,7 @@ public class CenterStageTele extends OpMode{
             anglePower = DSpid.anglePID(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), timeGap, Math.toRadians(0));
             x = x>0.55 ? x : -distancePower;
             r = -anglePower;
-            scalar = 0.5;
+            scalar = 0.25;
         }
         telemetry.addData("Pitch", imu.getRobotYawPitchRollAngles().getPitch(AngleUnit.RADIANS));
         telemetry.addData("Roll", imu.getRobotYawPitchRollAngles().getRoll(AngleUnit.RADIANS));
@@ -256,12 +261,16 @@ public class CenterStageTele extends OpMode{
         if (gamepad2.y) {
             pRight.setPosition(plungerGrabPos);
             pLeft.setPosition(plungerGrabPos);
+            plungerLClosed = false;
+            plungerRClosed = false;
         }
 
         //plunger close
         if (gamepad2.a) {
             pRight.setPosition(plungerReleasePos);
             pLeft.setPosition(plungerReleasePos);
+            plungerLClosed = true;
+            plungerRClosed = true;
         }
 
         if (gamepad2.dpad_right) {
@@ -278,22 +287,17 @@ public class CenterStageTele extends OpMode{
             dpadDownPressed = false;
         }
 
-        //if (gamepad1.dpad_up) {
-        //    slidePositionTarget = slideMax;
-        //}
-
         //intake spinning
         if (gamepad1.left_trigger > 0.2 && intakeOnGround) {
             intake.setPower(-0.3 * gamepad1.left_trigger); //reverse
         } else if (gamepad1.right_trigger > 0.2 && intakeOnGround) {
-            intake.setPower(gamepad1.right_trigger); //forward
-            if (slidePositionTarget < 150.0) {
-                slidePositionTarget = 150.0;
+            intake.setPower(gamepad1.right_trigger*0.8); //forward
+            if (slidePositionTarget < 130.0) {
+                slidePositionTarget = 130.0;
             }
         } else {
             intake.setPower(0.0);
         }
-
 
         //intake swinging out and swinging in
         if(gamepad1.right_bumper && !gamepad1prev.right_bumper){
@@ -317,7 +321,19 @@ public class CenterStageTele extends OpMode{
             intakeLeft.setPosition(intakeStackPos);
         }
 
+        //reset imu
+        if(gamepad1.back){
+            imu.resetYaw();
+        }
 
+        //hammer
+        if(gamepad1.y){
+            intakeLeft.setPosition(0.5);
+            intakeRight.setPosition(0.5);
+            DelaysAndAutoms.delayServo(350,intakeLeft, 0.5, intakeDownPos);
+            DelaysAndAutoms.delayServo(350,intakeRight, 0.5, intakeDownPos);
+            DelaysAndAutoms.delayMotor(200,intake, 0, 0.8);
+        }
 
         // drone launcher
         if (gamepad2.back) {
@@ -325,33 +341,46 @@ public class CenterStageTele extends OpMode{
         } else {
             droneLauncher.setPosition(dronePos2);
         }
-        //droneLauncher.setPosition(dronePos2);
+
+        if(gamepad2.right_bumper && !gamepad2prev.right_bumper){
+            if(plungerRClosed){
+                pRight.setPosition(plungerGrabPos);
+                plungerRClosed = false;
+            }
+            else{
+                pRight.setPosition(plungerReleasePos);
+                plungerRClosed = true;
+            }
+        }
+
+        if(gamepad2.left_bumper && !gamepad2prev.left_bumper){
+            if(plungerLClosed){
+                pLeft.setPosition(plungerGrabPos);
+                plungerLClosed = false;
+            }
+            else{
+                pLeft.setPosition(plungerReleasePos);
+                plungerLClosed = true;
+            }
+        }
 
         //output automation
-        /*if(gamepad2.y){
-            pRight.setPosition(plungerReleasePos);
-            pLeft.setPosition(plungerReleasePos);
-            armLeft.setPosition(armInPos);
-            try {
-                wait(250);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            slideSavedPosition = slidePositionTarget;
-            slidePositionTarget = 100.0;
+        if(gamepad2.dpad_up){
+            slidePositionTarget = 200.0;
+            rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
+            ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
+            DelaysAndAutoms.delayServo(500.0, armLeft, armOutPos, armInPos);
+            DelaysAndAutoms.delayMotor(600.0,ls, slidesPidLeft.calculatePower(slidePositionTarget),
+                    slidesPidLeft.calculatePower(0));
+            DelaysAndAutoms.delayMotor(600.0,rs, slidesPidRight.calculatePower(slidePositionTarget),
+                    slidesPidRight.calculatePower(0));
+            DelaysAndAutoms.delayServo(800.0,pRight,plungerReleasePos, plungerGrabPos);
+            DelaysAndAutoms.delayServo(800.0,pLeft,plungerReleasePos, plungerGrabPos);
         }
-        if(gamepad2.x){
-            slideSavedPosition = slidePositionTarget;
-            slidePositionTarget = slideMin;
-            if(slidesPressed){
-                pRight.setPosition(plungerGrabPos);
-                pLeft.setPosition(plungerGrabPos);
-            }
-        }
-        if(gamepad2.left_stick_y < 0.2 && (rs.getCurrentPosition() > 100.0 && ls.getCurrentPosition() > 100.0) && (armLeft.getPosition() > 0.9){
+
+        if(gamepad2.left_stick_y < -0.1 && (slidePositionTarget >= 400) && (armLeft.getPosition() > 0.8)){
             armLeft.setPosition(armOutPos);
         }
-         */
 
         gamepad1prev.copy(gamepad1);
         gamepad2prev.copy(gamepad2);

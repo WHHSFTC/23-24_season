@@ -5,9 +5,12 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.opencv.*;
 
+import java.util.Arrays;
+
 public class VisionPipeline extends OpenCvPipeline {
    
   private int output = -1;
+  private String telemestring;
   private boolean isRed;
   private boolean isOutputSide;
 
@@ -24,9 +27,9 @@ public class VisionPipeline extends OpenCvPipeline {
   private Mat hsv = new Mat();
   private Mat threshold = new Mat();
   private Mat otherThreshold = new Mat(); // in case of red where 2 are needed
-  private Mat leftROI = new Mat();
-  private Mat midROI = new Mat();
-  private Mat rightROI = new Mat();
+  private MatOfDouble leftROI = new MatOfDouble();
+  private MatOfDouble midROI = new MatOfDouble();
+  private MatOfDouble rightROI = new MatOfDouble();
 
   private double[] means = new double[3];
 
@@ -49,9 +52,9 @@ public class VisionPipeline extends OpenCvPipeline {
       } else {
         Core.inRange(hsv, lowBlue, highBlue, threshold);
       }
-      leftROI = threshold.submat(new Rect(0, rowsFromTopToIgnore, 110, 240-rowsFromTopToIgnore));
-      midROI = threshold.submat(new Rect(109, rowsFromTopToIgnore, 100, 240-rowsFromTopToIgnore));
-      rightROI = threshold.submat(new Rect(209, rowsFromTopToIgnore, 110, 240-rowsFromTopToIgnore));
+      leftROI = new MatOfDouble(threshold.submat(new Rect(0, 0, 110, 240-rowsFromTopToIgnore)));
+      midROI = new MatOfDouble(threshold.submat(new Rect(109, 0, 100, 240-rowsFromTopToIgnore)));
+      rightROI = new MatOfDouble(threshold.submat(new Rect(209, 0, 110, 240-rowsFromTopToIgnore)));
 
       means[0] = Core.mean(leftROI).val[0];
       means[1] = Core.mean(midROI).val[0];
@@ -76,10 +79,15 @@ public class VisionPipeline extends OpenCvPipeline {
     }
 
     // TODO: finish frame processing here and set output
-    return threshold;
+    return leftROI;
   }
 
   public int getOutput() {
     return output;
+  }
+  public String getPipelineTelemetry() {
+//    telemestring = means[0] + " (L), " + means[1] + " (M), " + means[2] + " (R).";
+    telemestring = Core.mean(leftROI) + " (L), " + Core.mean(midROI) + " (M), " + Core.mean(rightROI) + " (R).";
+    return telemestring;
   }
 }
