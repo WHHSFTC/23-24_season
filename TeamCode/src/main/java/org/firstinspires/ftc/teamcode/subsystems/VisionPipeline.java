@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import org.checkerframework.checker.units.qual.A;
+import org.firstinspires.ftc.teamcode.AutoBlueScorePurple;
+import org.firstinspires.ftc.teamcode.CenterStageOpMode;
 import org.opencv.core.*; // TODO: make sure imports are right
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -11,7 +14,7 @@ public class VisionPipeline extends OpenCvPipeline {
    
   private int output = -1;
   private String telemestring;
-  private boolean isRed;
+  private boolean isBlue;
   private boolean isOutputSide;
 
   private Scalar lowBlue =  new Scalar(95,  165, 55);
@@ -21,40 +24,39 @@ public class VisionPipeline extends OpenCvPipeline {
   private Scalar lowRed1 =  new Scalar(0,   165, 55);
   private Scalar highRed1 = new Scalar(5,   255, 255);
 
-  private int rowsFromTopToIgnore = 90;
-
   private Mat blurred = new Mat();
   private Mat hsv = new Mat();
   private Mat threshold = new Mat();
   private Mat otherThreshold = new Mat(); // in case of red where 2 are needed
-  private MatOfDouble leftROI = new MatOfDouble();
-  private MatOfDouble midROI = new MatOfDouble();
-  private MatOfDouble rightROI = new MatOfDouble();
+  private Mat leftROI = new MatOfDouble();
+  private Mat midROI = new MatOfDouble();
+  private Mat rightROI = new MatOfDouble();
 
   private double[] means = new double[3];
 
-  public VisionPipeline(boolean red, boolean outputSide) {
-    isRed = red;
+  public VisionPipeline(boolean blue, boolean outputSide) {
+    isBlue = blue;
     isOutputSide = outputSide;
   }
    
   @Override
   public Mat processFrame(Mat input) {
+
     if(isOutputSide) {
       // frame processing for reading team prop
       Imgproc.GaussianBlur(input, blurred, new Size(15, 15), 0, 0);
       Imgproc.cvtColor(blurred, hsv, Imgproc.COLOR_BGR2HSV);
       
-      if(isRed) {	
+      if(isBlue) {	
         Core.inRange(hsv, lowRed1, highRed1, threshold);
         Core.inRange(hsv, lowRed2, highRed2, otherThreshold);
         Core.bitwise_or(threshold, otherThreshold, threshold);
       } else {
         Core.inRange(hsv, lowBlue, highBlue, threshold);
       }
-      leftROI = new MatOfDouble(threshold.submat(new Rect(0, 0, 110, 240-rowsFromTopToIgnore)));
-      midROI = new MatOfDouble(threshold.submat(new Rect(109, 0, 100, 240-rowsFromTopToIgnore)));
-      rightROI = new MatOfDouble(threshold.submat(new Rect(209, 0, 110, 240-rowsFromTopToIgnore)));
+      leftROI = threshold.submat(new Rect(0, 0, 110, 240));
+      midROI = threshold.submat(new Rect(109, 0, 100, 240));
+      rightROI = threshold.submat(new Rect(209, 0, 110, 240));
 
       means[0] = Core.mean(leftROI).val[0];
       means[1] = Core.mean(midROI).val[0];
@@ -79,7 +81,7 @@ public class VisionPipeline extends OpenCvPipeline {
     }
 
     // TODO: finish frame processing here and set output
-    return leftROI;
+    return threshold;
   }
 
   public int getOutput() {

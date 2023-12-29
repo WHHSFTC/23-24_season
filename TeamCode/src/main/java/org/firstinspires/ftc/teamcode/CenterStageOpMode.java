@@ -32,7 +32,7 @@ import java.util.List;
 @Disabled
 @TeleOp
 abstract public class CenterStageOpMode extends OpMode {
-    boolean red;
+    boolean blue;
 
     SampleMecanumDrive drive;
     FtcDashboard dashboard;

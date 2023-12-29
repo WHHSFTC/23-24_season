@@ -16,7 +16,7 @@ public class AutoRedScorePurple extends CenterStageAuto {
     Trajectory purplePixel3;
 
     public void init() {
-        red = true;
+        blue = false;
         super.init();
         drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(16.4, 63.25,Math.toRadians(90));
@@ -42,13 +42,12 @@ public class AutoRedScorePurple extends CenterStageAuto {
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
-
-        telemetry.addData("pipeline", pipeline.getOutput());
     }
+
+    @Override
     public void start() {
         super.start();
-
-        switch (pipeline.getOutput()) {
+        switch (elementPosition) {
             case 0:
                 drive.followTrajectoryAsync(purplePixel1);
                 break;
@@ -59,5 +58,11 @@ public class AutoRedScorePurple extends CenterStageAuto {
                 drive.followTrajectoryAsync(purplePixel3);
                 break;
         }
+    }
+
+    @Override
+    public void childLoop() {
+        super.childLoop();
+        telemetry.addData("loopvision", pipeline.getOutput());
     }
 }
