@@ -24,21 +24,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 @Autonomous (preselectTeleOp = "CenterStageTele")
-public class RRBlueBackdrop extends OpMode{
+public class RRBlueBackdrop extends CenterStageAuto{
 
     FtcDashboard dashboard;
     TelemetryPacket packet;
     //public static MultipleTelemetry dashTelemetry = new MultipleTelemetry();
 
-    DcMotor rf;
-    DcMotor lf;
-    DcMotor rb;
-    DcMotor lb;
-    DcMotor intake;
-    DcMotor ls;
-    DcMotor rs;
-
-    public static double slidePositionTarget = 100.0;
     public static double slidesff = 0.0;
     public static double slideTargetGain = 100.0;
     public static double slideMin = 0.0;
@@ -46,7 +37,6 @@ public class RRBlueBackdrop extends OpMode{
     boolean slidesPressed;
     boolean dpadDownPressed;
     double slideSavedPosition = 1100.0;
-
     public static double intakeUpPos = 0.64;
     public static double intakeDownPos = 0.07;
     public static double intakeStackPos = 0.18;
@@ -56,26 +46,9 @@ public class RRBlueBackdrop extends OpMode{
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
-    public static int vision;
-    ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    SlidesPID slidesPidRight;
-    SlidesPID slidesPidLeft;
     double timeGap = 0.0;
     boolean intakeOnGround;
 
-    //Camera teamPropCam;
-
-    //Servo armRight;
-    Servo armLeft;
-    Servo pRight;
-    Servo pLeft;
-    Servo intakeRight;
-    Servo intakeLeft;
-    Servo droneLauncher;
-    TouchSensor slidesLimit;
-    DistanceSensor rightDS;
-    DistanceSensor leftDS;
-    SampleMecanumDrive drive;
     Trajectory purplePixel1;
     Trajectory purplePixel2;
     Trajectory purplePixel3;
@@ -94,75 +67,21 @@ public class RRBlueBackdrop extends OpMode{
 
     @Override
     public void init(){
-        dashboard = FtcDashboard.getInstance();
-        packet = new TelemetryPacket();
-        slidesPidRight = new SlidesPID();
-        slidesPidLeft = new SlidesPID();
-        //teamPropCam = new Camera(hardwareMap, false, true, "outputCamera");
 
-        rf = hardwareMap.get(DcMotor.class, "motorRF");
-        lf = hardwareMap.get(DcMotor.class, "motorLF");
-        rb = hardwareMap.get(DcMotor.class, "motorRB");
-        lb = hardwareMap.get(DcMotor.class, "motorLB");
-        intake = hardwareMap.get(DcMotor.class, "motorIntake");
-        ls = hardwareMap.get(DcMotor.class, "motorLS");
-        rs = hardwareMap.get(DcMotor.class, "motorRS");
-
-        armLeft = hardwareMap.get(Servo.class, "armLeft");
-        //armRight = hardwareMap.get(Servo.class, "armRight");
-        pRight = hardwareMap.get(Servo.class, "plungerRight");
-        pLeft = hardwareMap.get(Servo.class, "plungerLeft");
-        //droneLauncher = hardwareMap.get(Servo.class, "drone");
-
-        slidesLimit = hardwareMap.get(TouchSensor.class, "slidesLimit");
-        rightDS = hardwareMap.get(DistanceSensor.class, "rightDS");
-        leftDS = hardwareMap.get(DistanceSensor.class, "leftDS");
-
-        ls.setDirection(DcMotorSimple.Direction.FORWARD);
-        rs.setDirection(DcMotorSimple.Direction.REVERSE);
-        ls.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rs.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        ls.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rs.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        intakeRight = hardwareMap.get(Servo.class, "intakeRight");
-        intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
-
-        intakeLeft.scaleRange(0.0, 1.0);
-        intakeRight.scaleRange(0.0, 1.0);
-
-        intakeRight.setDirection(Servo.Direction.REVERSE);
-
-        armLeft.scaleRange(0.0, 0.245);
-
-        pRight.scaleRange(0.68, 0.77);
-        pLeft.scaleRange(0.57,0.67);
-
-        //teamPropCam.teamPropPipeline.processFrame(new Mat());
-        vision = 2;
-        telemetry.addData("vision randomization", vision);
-
-        /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
-        rb.setDirection(DcMotorSimple.Direction.REVERSE);
-        lb.setDirection(DcMotorSimple.Direction.REVERSE);
-        lf.setDirection(DcMotorSimple.Direction.REVERSE); */
+        blue = true;
+        super.init();
         drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(16.4, 63.25,Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
-        //purple pixels
         purplePixel1 = drive.trajectoryBuilder(startPose)
-                .lineTo(new Vector2d(23.5, 33.5),
+                .lineTo(new Vector2d(23.5, 35),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(moveUp1);
+                })
                 .build();
 
         purplePixel2 = drive.trajectoryBuilder(startPose, true)
@@ -170,13 +89,19 @@ public class RRBlueBackdrop extends OpMode{
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(moveUp2);
+                })
                 .build();
 
         purplePixel3 = drive.trajectoryBuilder(startPose, true)
-                .lineToLinearHeading(new Pose2d(4.8,32.71, Math.toRadians(60)),
+                .lineToLinearHeading(new Pose2d(4.8,35, Math.toRadians(60)),
                         SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(yellowPixel3);
+                })
                 .build();
 
         //move up
@@ -185,56 +110,136 @@ public class RRBlueBackdrop extends OpMode{
                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(yellowPixel1);
+                })
                 .build();
 
         moveUp2 = drive.trajectoryBuilder(purplePixel2.end())
                 .forward(5, SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(yellowPixel2);
+                })
                 .build();
-
-        //yellow pixels
-        yellowPixel1 = drive.trajectoryBuilder(moveUp1.end())
-                .lineToLinearHeading(new Pose2d(50.2,32, Math.toRadians(180)),
-                        SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+        moveUp3 = drive.trajectoryBuilder(purplePixel3.end())
+                .forward(5, SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(yellowPixel3);
+                })
+                .build();
+        //yellow pixels
+        yellowPixel1 = drive.trajectoryBuilder(moveUp1.end())
+                .lineToLinearHeading(new Pose2d(50.2,44, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(0.3,0,()->{
+                    slidePositionTarget = 400.0;
+                })
+                .addDisplacementMarker(0.8,0,()->{
+                    armLeft.setPosition(armOutPos);
+                })
+                .addDisplacementMarker(()->{
+                    pLeft.setPosition(plungerReleasePos);
+                    pRight.setPosition(plungerReleasePos);
+                })
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(reset1);
+                })
                 .build();
 
         yellowPixel2 = drive.trajectoryBuilder(moveUp2.end())
                 .lineToLinearHeading(new Pose2d(50.2,38, Math.toRadians(180)),
-                        SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(0.3,0,()->{
+                    slidePositionTarget = 400.0;
+                })
+                .addDisplacementMarker(0.8,0,()->{
+                    armLeft.setPosition(armOutPos);
+                })
+                .addDisplacementMarker(()->{
+                    pLeft.setPosition(plungerReleasePos);
+                    pRight.setPosition(plungerReleasePos);
+                })
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(reset2);
+                })
                 .build();
 
-        yellowPixel3 = drive.trajectoryBuilder(purplePixel3.end())
-                .lineToSplineHeading(new Pose2d(50.2,44, Math.toRadians(184)),
-                        SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+        yellowPixel3 = drive.trajectoryBuilder(moveUp3.end())
+                .lineToSplineHeading(new Pose2d(50.2,32, Math.toRadians(184)),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(0.3,0,()->{
+                    slidePositionTarget = 600.0;
+                })
+                .addDisplacementMarker(0.8,0,()->{
+                    armLeft.setPosition(armOutPos);
+                })
+                .addDisplacementMarker(()->{
+                    pLeft.setPosition(plungerReleasePos);
+                    pRight.setPosition(plungerReleasePos);
+                })
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(reset3);
+                })
                 .build();
 
                 //resets
                 reset1 = drive.trajectoryBuilder(yellowPixel1.end())
-                        .forward(10,
-                                SampleMecanumDrive.getVelocityConstraint(8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        .forward(8,
+                                SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                         )
+                        .addDisplacementMarker(0.2, 0, ()->{
+                            armLeft.setPosition(armInPos);
+                        })
+                        .addDisplacementMarker(0.5,0,()->{
+                            rs.setPower(slidesPidRight.calculatePower(0.0));
+                            ls.setPower(slidesPidLeft.calculatePower(0.0));
+                        })
                         .build();
 
                 reset2 = drive.trajectoryBuilder(yellowPixel2.end())
-                        .forward(10,
-                                SampleMecanumDrive.getVelocityConstraint(8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        .forward(8,
+                                SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                         )
+
+                        .addDisplacementMarker(0.2, 0, ()->{
+                            armLeft.setPosition(armInPos);
+                        })
+                        .addDisplacementMarker(0.5,0,()->{
+                            rs.setPower(slidesPidRight.calculatePower(0.0));
+                            ls.setPower(slidesPidLeft.calculatePower(0.0));
+                        })
+                        .addDisplacementMarker(()->{
+                            drive.followTrajectory(park2);
+                        })
                         .build();
 
                 reset3 = drive.trajectoryBuilder(yellowPixel3.end())
                         .forward(10,
-                                SampleMecanumDrive.getVelocityConstraint(8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                         )
+                        .addDisplacementMarker(0.2, 0, ()->{
+                            armLeft.setPosition(armInPos);
+                        })
+                        .addDisplacementMarker(0.5,0,()->{
+                            rs.setPower(slidesPidRight.calculatePower(0.0));
+                            ls.setPower(slidesPidLeft.calculatePower(0.0));
+                        })
+                        .addDisplacementMarker(()->{
+                            drive.followTrajectory(park3);
+                        })
                         .build();
 
                         //parks
@@ -243,6 +248,9 @@ public class RRBlueBackdrop extends OpMode{
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    super.stop();
+                })
                 .build();
 
         park2 = drive.trajectoryBuilder(reset2.end())
@@ -250,69 +258,48 @@ public class RRBlueBackdrop extends OpMode{
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    super.stop();
+                })
                 .build();
 
         park3 = drive.trajectoryBuilder(reset3.end())
-                .splineToLinearHeading(new Pose2d(58.7,11, Math.toRadians(182)),Math.toRadians(0),
+                .lineToLinearHeading(new Pose2d(58.7,11, Math.toRadians(182)),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .addDisplacementMarker(()->{
+                    super.stop();
+                })
                 .build();
 
         intakeLeft.setPosition(intakeUpPos);
         intakeRight.setPosition(intakeUpPos);
-        //droneLauncher.setPosition(dronePos2);
+        pLeft.setPosition(plungerGrabPos);
+        pRight.setPosition(plungerGrabPos);
+        droneLauncher.setPosition(1.0);
     }
     @Override
     public void start(){
-
-        switch (vision) {
+        super.start();
+        switch (elementPosition) {
+            case 0:
+                drive.followTrajectoryAsync(purplePixel1);
+                break;
             case 1:
-                drive.followTrajectory(purplePixel1);
-                drive.followTrajectory(moveUp1);
-                drive.followTrajectory(yellowPixel1);
-                drive.followTrajectory(reset1);
-                drive.followTrajectory(park1);
-                intakeLeft.setPosition(intakeDownPos);
-                intakeRight.setPosition(intakeDownPos);
+                drive.followTrajectoryAsync(purplePixel2);
                 break;
-            case 2:
-                drive.followTrajectory(purplePixel2);
-                drive.followTrajectory(moveUp2);
-                drive.followTrajectory(yellowPixel2);
-                drive.followTrajectory(reset2);
-                drive.followTrajectory(park2);
-                intakeLeft.setPosition(intakeDownPos);
-                intakeRight.setPosition(intakeDownPos);
-                break;
-            case 3:
-                drive.followTrajectory(purplePixel3);
-                drive.followTrajectory(moveUp3);
-                drive.followTrajectory(yellowPixel3);
-                drive.followTrajectory(reset3);
-                drive.followTrajectory(park3);
-                intakeLeft.setPosition(intakeDownPos);
-                intakeRight.setPosition(intakeDownPos);
+            default:
+                drive.followTrajectoryAsync(purplePixel3);
                 break;
         }
     }
-    @Override
-    public void loop(){
-        /*timeGap = timer.milliseconds();
-        timer.reset();
-        slidesPidRight.update(rs.getCurrentPosition(), timeGap);
-        slidesPidLeft.update(ls.getCurrentPosition(), timeGap);
-        drive.update();
 
-        telemetry.addData("idkkkkkkk",slidesPidLeft.calculatePower(slidePositionTarget));
-        telemetry.addData("pRight", "Position: " + pRight.getPosition());
-        telemetry.addData("pLeft", "Position: " + pLeft.getPosition());
-        telemetry.addData("armLeft", "Position: " + armLeft.getPosition());
-        telemetry.addData("slides position rs: ", "current rs pos: " + rs.getCurrentPosition());
-        telemetry.addData("slides position ls: ", "current ls pos: " + ls.getCurrentPosition());
-        telemetry.addData("slides power rs: ", "current rs power: " + rs.getPower());
-        telemetry.addData("slides power ls: ", "current ls power: " + ls.getPower());
-        telemetry.update();*/
+    @Override
+    public void childLoop() {
+        super.childLoop();
+        telemetry.addData("target", slidePositionTarget);
+        telemetry.addData("loopvision", pipeline.getOutput());
     }
     public void stop(){
         super.stop();

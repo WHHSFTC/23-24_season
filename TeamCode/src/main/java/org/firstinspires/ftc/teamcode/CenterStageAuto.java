@@ -20,6 +20,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public abstract class CenterStageAuto extends CenterStageOpMode {
     int elementPosition;
 
+
     enum State {
         SCANNING,
         PURPLE,
@@ -34,7 +35,6 @@ public abstract class CenterStageAuto extends CenterStageOpMode {
     @Override
     public void init() {
         super.init();
-
         pipeline = new VisionPipeline(blue, true);
         webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
@@ -56,15 +56,17 @@ public abstract class CenterStageAuto extends CenterStageOpMode {
         telemetry.update();
     }
 
+    @Override
     public void start() {
+        super.start();
         elementPosition = pipeline.getOutput();
     }
 
+
     @Override
     public void childLoop() {
+        super.childLoop();
         drive.update();
-        switch(currentState) {
-
-        }
+        //danielNotShowUp = 3.0;
     }
 }

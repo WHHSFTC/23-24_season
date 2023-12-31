@@ -34,7 +34,7 @@ import java.util.List;
 abstract public class CenterStageOpMode extends OpMode {
     boolean blue;
 
-    SampleMecanumDrive drive;
+    static SampleMecanumDrive drive;
     FtcDashboard dashboard;
     static TelemetryPacket packet;
     List<LynxModule> bothHubs;
@@ -56,7 +56,20 @@ abstract public class CenterStageOpMode extends OpMode {
     double lsPosition;
     DcMotor rs;
     double rsPosition;
+    double slidePositionTarget;
+    double slideSavedPosition = 1100.0;
 
+    public static double intakeUpPos = 0.64;
+    public static double intakeDownPos = 0.07;
+    public static double intakeStackPos = 0.18;
+
+    public static double armOutPos = 0.01;
+    public static double armInPos = 0.920;
+    public static double plungerGrabPos = 0.0;
+    public static double plungerReleasePos = 1.0;
+    public static double dronePos1 = 0.35;
+    public static double dronePos2 = 0.95;
+    public static double distBackdrop = 6.20;
     //Servo armRight;
     Servo armLeft;
     Servo pRight;
@@ -73,14 +86,17 @@ abstract public class CenterStageOpMode extends OpMode {
     double leftDSValue;
 
     VoltageSensor voltageSensor;
-
     OpenCvWebcam webcam;
+    SlidesPID slidesPidRight;
+    SlidesPID slidesPidLeft;
 
     @Override
     public void init() {
         bothHubs = hardwareMap.getAll(LynxModule.class);
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket();
+        slidesPidRight = new SlidesPID();
+        slidesPidLeft = new SlidesPID();
 
         //DC Motors
         rf = hardwareMap.get(DcMotor.class, "motorRF");
@@ -146,12 +162,16 @@ abstract public class CenterStageOpMode extends OpMode {
         pLeft.setPosition(1.0);
 
         droneLauncher.scaleRange(0.3, 0.9);
-        droneLauncher.setPosition(0);
-
         //camera
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "outputCamera"), cameraMonitorViewId);
         webcam.setMillisecondsPermissionTimeout(5000);
+    }
+
+    @Override
+    public void start() {
+        ls.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rs.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
@@ -183,7 +203,11 @@ abstract public class CenterStageOpMode extends OpMode {
         slidesLimit.isPressed();
 
         childLoop();
+        slidesPidRight.update(rs.getCurrentPosition(), timePerLoop);
+        slidesPidLeft.update(ls.getCurrentPosition(), timePerLoop);
 
+        telemetry.addData("rs position", rs.getCurrentPosition());
+        telemetry.addData("ls position", ls.getCurrentPosition());
         telemetry.update();
     }
 
@@ -200,6 +224,9 @@ abstract public class CenterStageOpMode extends OpMode {
     }
 
     public void childLoop() {
-
+        rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
+        ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
+        slidesPidLeft.update(ls.getCurrentPosition(),timePerLoop);
+        slidesPidRight.update(rs.getCurrentPosition(),timePerLoop);
     }
 }

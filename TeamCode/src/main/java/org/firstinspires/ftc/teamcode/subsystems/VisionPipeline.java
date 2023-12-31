@@ -54,9 +54,9 @@ public class VisionPipeline extends OpenCvPipeline {
       } else {
         Core.inRange(hsv, lowBlue, highBlue, threshold);
       }
-      leftROI = threshold.submat(new Rect(0, 0, 110, 240));
-      midROI = threshold.submat(new Rect(109, 0, 100, 240));
-      rightROI = threshold.submat(new Rect(209, 0, 110, 240));
+      leftROI = threshold.submat(new Rect(0, 0, 85, 240));
+      midROI = threshold.submat(new Rect(149, 0, 150, 240));
+      rightROI = threshold.submat(new Rect(234, 0, 85, 240));
 
       means[0] = Core.mean(leftROI).val[0];
       means[1] = Core.mean(midROI).val[0];
