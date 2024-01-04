@@ -148,7 +148,7 @@ public class CenterStageTele extends OpMode{
 
         //droneLauncher.scaleRange(dronePos1, dronePos2);
         //droneLauncher.setPosition(1.0);
-        intakeOnGround = true;
+        intakeOnGround = false;
         plungerLClosed = true;
         plungerRClosed = true;
 
