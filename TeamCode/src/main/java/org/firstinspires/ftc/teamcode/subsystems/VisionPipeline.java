@@ -54,9 +54,9 @@ public class VisionPipeline extends OpenCvPipeline {
       } else {
         Core.inRange(hsv, lowBlue, highBlue, threshold);
       }
-      leftROI = threshold.submat(new Rect(0, 0, 85, 240));
-      midROI = threshold.submat(new Rect(149, 0, 150, 240));
-      rightROI = threshold.submat(new Rect(234, 0, 85, 240));
+      leftROI = threshold.submat(new Rect(0, 0, 80, 240));
+      midROI = threshold.submat(new Rect(80, 0, 160, 240));
+      rightROI = threshold.submat(new Rect(240, 0, 80, 240));
 
       means[0] = Core.mean(leftROI).val[0];
       means[1] = Core.mean(midROI).val[0];
@@ -89,7 +89,7 @@ public class VisionPipeline extends OpenCvPipeline {
   }
   public String getPipelineTelemetry() {
 //    telemestring = means[0] + " (L), " + means[1] + " (M), " + means[2] + " (R).";
-    telemestring = Core.mean(leftROI) + " (L), " + Core.mean(midROI) + " (M), " + Core.mean(rightROI) + " (R).";
+    telemestring = "AAHHHHHHHH LOOK" + Core.mean(leftROI) + " (L), " + Core.mean(midROI) + " (M), " + Core.mean(rightROI) + " (R).";
     return telemestring;
   }
 }

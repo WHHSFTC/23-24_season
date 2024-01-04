@@ -52,7 +52,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode {
 
     @Override
     public void init_loop() {
-        telemetry.addData("pipeline", pipeline.getOutput());
+        telemetry.addData("pipeline", pipeline.getPipelineTelemetry() + "     " + pipeline.getOutput());
         telemetry.update();
     }
 

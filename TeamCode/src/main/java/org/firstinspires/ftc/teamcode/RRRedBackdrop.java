@@ -24,7 +24,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 @Autonomous (preselectTeleOp = "CenterStageTele")
-public class RRBlueBackdrop extends CenterStageAuto{
+public class RRRedBackdrop extends CenterStageAuto{
 
     FtcDashboard dashboard;
     TelemetryPacket packet;
@@ -68,14 +68,14 @@ public class RRBlueBackdrop extends CenterStageAuto{
     @Override
     public void init(){
 
-        blue = true;
+        blue = false;
         super.init();
         drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(16.4, 63.25,Math.toRadians(90));
+        Pose2d startPose = new Pose2d(14.96, -63.25,Math.toRadians(270));
         drive.setPoseEstimate(startPose);
 
         purplePixel1 = drive.trajectoryBuilder(startPose)
-                .lineTo(new Vector2d(23.5, 35),
+                .lineToLinearHeading(new Pose2d(3.2, -35, Math.toRadians(300)),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -90,7 +90,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .build();
 
         purplePixel2 = drive.trajectoryBuilder(startPose, true)
-                .lineTo(new Vector2d(9,32),
+                .lineTo(new Vector2d(9,-32.5),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -105,7 +105,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .build();
 
         purplePixel3 = drive.trajectoryBuilder(startPose, true)
-                .lineToLinearHeading(new Pose2d(4.9,35, Math.toRadians(60)),
+                .lineTo(new Vector2d(23.5,-35),
                         SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -148,7 +148,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .build();
         //yellow pixels
         yellowPixel1 = drive.trajectoryBuilder(moveUp1.end())
-                .lineToLinearHeading(new Pose2d(52,45, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(50.8,-34.5, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -168,7 +168,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .build();
 
         yellowPixel2 = drive.trajectoryBuilder(moveUp2.end())
-                .lineToLinearHeading(new Pose2d(52,38, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(50.8,-42, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -188,11 +188,11 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .build();
 
         yellowPixel3 = drive.trajectoryBuilder(moveUp3.end())
-                .lineToSplineHeading(new Pose2d(52,31, Math.toRadians(184)),
+                .lineToSplineHeading(new Pose2d(50.8,-47.2, Math.toRadians(184)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-               /* .addDisplacementMarker(0.3,0,()->{
+                /*.addDisplacementMarker(0.3,0,()->{
                     slidePositionTarget = 600.0;
                 })*/
                 .addDisplacementMarker(0.8,0,()->{
@@ -207,62 +207,62 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 })
                 .build();
 
-                //resets
-                reset1 = drive.trajectoryBuilder(yellowPixel1.end())
-                        .forward(5,
-                                SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                        )
-                        .addDisplacementMarker(0.2, 0, ()->{
-                            armLeft.setPosition(armInPos);
-                        })
-                        .addDisplacementMarker(0.5,0,()->{
-                            rs.setPower(slidesPidRight.calculatePower(0.0));
-                            ls.setPower(slidesPidLeft.calculatePower(0.0));
-                        })
-                        .addDisplacementMarker(()->{
-                            drive.followTrajectory(park1);
-                        })
-                        .build();
+        //resets
+        reset1 = drive.trajectoryBuilder(yellowPixel1.end())
+                .forward(8,
+                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(0.2, 0, ()->{
+                    armLeft.setPosition(armInPos);
+                })
+                .addDisplacementMarker(0.5,0,()->{
+                    rs.setPower(slidesPidRight.calculatePower(0.0));
+                    ls.setPower(slidesPidLeft.calculatePower(0.0));
+                })
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(park1);
+                })
+                .build();
 
-                reset2 = drive.trajectoryBuilder(yellowPixel2.end())
-                        .forward(5,
-                                SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                        )
+        reset2 = drive.trajectoryBuilder(yellowPixel2.end())
+                .forward(8,
+                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
 
-                        .addDisplacementMarker(0.2, 0, ()->{
-                            armLeft.setPosition(armInPos);
-                        })
-                        .addDisplacementMarker(0.5,0,()->{
-                            rs.setPower(slidesPidRight.calculatePower(0.0));
-                            ls.setPower(slidesPidLeft.calculatePower(0.0));
-                        })
-                        .addDisplacementMarker(()->{
-                            drive.followTrajectory(park2);
-                        })
-                        .build();
+                .addDisplacementMarker(0.2, 0, ()->{
+                    armLeft.setPosition(armInPos);
+                })
+                .addDisplacementMarker(0.5,0,()->{
+                    rs.setPower(slidesPidRight.calculatePower(0.0));
+                    ls.setPower(slidesPidLeft.calculatePower(0.0));
+                })
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(park2);
+                })
+                .build();
 
-                reset3 = drive.trajectoryBuilder(yellowPixel3.end())
-                        .forward(5,
-                                SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                        )
-                        .addDisplacementMarker(0.2, 0, ()->{
-                            armLeft.setPosition(armInPos);
-                        })
-                        .addDisplacementMarker(0.5,0,()->{
-                            rs.setPower(slidesPidRight.calculatePower(0.0));
-                            ls.setPower(slidesPidLeft.calculatePower(0.0));
-                        })
-                        .addDisplacementMarker(()->{
-                            drive.followTrajectory(park3);
-                        })
-                        .build();
+        reset3 = drive.trajectoryBuilder(yellowPixel3.end())
+                .forward(10,
+                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .addDisplacementMarker(0.2, 0, ()->{
+                    armLeft.setPosition(armInPos);
+                })
+                .addDisplacementMarker(0.5,0,()->{
+                    rs.setPower(slidesPidRight.calculatePower(0.0));
+                    ls.setPower(slidesPidLeft.calculatePower(0.0));
+                })
+                .addDisplacementMarker(()->{
+                    drive.followTrajectory(park3);
+                })
+                .build();
 
-                        //parks
-        /*park1 = drive.trajectoryBuilder(reset1.end())
-                .splineToLinearHeading(new Pose2d(58.7,11, Math.toRadians(182)),Math.toRadians(0),
+        //parks
+       /* park1 = drive.trajectoryBuilder(reset1.end())
+                .splineToLinearHeading(new Pose2d(58.7,-11, Math.toRadians(182)),Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -272,7 +272,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .build();
 
         park2 = drive.trajectoryBuilder(reset2.end())
-                .splineToLinearHeading(new Pose2d(58.7,11, Math.toRadians(182)),Math.toRadians(0),
+                .splineToLinearHeading(new Pose2d(58.7,-11, Math.toRadians(182)),Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -282,7 +282,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .build();
 
         park3 = drive.trajectoryBuilder(reset3.end())
-                .lineToLinearHeading(new Pose2d(58.7,11, Math.toRadians(182)),
+                .lineToLinearHeading(new Pose2d(58.7,-11, Math.toRadians(182)),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -303,14 +303,17 @@ public class RRBlueBackdrop extends CenterStageAuto{
     public void start(){
         super.start();
         switch (elementPosition) {
+
             case 0:
                 drive.followTrajectoryAsync(purplePixel1);
                 break;
             case 1:
                 drive.followTrajectoryAsync(purplePixel2);
                 break;
+            case 2:
+                drive.followTrajectory(purplePixel3);
             default:
-                drive.followTrajectoryAsync(purplePixel3);
+                drive.followTrajectoryAsync(purplePixel1);
                 break;
         }
     }
