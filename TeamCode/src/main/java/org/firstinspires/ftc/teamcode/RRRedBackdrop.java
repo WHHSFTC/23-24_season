@@ -115,7 +115,7 @@ public class RRRedBackdrop extends CenterStageAuto{
                     pRight.setPosition(plungerGrabPos);
                 })
                 .addDisplacementMarker(()->{
-                    drive.followTrajectory(yellowPixel3);
+                    drive.followTrajectory(moveUp3);
                 })
                 .build();
 
@@ -188,13 +188,10 @@ public class RRRedBackdrop extends CenterStageAuto{
                 .build();
 
         yellowPixel3 = drive.trajectoryBuilder(moveUp3.end())
-                .lineToSplineHeading(new Pose2d(50.8,-47.2, Math.toRadians(184)),
+                .lineToSplineHeading(new Pose2d(50.8,-47.2, Math.toRadians(181)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                /*.addDisplacementMarker(0.3,0,()->{
-                    slidePositionTarget = 600.0;
-                })*/
                 .addDisplacementMarker(0.8,0,()->{
                     armLeft.setPosition(armOutPos);
                 })
