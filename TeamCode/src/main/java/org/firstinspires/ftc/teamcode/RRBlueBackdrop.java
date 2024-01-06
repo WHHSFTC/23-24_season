@@ -46,6 +46,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
+    double delay = 0.0;
     double timeGap = 0.0;
     boolean intakeOnGround;
 
@@ -65,9 +66,9 @@ public class RRBlueBackdrop extends CenterStageAuto{
     Trajectory park2;
     Trajectory park3;
 
+
     @Override
     public void init(){
-
         blue = true;
         super.init();
         drive = new SampleMecanumDrive(hardwareMap);
@@ -299,8 +300,10 @@ public class RRBlueBackdrop extends CenterStageAuto{
         droneLauncher.setPosition(1.0);
         slidePositionTarget = 700.0;
     }
+
     @Override
     public void start(){
+
         super.start();
         switch (elementPosition) {
             case 0:

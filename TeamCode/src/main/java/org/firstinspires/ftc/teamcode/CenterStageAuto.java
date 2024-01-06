@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
@@ -19,7 +20,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Disabled
 public abstract class CenterStageAuto extends CenterStageOpMode {
     int elementPosition;
-
+    double delay = 0.0;
 
     enum State {
         SCANNING,
@@ -51,13 +52,36 @@ public abstract class CenterStageAuto extends CenterStageOpMode {
     }
 
     @Override
-    public void init_loop() {
+    final public void init_loop() {
         telemetry.addData("pipeline", pipeline.getPipelineTelemetry() + "     " + pipeline.getOutput());
+
+        if(gamepad1.dpad_up && !gamepad1prev.dpad_up){
+            delay += 500.0;
+        }else if(gamepad1.dpad_down && !gamepad1prev.dpad_down){
+            if(delay <= 500.0){
+                delay = 0.0;
+            }
+            else{
+                delay -= 500.0;
+            }
+        }else{
+            delay = delay;
+        }
+
+        telemetry.addData("delay time", delay);
         telemetry.update();
+        gamepad1prev.copy(gamepad1);
+        gamepad2prev.copy(gamepad2);
     }
 
     @Override
     public void start() {
+        ElapsedTime wait = new ElapsedTime();
+        while(wait.milliseconds() < delay){
+            telemetry.addData("tmoney", wait.milliseconds());
+            telemetry.update();
+        }
+
         super.start();
         elementPosition = pipeline.getOutput();
     }
