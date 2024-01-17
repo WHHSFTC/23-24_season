@@ -46,6 +46,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
+    double delay = 0.0;
     double timeGap = 0.0;
     boolean intakeOnGround;
 
@@ -65,9 +66,9 @@ public class RRBlueBackdrop extends CenterStageAuto{
     Trajectory park2;
     Trajectory park3;
 
+
     @Override
     public void init(){
-
         blue = true;
         super.init();
         drive = new SampleMecanumDrive(hardwareMap);
@@ -90,7 +91,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .build();
 
         purplePixel2 = drive.trajectoryBuilder(startPose, true)
-                .lineTo(new Vector2d(9,32),
+                .lineTo(new Vector2d(9,33.5),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -105,7 +106,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .build();
 
         purplePixel3 = drive.trajectoryBuilder(startPose, true)
-                .lineToLinearHeading(new Pose2d(4.9,35, Math.toRadians(60)),
+                .lineToLinearHeading(new Pose2d(5.2,35, Math.toRadians(60)),
                         SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -213,10 +214,10 @@ public class RRBlueBackdrop extends CenterStageAuto{
                                 SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                         )
-                        .addDisplacementMarker(0.2, 0, ()->{
+                        .addDisplacementMarker(0.4, 0, ()->{
                             armLeft.setPosition(armInPos);
                         })
-                        .addDisplacementMarker(0.5,0,()->{
+                        .addDisplacementMarker(0.7,0,()->{
                             rs.setPower(slidesPidRight.calculatePower(0.0));
                             ls.setPower(slidesPidLeft.calculatePower(0.0));
                         })
@@ -231,10 +232,10 @@ public class RRBlueBackdrop extends CenterStageAuto{
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                         )
 
-                        .addDisplacementMarker(0.2, 0, ()->{
+                        .addDisplacementMarker(0.4, 0, ()->{
                             armLeft.setPosition(armInPos);
                         })
-                        .addDisplacementMarker(0.5,0,()->{
+                        .addDisplacementMarker(0.7,0,()->{
                             rs.setPower(slidesPidRight.calculatePower(0.0));
                             ls.setPower(slidesPidLeft.calculatePower(0.0));
                         })
@@ -248,10 +249,10 @@ public class RRBlueBackdrop extends CenterStageAuto{
                                 SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                         )
-                        .addDisplacementMarker(0.2, 0, ()->{
+                        .addDisplacementMarker(0.4, 0, ()->{
                             armLeft.setPosition(armInPos);
                         })
-                        .addDisplacementMarker(0.5,0,()->{
+                        .addDisplacementMarker(0.7,0,()->{
                             rs.setPower(slidesPidRight.calculatePower(0.0));
                             ls.setPower(slidesPidLeft.calculatePower(0.0));
                         })
@@ -299,8 +300,10 @@ public class RRBlueBackdrop extends CenterStageAuto{
         droneLauncher.setPosition(1.0);
         slidePositionTarget = 700.0;
     }
+
     @Override
     public void start(){
+
         super.start();
         switch (elementPosition) {
             case 0:

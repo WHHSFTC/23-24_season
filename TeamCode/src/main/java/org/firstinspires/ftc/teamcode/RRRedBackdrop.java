@@ -67,7 +67,7 @@ public class RRRedBackdrop extends CenterStageAuto{
 
     @Override
     public void init(){
-
+        slidePositionTarget = 700.0;
         blue = false;
         super.init();
         drive = new SampleMecanumDrive(hardwareMap);
@@ -168,7 +168,7 @@ public class RRRedBackdrop extends CenterStageAuto{
                 .build();
 
         yellowPixel2 = drive.trajectoryBuilder(moveUp2.end())
-                .lineToLinearHeading(new Pose2d(50.8,-42, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(50.8,-41, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -210,10 +210,10 @@ public class RRRedBackdrop extends CenterStageAuto{
                         SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(0.2, 0, ()->{
+                .addDisplacementMarker(0.4, 0, ()->{
                     armLeft.setPosition(armInPos);
                 })
-                .addDisplacementMarker(0.5,0,()->{
+                .addDisplacementMarker(0.7,0,()->{
                     rs.setPower(slidesPidRight.calculatePower(0.0));
                     ls.setPower(slidesPidLeft.calculatePower(0.0));
                 })
@@ -228,10 +228,10 @@ public class RRRedBackdrop extends CenterStageAuto{
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
 
-                .addDisplacementMarker(0.2, 0, ()->{
+                .addDisplacementMarker(0.4, 0, ()->{
                     armLeft.setPosition(armInPos);
                 })
-                .addDisplacementMarker(0.5,0,()->{
+                .addDisplacementMarker(0.7,0,()->{
                     rs.setPower(slidesPidRight.calculatePower(0.0));
                     ls.setPower(slidesPidLeft.calculatePower(0.0));
                 })
@@ -245,10 +245,10 @@ public class RRRedBackdrop extends CenterStageAuto{
                         SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(0.2, 0, ()->{
+                .addDisplacementMarker(0.4, 0, ()->{
                     armLeft.setPosition(armInPos);
                 })
-                .addDisplacementMarker(0.5,0,()->{
+                .addDisplacementMarker(0.7,0,()->{
                     rs.setPower(slidesPidRight.calculatePower(0.0));
                     ls.setPower(slidesPidLeft.calculatePower(0.0));
                 })
@@ -307,10 +307,8 @@ public class RRRedBackdrop extends CenterStageAuto{
             case 1:
                 drive.followTrajectoryAsync(purplePixel2);
                 break;
-            case 2:
-                drive.followTrajectory(purplePixel3);
             default:
-                drive.followTrajectoryAsync(purplePixel1);
+                drive.followTrajectoryAsync(purplePixel3);
                 break;
         }
     }

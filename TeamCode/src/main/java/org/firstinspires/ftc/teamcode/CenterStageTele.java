@@ -50,7 +50,7 @@ public class CenterStageTele extends OpMode{
     double slideSavedPosition = 1100.0;
 
     public static double intakeUpPos = 0.64;
-    public static double intakeDownPos = 0.07;
+    public static double intakeDownPos = 0.02;
     public static double intakeStackPos = 0.18;
 
     public static double armOutPos = 0.01;
@@ -140,8 +140,8 @@ public class CenterStageTele extends OpMode{
 
         armLeft.setPosition(0.0);
 
-        pRight.scaleRange(0.68, 0.77);
-        pLeft.scaleRange(0.57,0.67);
+        pRight.scaleRange(0.64, 0.77);
+        pLeft.scaleRange(0.53,0.67);
 
         pRight.setPosition(1.0);
         pLeft.setPosition(1.0);

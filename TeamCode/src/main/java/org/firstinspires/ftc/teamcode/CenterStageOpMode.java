@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -63,7 +64,7 @@ abstract public class CenterStageOpMode extends OpMode {
     public static double intakeDownPos = 0.07;
     public static double intakeStackPos = 0.18;
 
-    public static double armOutPos = 0.01;
+    public static double armOutPos = 0.07;
     public static double armInPos = 0.920;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
@@ -89,6 +90,8 @@ abstract public class CenterStageOpMode extends OpMode {
     OpenCvWebcam webcam;
     SlidesPID slidesPidRight;
     SlidesPID slidesPidLeft;
+    Gamepad gamepad1prev = new Gamepad();
+    Gamepad gamepad2prev = new Gamepad();
 
     @Override
     public void init() {
@@ -166,6 +169,9 @@ abstract public class CenterStageOpMode extends OpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "outputCamera"), cameraMonitorViewId);
         webcam.setMillisecondsPermissionTimeout(5000);
+
+        gamepad1prev.copy(gamepad1);
+        gamepad2prev.copy(gamepad2);
     }
 
     @Override
@@ -209,6 +215,8 @@ abstract public class CenterStageOpMode extends OpMode {
         telemetry.addData("rs position", rs.getCurrentPosition());
         telemetry.addData("ls position", ls.getCurrentPosition());
         telemetry.update();
+        gamepad1prev.copy(gamepad1);
+        gamepad2prev.copy(gamepad2);
     }
 
     @Override
