@@ -35,6 +35,7 @@ public class CenterStageTele extends OpMode{
     DcMotor rb;
     DcMotor lb;
     DcMotor intake;
+    DcMotor conveyor;
     DcMotor ls;
     DcMotor rs;
 
@@ -42,7 +43,7 @@ public class CenterStageTele extends OpMode{
     public static double slidesff = 0.0;
     public static double slideTargetGain = 300.0;
     public static double slideMin = 0.0;
-    public static double slideMax = 2200.0;
+    public static double slideMax = 2700.0;
     double distancePower;
     double anglePower;
     boolean slidesPressed = true;
@@ -81,7 +82,6 @@ public class CenterStageTele extends OpMode{
     TouchSensor slidesLimit;
     DistanceSensor rightDS;
     DistanceSensor leftDS;
-
     @Override
     public void init(){
 
@@ -96,6 +96,7 @@ public class CenterStageTele extends OpMode{
         rb = hardwareMap.get(DcMotor.class, "motorRB");
         lb = hardwareMap.get(DcMotor.class, "motorLB");
         intake = hardwareMap.get(DcMotor.class, "motorIntake");
+        conveyor = hardwareMap.get(DcMotor.class, "motorConveyor");
         ls = hardwareMap.get(DcMotor.class, "motorLS");
         rs = hardwareMap.get(DcMotor.class, "motorRS");
 
@@ -148,7 +149,7 @@ public class CenterStageTele extends OpMode{
 
         //droneLauncher.scaleRange(dronePos1, dronePos2);
         //droneLauncher.setPosition(1.0);
-        intakeOnGround = false;
+        intakeOnGround = true;
         plungerLClosed = true;
         plungerRClosed = true;
 
@@ -300,7 +301,7 @@ public class CenterStageTele extends OpMode{
         if (gamepad1.left_trigger > 0.2 && intakeOnGround) {
             intake.setPower(-0.3 * gamepad1.left_trigger); //reverse
         } else if (gamepad1.right_trigger > 0.2 && intakeOnGround) {
-            intake.setPower(gamepad1.right_trigger*0.8); //forward
+            intake.setPower(gamepad1.right_trigger*0.5); //forward
             if (slidePositionTarget < 130.0) {
                 slidePositionTarget = 130.0;
             }
@@ -319,6 +320,15 @@ public class CenterStageTele extends OpMode{
                     intakeLeft.setPosition(intakeDownPos);
                     intakeOnGround = true;
                 }
+        }
+
+        if(gamepad2.right_trigger > 0.05){
+            conveyor.setPower(-0.9);
+        }
+        else if(gamepad2.left_trigger > 0.05){
+            conveyor.setPower(0.9);
+        }else{
+            conveyor.setPower(0.0);
         }
 
         //stack position intake
@@ -352,8 +362,8 @@ public class CenterStageTele extends OpMode{
         if(gamepad1.y){
             intakeLeft.setPosition(0.8);
             intakeRight.setPosition(0.8);
-            DelaysAndAutoms.delayServo(200,intakeLeft, 0.75, intakeDownPos);
-            DelaysAndAutoms.delayServo(200,intakeRight, 0.75, intakeDownPos);
+            DelaysAndAutoms hammer = new DelaysAndAutoms(200, intakeLeft, 0.8, intakeDownPos);
+            hammer.delay();
         }
 
         // drone launcher
@@ -364,7 +374,7 @@ public class CenterStageTele extends OpMode{
         }
 
         //manual release for plungers
-        if(gamepad2.right_bumper){
+        if(gamepad2.right_bumper && !gamepad2prev.right_bumper){
             if(plungerLClosed){
                 pLeft.setPosition(plungerGrabPos);
                 plungerLClosed = false;
@@ -375,7 +385,7 @@ public class CenterStageTele extends OpMode{
             }
         }
 
-        if(gamepad2.left_bumper){
+        if(gamepad2.left_bumper && !gamepad2prev.left_bumper){
             if(plungerRClosed){
                 pRight.setPosition(plungerGrabPos);
                 plungerRClosed = false;
@@ -386,19 +396,29 @@ public class CenterStageTele extends OpMode{
             }
         }
 
+        if(gamepad2.dpad_up && (slidePositionTarget >-10 && slidePositionTarget< 10)){
+            slidePositionTarget = 400.0;
+        }
+        else if(gamepad2.dpad_up && (slidePositionTarget >390 && slidePositionTarget< 410)){
+            slidePositionTarget = 1000.0;
+        }
+        else if(gamepad2.dpad_up && (slidePositionTarget >990 && slidePositionTarget< 1010)){
+            slidePositionTarget = 1500;
+        }
+
         //output automation
-        if(gamepad2.dpad_left){
+        if(gamepad2.dpad_left){/*
             slidePositionTarget = 200.0;
             rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
             ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
-            DelaysAndAutoms.delayServo(100.0, armLeft, armOutPos, armInPos);
+            DelaysAndAutoms.delay(100.0, armLeft, armOutPos, armInPos);
             slidePositionTarget = -5.0;
-            DelaysAndAutoms.delayMotor(200.0,ls, slidesPidLeft.calculatePower(200.0),
+            DelaysAndAutoms.delay(200.0,ls, slidesPidLeft.calculatePower(200.0),
                     slidesPidLeft.calculatePower(slidePositionTarget));
-            DelaysAndAutoms.delayMotor(200.0,rs, slidesPidRight.calculatePower(200.0),
+            DelaysAndAutoms.delay(200.0,rs, slidesPidRight.calculatePower(200.0),
                     slidesPidRight.calculatePower(slidePositionTarget));
-            DelaysAndAutoms.delayServo(400.0,pRight,plungerReleasePos, plungerGrabPos);
-            DelaysAndAutoms.delayServo(400.0,pLeft,plungerReleasePos, plungerGrabPos);
+            DelaysAndAutoms.delay(400.0,pRight,plungerReleasePos, plungerGrabPos);
+            DelaysAndAutoms.delay(400.0,pLeft,plungerReleasePos, plungerGrabPos);*/
         }
 
         if(gamepad2.left_stick_y < -0.1 && (slidePositionTarget >= 1000) && (armLeft.getPosition() > 0.8) && !zeroing){

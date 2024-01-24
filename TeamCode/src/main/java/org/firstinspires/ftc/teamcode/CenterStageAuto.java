@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static android.provider.SyncStateContract.Helpers.update;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -18,24 +20,25 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Disabled
-public abstract class CenterStageAuto extends CenterStageOpMode {
+public abstract class CenterStageAuto extends CenterStageOpMode implements AutoInterface {
     int elementPosition;
     double delay = 0.0;
 
     enum State {
-        SCANNING,
         PURPLE,
         YELLOW,
         CYCLE,
-        PARK
+        PARK,
+        IDLE
     }
 
-    State currentState = State.PURPLE;
+    State currentState;
     VisionPipeline pipeline;
 
     @Override
     public void init() {
         super.init();
+        currentState = State.PURPLE;
         pipeline = new VisionPipeline(blue, true);
         webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
@@ -80,11 +83,43 @@ public abstract class CenterStageAuto extends CenterStageOpMode {
     public void start() {
         ElapsedTime wait = new ElapsedTime();
         while(wait.milliseconds() < delay){
-            telemetry.addData("tmoney", wait.milliseconds());
+            telemetry.addData("delay time", wait.milliseconds());
             telemetry.update();
         }
         super.start();
         elementPosition = pipeline.getOutput();
+
+       /* switch (currentState)
+            case State.PURPLE:
+                switch(elementPosition)
+                    case 0:
+                        nvjonvnoivnoi
+                        break;
+                    case 1:
+                        nfuriuberiubviueriu
+                        break;
+                    case 2:
+                        ngiogiorngoierng
+                        break;
+            case State.YELLOW:
+                switch(elementPosition)
+                    case 0:
+                        nvjonvnoivnoi
+                        break;
+                    case 1:
+                        nfuriuberiubviueriu
+                        break;
+                    case 2:
+                        ngiogiorngoierng
+                        break;
+            case State.CYCLE:
+            do more and more stuff
+                break;
+        case State.PARK:
+            do more and more and more stuff
+                break;
+        default:
+            currentState = State.IDLE; */
     }
 
 
