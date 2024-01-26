@@ -4,6 +4,8 @@ import static android.provider.SyncStateContract.Helpers.update;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -24,7 +26,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
     int elementPosition;
     double delay = 0.0;
 
-    enum State {
+    enum AutoState {
         PURPLE,
         YELLOW,
         CYCLE,
@@ -32,15 +34,23 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         IDLE
     }
 
-    State currentState;
+    AutoState currentState = AutoState.PURPLE;
     VisionPipeline pipeline;
+    ElapsedTime liftTimer = new ElapsedTime();
 
     @Override
     public void init() {
         super.init();
-        currentState = State.PURPLE;
+        liftTimer.reset();
+        slidePositionTarget = 0.0;
         pipeline = new VisionPipeline(blue, true);
         webcam.setPipeline(pipeline);
+
+        intakeLeft.setPosition(intakeUpPos);
+        intakeRight.setPosition(intakeUpPos);
+        pLeft.setPosition(plungerGrabPos);
+        pRight.setPosition(plungerGrabPos);
+        armLeft.setPosition(armInPos);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -88,45 +98,42 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         }
         super.start();
         elementPosition = pipeline.getOutput();
-
-       /* switch (currentState)
-            case State.PURPLE:
-                switch(elementPosition)
-                    case 0:
-                        nvjonvnoivnoi
-                        break;
-                    case 1:
-                        nfuriuberiubviueriu
-                        break;
-                    case 2:
-                        ngiogiorngoierng
-                        break;
-            case State.YELLOW:
-                switch(elementPosition)
-                    case 0:
-                        nvjonvnoivnoi
-                        break;
-                    case 1:
-                        nfuriuberiubviueriu
-                        break;
-                    case 2:
-                        ngiogiorngoierng
-                        break;
-            case State.CYCLE:
-            do more and more stuff
-                break;
-        case State.PARK:
-            do more and more and more stuff
-                break;
-        default:
-            currentState = State.IDLE; */
     }
 
 
     @Override
     public void childLoop() {
         super.childLoop();
+
+         switch (currentState) {
+             case PURPLE:
+                 followPurple();
+             case YELLOW:
+                 followYellow();
+             case CYCLE:
+                 followCycle();
+                 break;
+             case PARK:
+                 followPark();
+                 break;
+             case IDLE:
+                 super.stop();
+         }
         drive.update();
-        //danielNotShowUp = 3.0;
+    }
+    public void followPurple(){
+
+    }
+
+    public void followYellow(){
+
+    }
+
+    public void followCycle(){
+
+    }
+
+    public void followPark(){
+
     }
 }

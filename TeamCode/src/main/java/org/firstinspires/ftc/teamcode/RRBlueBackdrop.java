@@ -34,20 +34,16 @@ public class RRBlueBackdrop extends CenterStageAuto{
     boolean slidesPressed;
     public static double intakeUpPos = 0.64;
     public static double intakeDownPos = 0.07;
-    public static double intakeStackPos = 0.18;
     public static double armOutPos = 0.1;
     public static double armInPos = 1.0;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
-    public static double dronePos1 = 0.35;
-    public static double dronePos2 = 0.95;
-    double delay = 0.0;
-    double timeGap = 0.0;
+    double slideDelay = 2.0;
 
-    TrajectorySequence blueBackdrop1;
+    /*TrajectorySequence blueBackdrop1;
     TrajectorySequence blueBackdrop2;
-    TrajectorySequence blueBackdrop3;
-    /*Trajectory purplePixel1;
+    TrajectorySequence blueBackdrop3;*/
+    Trajectory purplePixel1;
     Trajectory purplePixel2;
     Trajectory purplePixel3;
     Trajectory moveUp1;
@@ -61,7 +57,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
     Trajectory reset3;
     Trajectory park1;
     Trajectory park2;
-    Trajectory park3;*/
+    Trajectory park3;
 
     @Override
     public void init(){
@@ -71,7 +67,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
         Pose2d startPose = new Pose2d(16.4, 63.25,Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
-        blueBackdrop1 = drive.trajectorySequenceBuilder(startPose)
+        /*blueBackdrop1 = drive.trajectorySequenceBuilder(startPose)
                 .UNSTABLE_addTemporalMarkerOffset(1.0, ()->{
                     armLeft.setPosition(armInPos);
                     pLeft.setPosition(plungerGrabPos);
@@ -207,9 +203,9 @@ public class RRBlueBackdrop extends CenterStageAuto{
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .build();
+                .build();*/
 
-        /*purplePixel1 = drive.trajectoryBuilder(startPose)
+        purplePixel1 = drive.trajectoryBuilder(startPose)
                 .lineTo(new Vector2d(23.5, 35),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
@@ -250,7 +246,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
                     pRight.setPosition(plungerGrabPos);
                 })
                 .addDisplacementMarker(()->{
-                    drive.followTrajectory(yellowPixel3);
+                    drive.followTrajectory(moveUp3);
                 })
                 .build();
 
@@ -260,36 +256,25 @@ public class RRBlueBackdrop extends CenterStageAuto{
                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(yellowPixel1);
-                })
                 .build();
 
         moveUp2 = drive.trajectoryBuilder(purplePixel2.end())
                 .forward(5, SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(yellowPixel2);
-                })
                 .build();
         moveUp3 = drive.trajectoryBuilder(purplePixel3.end())
                 .forward(5, SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(yellowPixel3);
-                })
                 .build();
+
         //yellow pixels
         yellowPixel1 = drive.trajectoryBuilder(moveUp1.end())
                 .lineToLinearHeading(new Pose2d(52,45, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(0.3,0,()->{
-                    slidePositionTarget = 400.0;
-                })
                 .addDisplacementMarker(0.8,0,()->{
                     armLeft.setPosition(armOutPos);
                 })
@@ -307,9 +292,6 @@ public class RRBlueBackdrop extends CenterStageAuto{
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(0.3,0,()->{
-                    slidePositionTarget = 400.0;
-                })
                 .addDisplacementMarker(0.8,0,()->{
                     armLeft.setPosition(armOutPos);
                 })
@@ -348,13 +330,6 @@ public class RRBlueBackdrop extends CenterStageAuto{
                         .addDisplacementMarker(0.4, 0, ()->{
                             armLeft.setPosition(armInPos);
                         })
-                        .addDisplacementMarker(0.7,0,()->{
-                            rs.setPower(slidesPidRight.calculatePower(0.0));
-                            ls.setPower(slidesPidLeft.calculatePower(0.0));
-                        })
-                        .addDisplacementMarker(()->{
-                            drive.followTrajectory(park1);
-                        })
                         .build();
 
                 reset2 = drive.trajectoryBuilder(yellowPixel2.end())
@@ -366,13 +341,6 @@ public class RRBlueBackdrop extends CenterStageAuto{
                         .addDisplacementMarker(0.4, 0, ()->{
                             armLeft.setPosition(armInPos);
                         })
-                        .addDisplacementMarker(0.7,0,()->{
-                            rs.setPower(slidesPidRight.calculatePower(0.0));
-                            ls.setPower(slidesPidLeft.calculatePower(0.0));
-                        })
-                        .addDisplacementMarker(()->{
-                            drive.followTrajectory(park2);
-                        })
                         .build();
 
                 reset3 = drive.trajectoryBuilder(yellowPixel3.end())
@@ -382,13 +350,6 @@ public class RRBlueBackdrop extends CenterStageAuto{
                         )
                         .addDisplacementMarker(0.4, 0, ()->{
                             armLeft.setPosition(armInPos);
-                        })
-                        .addDisplacementMarker(0.7,0,()->{
-                            rs.setPower(slidesPidRight.calculatePower(0.0));
-                            ls.setPower(slidesPidLeft.calculatePower(0.0));
-                        })
-                        .addDisplacementMarker(()->{
-                            drive.followTrajectory(park3);
                         })
                         .build();
 
@@ -421,38 +382,12 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .addTemporalMarker(0.5, 0, ()->{
                     super.stop();
                 })
-                .build();*/
-
-        intakeLeft.setPosition(intakeUpPos);
-        intakeRight.setPosition(intakeUpPos);
-        pLeft.setPosition(plungerGrabPos);
-        pRight.setPosition(plungerGrabPos);
-        armLeft.setPosition(armInPos);
-        //droneLauncher.setPosition(1.0);
-        //slidePositionTarget = 700.0;
+                .build();
     }
 
     @Override
     public void start(){
-
         super.start();
-        switch (elementPosition) {
-            case 0:
-                drive.followTrajectorySequenceAsync(blueBackdrop1);
-                intakeLeft.setPosition(intakeDownPos);
-                intakeRight.setPosition(intakeDownPos);
-                break;
-            case 1:
-                drive.followTrajectorySequenceAsync(blueBackdrop2);
-                intakeLeft.setPosition(intakeDownPos);
-                intakeRight.setPosition(intakeDownPos);
-                break;
-            default:
-                drive.followTrajectorySequenceAsync(blueBackdrop3);
-                intakeLeft.setPosition(intakeDownPos);
-                intakeRight.setPosition(intakeDownPos);
-                break;
-        }
     }
 
     @Override
@@ -460,6 +395,57 @@ public class RRBlueBackdrop extends CenterStageAuto{
         super.childLoop();
         telemetry.addData("target", slidePositionTarget);
         telemetry.addData("loopvision", pipeline.getOutput());
+    }
+
+    @Override
+    public void followPurple(){
+        if(elementPosition == 0){
+            drive.followTrajectoryAsync(purplePixel1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(purplePixel2);
+        }
+        else{
+            drive.followTrajectoryAsync(purplePixel3);
+        }
+        currentState = AutoState.YELLOW;
+        liftTimer.reset();
+    }
+    @Override
+    public void followYellow(){
+        if(liftTimer.seconds() > slideDelay){
+            slidePositionTarget = 500.0;
+        }
+
+        if(elementPosition == 0){
+            drive.followTrajectoryAsync(yellowPixel1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(yellowPixel2);
+        }
+        else{
+            drive.followTrajectoryAsync(yellowPixel3);
+        }
+        currentState = AutoState.PARK;
+        liftTimer.reset();
+    }
+    @Override
+    public void followPark(){
+        slidePositionTarget = 0.0;
+        if(elementPosition == 0){
+           drive.followTrajectoryAsync(park1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(park2);
+        }
+        else{
+            drive.followTrajectoryAsync(park3);
+        }
+
+        intakeLeft.setPosition(intakeDownPos);
+        intakeRight.setPosition(intakeDownPos);
+        currentState = AutoState.IDLE;
+        liftTimer.reset();
     }
     public void stop(){
         super.stop();

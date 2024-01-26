@@ -209,9 +209,6 @@ abstract public class CenterStageOpMode extends OpMode {
         slidesLimit.isPressed();
 
         childLoop();
-        slidesPidRight.update(rs.getCurrentPosition(), timePerLoop);
-        slidesPidLeft.update(ls.getCurrentPosition(), timePerLoop);
-
         telemetry.addData("rs position", rs.getCurrentPosition());
         telemetry.addData("ls position", ls.getCurrentPosition());
         telemetry.update();
@@ -232,9 +229,9 @@ abstract public class CenterStageOpMode extends OpMode {
     }
 
     public void childLoop() {
-        rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
-        ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
         slidesPidLeft.update(ls.getCurrentPosition(),timePerLoop);
         slidesPidRight.update(rs.getCurrentPosition(),timePerLoop);
+        rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
+        ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
     }
 }
