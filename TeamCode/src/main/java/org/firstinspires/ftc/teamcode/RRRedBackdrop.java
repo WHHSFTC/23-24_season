@@ -275,7 +275,7 @@ public class RRRedBackdrop extends CenterStageAuto{
                 .addDisplacementMarker(()->{
                     pLeft.setPosition(plungerReleasePos);
                     pRight.setPosition(plungerReleasePos);
-                })
+                })//
                 .build();
 
         yellowPixel2 = drive.trajectoryBuilder(moveUp2.end())
