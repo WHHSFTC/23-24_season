@@ -9,48 +9,67 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.sun.tools.javac.util.GraphUtils;
+
+import java.util.ArrayList;
 
 public class DelaysAndAutoms extends drivetraintele {
     private double delay;
     private Servo mechanism;
     private DcMotor mot;
-    private double initialPos;
-    private double finalPos;
-    private double initialPower;
-    private double finalPower;
+    private Double value;
+    private double initial;
+    private double target;
     private ElapsedTime delayTimer;
+    private static ArrayList<DelaysAndAutoms> allDelays = new ArrayList<DelaysAndAutoms>();
 
-    public DelaysAndAutoms(double delay, Servo mechanism, double initialPos, double finalPos) {
+    public DelaysAndAutoms(double delay, Servo mechanism, double initial, double target) {
         delayTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        this.finalPos = finalPos;
+        this.target = target;
         this.mechanism = mechanism;
-        this.initialPos = initialPos;
-        this.finalPos = finalPos;
+        this.initial = initial;
+        this.target = target;
     }
 
-    public DelaysAndAutoms(double delay, DcMotor mot, double initialPower, double finalPower) {
+    public DelaysAndAutoms(double delay, DcMotor mot, double initial, double target) {
         delayTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        this.finalPower = finalPower;
+        this.target = target;
         this.mot = mot;
         this.delay = delay;
-        this.initialPower = initialPower;
+        this.initial = initial;
+        allDelays.add(this);
     }
 
-    public void delay() {
+    public DelaysAndAutoms(double delay, Double value, double initial, double target) {
+        delayTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        this.target = target;
+        this.value = value;
+        this.delay = delay;
+        this.initial = initial;
+        allDelays.add(this);
+    }
 
-        if (mechanism != null) {
-            
+    public static void updateDelays() {
+        for (DelaysAndAutoms it : allDelays) {
+            if (it.mechanism != null) {
 
-            if (delayTimer.time() < delay) {
-                mechanism.setPosition(initialPos);
+                if (it.delayTimer.time() < it.delay) {
+                    it.mechanism.setPosition(it.initial);
+                } else {
+                    it.mechanism.setPosition(it.target);
+                }
+            } else if (it.mot != null) {
+                if (it.delayTimer.time() < it.delay) {
+                    it.mot.setPower(it.initial);
+                } else {
+                    it.mot.setPower(it.target);
+                }
             } else {
-                mechanism.setPosition(finalPos);
-            }
-        } else {
-            if (delayTimer.time() < delay) {
-                mot.setPower(initialPower);
-            } else {
-                mot.setPower(finalPower);
+                if (it.delayTimer.time() < it.delay) {
+                    it.value = it.initial;
+                } else {
+                    it.value = it.target;
+                }
             }
         }
     }

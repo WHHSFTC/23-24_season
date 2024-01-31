@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;//
 
+import static org.firstinspires.ftc.teamcode.DelaysAndAutoms.updateDelays;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -363,7 +365,7 @@ public class CenterStageTele extends OpMode{
             intakeLeft.setPosition(0.8);
             intakeRight.setPosition(0.8);
             DelaysAndAutoms hammer = new DelaysAndAutoms(200, intakeLeft, 0.8, intakeDownPos);
-            hammer.delay();
+            updateDelays();
         }
 
         // drone launcher
@@ -407,18 +409,25 @@ public class CenterStageTele extends OpMode{
         }
 
         //output automation
-        if(gamepad2.dpad_left){/*
+        if(gamepad2.dpad_left){
+
+            conveyor.setPower(0.0);
+            pLeft.setPosition(plungerReleasePos);
+            pRight.setPosition(plungerReleasePos);
             slidePositionTarget = 200.0;
             rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
             ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
-            DelaysAndAutoms.delay(100.0, armLeft, armOutPos, armInPos);
-            slidePositionTarget = -5.0;
-            DelaysAndAutoms.delay(200.0,ls, slidesPidLeft.calculatePower(200.0),
-                    slidesPidLeft.calculatePower(slidePositionTarget));
-            DelaysAndAutoms.delay(200.0,rs, slidesPidRight.calculatePower(200.0),
-                    slidesPidRight.calculatePower(slidePositionTarget));
-            DelaysAndAutoms.delay(400.0,pRight,plungerReleasePos, plungerGrabPos);
-            DelaysAndAutoms.delay(400.0,pLeft,plungerReleasePos, plungerGrabPos);*/
+
+            DelaysAndAutoms armManeuver = new DelaysAndAutoms(100.0, armLeft, armOutPos, armInPos);
+
+            DelaysAndAutoms slidePositionDelay = new DelaysAndAutoms(200.0, slidePositionTarget, 200.0, 0.0);
+            DelaysAndAutoms slideMotorDelayLS = new DelaysAndAutoms(250.0,ls, slidesPidLeft.calculatePower(200.0), slidesPidLeft.calculatePower(slidePositionTarget));
+            DelaysAndAutoms slideMotorDelayRS = new DelaysAndAutoms(250.0,rs, slidesPidRight.calculatePower(200.0), slidesPidRight.calculatePower(slidePositionTarget));
+
+            DelaysAndAutoms pLeftDelay = new DelaysAndAutoms(400.0, pLeft, plungerReleasePos, plungerGrabPos);
+            DelaysAndAutoms pRightDelay = new DelaysAndAutoms(400.0, pRight, plungerReleasePos, plungerGrabPos);
+
+            updateDelays();
         }
 
         if(gamepad2.left_stick_y < -0.1 && (slidePositionTarget >= 1000) && (armLeft.getPosition() > 0.8) && !zeroing){
