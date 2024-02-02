@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -10,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -21,11 +24,16 @@ import org.firstinspires.ftc.teamcode.subsystems.VisionPipeline;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
+
+import static org.firstinspires.ftc.teamcode.DelaysAndAutoms.updateDelays;
 
 import java.util.List;
 
@@ -44,33 +52,30 @@ abstract public class CenterStageOpMode extends OpMode {
     double loopCumulativeTime = 0.0;
     double loopCounter = 0.0;
 
+    IMU imu;
     DcMotor rf;
-    double rfPosition;
     DcMotor lf;
-    double lfPosition;
     DcMotor rb;
-    double rbPosition;
     DcMotor lb;
-    double lbPosition;
     DcMotor intake;
+    DcMotor conveyor;
     DcMotor ls;
-    double lsPosition;
     DcMotor rs;
-    double rsPosition;
-    double slidePositionTarget;
+
+    double slidePositionTarget = 0.0;
     double slideSavedPosition = 1100.0;
 
     public static double intakeUpPos = 0.64;
-    public static double intakeDownPos = 0.07;
+    public static double intakeDownPos = 0.02;
     public static double intakeStackPos = 0.18;
 
-    public static double armOutPos = 0.07;
-    public static double armInPos = 0.920;
+    public static double armOutPos = 0.01;
+    public static double armInPos = 0.94;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
-    public static double distBackdrop = 6.20;
+    public static double distBackdrop = 6.25;
     //Servo armRight;
     Servo armLeft;
     Servo pRight;
@@ -80,11 +85,8 @@ abstract public class CenterStageOpMode extends OpMode {
     Servo droneLauncher;
 
     TouchSensor slidesLimit;
-    boolean slidesLimitValue;
     DistanceSensor rightDS;
-    double rightDSValue;
     DistanceSensor leftDS;
-    double leftDSValue;
 
     VoltageSensor voltageSensor;
     OpenCvWebcam webcam;
@@ -101,12 +103,15 @@ abstract public class CenterStageOpMode extends OpMode {
         slidesPidRight = new SlidesPID();
         slidesPidLeft = new SlidesPID();
 
+        imu = hardwareMap.get(IMU.class, "imu");
+
         //DC Motors
         rf = hardwareMap.get(DcMotor.class, "motorRF");
         lf = hardwareMap.get(DcMotor.class, "motorLF");
         rb = hardwareMap.get(DcMotor.class, "motorRB");
         lb = hardwareMap.get(DcMotor.class, "motorLB");
         intake = hardwareMap.get(DcMotor.class, "motorIntake");
+        conveyor = hardwareMap.get(DcMotor.class, "motorConveyor");
         ls = hardwareMap.get(DcMotor.class, "motorLS");
         rs = hardwareMap.get(DcMotor.class, "motorRS");
 
@@ -145,7 +150,7 @@ abstract public class CenterStageOpMode extends OpMode {
         intakeRight = hardwareMap.get(Servo.class, "intakeRight");
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
 
-        intakeLeft.scaleRange(0.0, 0.65);
+        intakeLeft.scaleRange(0.0, 1.0);
         intakeRight.scaleRange(0.0, 1.0);
 
         intakeRight.setDirection(Servo.Direction.REVERSE);
@@ -169,9 +174,6 @@ abstract public class CenterStageOpMode extends OpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "outputCamera"), cameraMonitorViewId);
         webcam.setMillisecondsPermissionTimeout(5000);
-
-        gamepad1prev.copy(gamepad1);
-        gamepad2prev.copy(gamepad2);
     }
 
     @Override
@@ -207,18 +209,16 @@ abstract public class CenterStageOpMode extends OpMode {
         ls.getCurrentPosition();
         rs.getCurrentPosition();
         slidesLimit.isPressed();
+        imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         childLoop();
         telemetry.addData("rs position", rs.getCurrentPosition());
         telemetry.addData("ls position", ls.getCurrentPosition());
         telemetry.update();
-        gamepad1prev.copy(gamepad1);
-        gamepad2prev.copy(gamepad2);
     }
 
     @Override
     public void stop() {
-        super.stop();
         rf.setPower(0);
         lf.setPower(0);
         rb.setPower(0);

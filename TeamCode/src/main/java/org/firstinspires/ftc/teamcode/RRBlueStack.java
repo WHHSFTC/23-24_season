@@ -15,6 +15,7 @@ import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.subsystems.Camera;
 import org.opencv.core.Mat;
 
@@ -30,37 +31,21 @@ public class RRBlueStack extends CenterStageAuto{
     TelemetryPacket packet;
     //public static MultipleTelemetry dashTelemetry = new MultipleTelemetry();
 
-    public static double slidesff = 0.0;
-    public static double slideTargetGain = 100.0;
-    public static double slideMin = 0.0;
-    public static double slideMax = 2200.0;
     boolean slidesPressed;
-    boolean dpadDownPressed;
-    double slideSavedPosition = 1100.0;
     public static double intakeUpPos = 0.64;
     public static double intakeDownPos = 0.07;
-    public static double intakeStackPos = 0.18;
     public static double armOutPos = 0.1;
     public static double armInPos = 1.0;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
-    public static double dronePos1 = 0.35;
-    public static double dronePos2 = 0.95;
-    double timeGap = 0.0;
-    boolean intakeOnGround;
+    double slideDelay = 0.5;
 
     Trajectory purplePixel1;
     Trajectory purplePixel2;
     Trajectory purplePixel3;
-    Trajectory moveUp1;
-    Trajectory moveUp2;
-    Trajectory moveUp3;
-    Trajectory lineUp1;
-    Trajectory lineUp2;
-    Trajectory lineUp3;
-    Trajectory goForward1;
-    Trajectory goForward2;
-    Trajectory goForward3;
+    TrajectorySequence moveUp1;
+    TrajectorySequence moveUp2;
+    TrajectorySequence moveUp3;
     Trajectory yellowPixel1;
     Trajectory yellowPixel2;
     Trajectory yellowPixel3;
@@ -91,7 +76,7 @@ public class RRBlueStack extends CenterStageAuto{
                     pRight.setPosition(plungerGrabPos);
                 })
                 .addDisplacementMarker(()->{
-                    drive.followTrajectory(moveUp1);
+                    drive.followTrajectorySequence(moveUp1);
                 })
                 .build();
 
@@ -106,7 +91,7 @@ public class RRBlueStack extends CenterStageAuto{
                     pRight.setPosition(plungerGrabPos);
                 })
                 .addDisplacementMarker(()->{
-                    drive.followTrajectory(moveUp2);
+                    drive.followTrajectorySequence(moveUp2);
                 })
                 .build();
 
@@ -121,144 +106,81 @@ public class RRBlueStack extends CenterStageAuto{
                     pRight.setPosition(plungerGrabPos);
                 })
                 .addDisplacementMarker(()->{
-                    drive.followTrajectory(moveUp3);
+                    drive.followTrajectorySequence(moveUp3);
                 })
                 .build();
 
         //move up
-        moveUp1 = drive.trajectoryBuilder(purplePixel1.end())
+        moveUp1 = drive.trajectorySequenceBuilder(purplePixel1.end())
                 .forward(15,
                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(lineUp1);
-                })
+                .splineToLinearHeading(new Pose2d(-27.2, 11.8, Math.toRadians(181)), 0,
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .back(80.0)
                 .build();
 
-        moveUp2 = drive.trajectoryBuilder(purplePixel2.end())
+        moveUp2 = drive.trajectorySequenceBuilder(purplePixel2.end())
                 .forward(8, SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(lineUp2);
-                })
+                .splineToLinearHeading(new Pose2d(-27.2, 11.8, Math.toRadians(181)), 0,
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .back(80.0)
                 .build();
-        moveUp3 = drive.trajectoryBuilder(purplePixel3.end())
+        moveUp3 = drive.trajectorySequenceBuilder(purplePixel3.end())
                 .forward(8, SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(lineUp3);
-                })
-                .build();
-
-        //line up
-
-        lineUp1 = drive.trajectoryBuilder(moveUp1.end())
-                .splineToLinearHeading(new Pose2d(-27.2, 35.8, Math.toRadians(181)), 0,
+                .splineToLinearHeading(new Pose2d(-27.2, 11.8, Math.toRadians(181)), 0,
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(goForward1);
-                })
-                .build();
-
-        lineUp2 = drive.trajectoryBuilder(moveUp2.end())
-                .splineToLinearHeading(new Pose2d(-27.2, 35.8, Math.toRadians(181)), 0,
-                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(goForward2);
-                })
-                .build();
-
-        lineUp3 = drive.trajectoryBuilder(moveUp3.end())
-                .splineToLinearHeading(new Pose2d(-27.2, 35.8, Math.toRadians(181)), 0,
-                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(goForward3);
-                })
-                .build();
-
-        goForward1 = drive.trajectoryBuilder(lineUp1.end())
                 .back(80.0)
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(park1);
-                })
-                .build();
-
-        goForward2 = drive.trajectoryBuilder(lineUp2.end())
-                .back(80.0)
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(park2);
-                })
-                .build();
-
-        goForward3 = drive.trajectoryBuilder(lineUp3.end())
-                .back(80.0)
-                .addDisplacementMarker(()->{
-                    drive.followTrajectory(park3);
-                })
                 .build();
 
         //parks
-       /* park1 = drive.trajectoryBuilder(reset1.end())
-                .splineToLinearHeading(new Pose2d(58.7,-11, Math.toRadians(182)),Math.toRadians(0),
+       park1 = drive.trajectoryBuilder(reset1.end())
+                .splineToLinearHeading(new Pose2d(58.7,11, Math.toRadians(182)),Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addTemporalMarker(0.5, 0, ()->{
-                    super.stop();
-                })
+               .addDisplacementMarker(()->{
+                   intakeLeft.setPosition(intakeDownPos);
+                   intakeRight.setPosition(intakeDownPos);
+                   liftTimer.reset();
+               })
                 .build();
 
         park2 = drive.trajectoryBuilder(reset2.end())
-                .splineToLinearHeading(new Pose2d(58.7,-11, Math.toRadians(182)),Math.toRadians(0),
+                .splineToLinearHeading(new Pose2d(58.7,11, Math.toRadians(182)),Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addTemporalMarker(0.5, 0, ()->{
-                    super.stop();
+                .addDisplacementMarker(()->{
+                    intakeLeft.setPosition(intakeDownPos);
+                    intakeRight.setPosition(intakeDownPos);
+                    liftTimer.reset();
                 })
                 .build();
 
         park3 = drive.trajectoryBuilder(reset3.end())
-                .lineToLinearHeading(new Pose2d(58.7,-11, Math.toRadians(182)),
+                .lineToLinearHeading(new Pose2d(58.7,11, Math.toRadians(182)),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addTemporalMarker(0.5, 0, ()->{
-                    super.stop();
+                .addDisplacementMarker(()->{
+                    intakeLeft.setPosition(intakeDownPos);
+                    intakeRight.setPosition(intakeDownPos);
+                    liftTimer.reset();
                 })
-                .build();*/
-
-        intakeLeft.setPosition(intakeUpPos);
-        intakeRight.setPosition(intakeUpPos);
-        pLeft.setPosition(plungerGrabPos);
-        pRight.setPosition(plungerGrabPos);
-        armLeft.setPosition(armInPos);
-        droneLauncher.setPosition(1.0);
-        slidePositionTarget = 0.0;
+                .build();
     }
     @Override
     public void start(){
         super.start();
-        switch (elementPosition) {
-
-            case 0:
-                drive.followTrajectoryAsync(purplePixel1);
-                break;
-            case 1:
-                drive.followTrajectoryAsync(purplePixel2);
-                break;
-            case 2:
-                drive.followTrajectory(purplePixel3);
-            default:
-                drive.followTrajectoryAsync(purplePixel1);
-                break;
-        }
     }
 
     @Override
@@ -266,6 +188,116 @@ public class RRBlueStack extends CenterStageAuto{
         super.childLoop();
         telemetry.addData("target", slidePositionTarget);
         telemetry.addData("loopvision", pipeline.getOutput());
+        switch (currentState) {
+            case PURPLE:
+                followPurple();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.MOVEUP;
+                }
+            case MOVEUP:
+                followMOVEUP();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.YELLOW;
+                }
+            case YELLOW:
+                followYellow();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.RESET;
+                }
+            case RESET:
+                followReset();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.PARK;
+                }
+            case CYCLE:
+                followCycle();
+                break;
+            case PARK:
+                followPark();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.IDLE;
+                }
+                break;
+            case IDLE:
+                super.stop();
+        }
+    }
+
+    public void followPurple(){
+        if(elementPosition == 0){
+            drive.followTrajectoryAsync(purplePixel1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(purplePixel2);
+        }
+        else{
+            drive.followTrajectoryAsync(purplePixel3);
+        }
+        liftTimer.reset();
+    }
+
+    @Override
+    public void followMOVEUP() {
+        if(elementPosition == 0){
+            drive.followTrajectorySequenceAsync(moveUp1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectorySequenceAsync(moveUp2);
+        }
+        else{
+            drive.followTrajectorySequenceAsync(moveUp3);
+        }
+        liftTimer.reset();
+    }
+
+    @Override
+    public void followYellow(){
+        if(liftTimer.seconds() > slideDelay){
+            slidePositionTarget = 500.0;
+        }
+
+        if(elementPosition == 0){
+            drive.followTrajectoryAsync(yellowPixel1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(yellowPixel2);
+        }
+        else{
+            drive.followTrajectoryAsync(yellowPixel3);
+        }
+        liftTimer.reset();
+    }
+    @Override
+    public void followReset(){
+        if(elementPosition == 0){
+            drive.followTrajectoryAsync(reset1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(reset2);
+        }
+        else{
+            drive.followTrajectoryAsync(reset3);
+        }
+        liftTimer.reset();
+    }
+
+    @Override
+    public void followPark(){
+        slidePositionTarget = 0.0;
+        if(elementPosition == 0){
+            drive.followTrajectoryAsync(park1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(park2);
+        }
+        else{
+            drive.followTrajectoryAsync(park3);
+        }
+
+        intakeLeft.setPosition(intakeDownPos);
+        intakeRight.setPosition(intakeDownPos);
+        currentState = AutoState.IDLE;
+        liftTimer.reset();
     }
     public void stop(){
         super.stop();

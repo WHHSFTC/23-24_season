@@ -38,7 +38,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
     public static double armInPos = 1.0;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
-    double slideDelay = 2.0;
+    double slideDelay = 1.0;
 
     Trajectory purplePixel1;
     Trajectory purplePixel2;
@@ -370,6 +370,40 @@ public class RRBlueBackdrop extends CenterStageAuto{
         super.childLoop();
         telemetry.addData("target", slidePositionTarget);
         telemetry.addData("loopvision", pipeline.getOutput());
+
+        switch (currentState) {
+            case PURPLE:
+                followPurple();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.MOVEUP;
+                }
+            case MOVEUP:
+                followMOVEUP();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.YELLOW;
+                }
+            case YELLOW:
+                followYellow();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.RESET;
+                }
+            case RESET:
+                followReset();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.PARK;
+                }
+            case CYCLE:
+                followCycle();
+                break;
+            case PARK:
+                followPark();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.IDLE;
+                }
+                break;
+            case IDLE:
+                super.stop();
+        }
     }
 
     @Override
@@ -443,11 +477,6 @@ public class RRBlueBackdrop extends CenterStageAuto{
         else{
             drive.followTrajectoryAsync(park3);
         }
-
-        intakeLeft.setPosition(intakeDownPos);
-        intakeRight.setPosition(intakeDownPos);
-        currentState = AutoState.IDLE;
-        liftTimer.reset();
     }
     public void stop(){
         super.stop();

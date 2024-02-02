@@ -106,40 +106,6 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
     @Override
     public void childLoop() {
         super.childLoop();
-
-         switch (currentState) {
-             case PURPLE:
-                 followPurple();
-                 if (!drive.isBusy()) {
-                     currentState = AutoState.MOVEUP;
-                 }
-             case MOVEUP:
-                 followMOVEUP();
-                 if (!drive.isBusy()) {
-                     currentState = AutoState.YELLOW;
-                 }
-             case YELLOW:
-                 followYellow();
-                 if (!drive.isBusy()) {
-                     currentState = AutoState.RESET;
-                 }
-             case RESET:
-                 followReset();
-                 if (!drive.isBusy()) {
-                     currentState = AutoState.PARK;
-                 }
-             case CYCLE:
-                 followCycle();
-                 break;
-             case PARK:
-                 followPark();
-                 if (!drive.isBusy()) {
-                     currentState = AutoState.IDLE;
-                 }
-                 break;
-             case IDLE:
-                 super.stop();
-         }
         drive.update();
     }
     public void followPurple(){
