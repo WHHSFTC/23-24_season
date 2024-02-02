@@ -20,8 +20,8 @@ public class DelaysAndAutoms extends drivetraintele {
     private Double value;
     private double initial;
     private double target;
-    private ElapsedTime delayTimer;
-    private static ArrayList<DelaysAndAutoms> allDelays = new ArrayList<DelaysAndAutoms>();
+    public ElapsedTime delayTimer; //TODO: make private again
+    public static ArrayList<DelaysAndAutoms> allDelays = new ArrayList<DelaysAndAutoms>();
 
     public DelaysAndAutoms(double delay, Servo mechanism, double initial, double target) {
         delayTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -53,19 +53,19 @@ public class DelaysAndAutoms extends drivetraintele {
         for (DelaysAndAutoms it : allDelays) {
             if (it.mechanism != null) {
 
-                if (it.delayTimer.time() < it.delay) {
+                if (it.delayTimer.milliseconds() < it.delay) {
                     it.mechanism.setPosition(it.initial);
                 } else {
                     it.mechanism.setPosition(it.target);
                 }
             } else if (it.mot != null) {
-                if (it.delayTimer.time() < it.delay) {
+                if (it.delayTimer.milliseconds() < it.delay) {
                     it.mot.setPower(it.initial);
                 } else {
                     it.mot.setPower(it.target);
                 }
             } else {
-                if (it.delayTimer.time() < it.delay) {
+                if (it.delayTimer.milliseconds() < it.delay) {
                     it.value = it.initial;
                 } else {
                     it.value = it.target;

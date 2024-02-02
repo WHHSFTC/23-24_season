@@ -4,10 +4,12 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 
+@Disabled
 @Autonomous
 public class AutoRedScorePurple extends CenterStageAuto {
 
@@ -21,7 +23,7 @@ public class AutoRedScorePurple extends CenterStageAuto {
         drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(16.4, 63.25,Math.toRadians(90));
         drive.setPoseEstimate(startPose);
-
+        //TODO: change trajectory and remove @Disabled tag
         purplePixel1 = drive.trajectoryBuilder(startPose)
                 .lineTo(new Vector2d(23.5, 33.5),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),

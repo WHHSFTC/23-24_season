@@ -86,8 +86,12 @@ public class CenterStageTeleProper extends CenterStageOpMode{
 
 
         if (gamepad1.dpad_up) {
-            if (fieldCentric) {fieldCentric = true;} else {fieldCentric = false;}
+            fieldCentric = true;
         }
+        if (gamepad1.dpad_down) {
+            fieldCentric = false;
+        }
+        telemetry.addData("field centric:", fieldCentric);
 
         if(gamepad1.a){
             distancePower = DSpid.distancePID(rightDS.getDistance(DistanceUnit.INCH), leftDS.getDistance(DistanceUnit.INCH), timeGap, distBackdrop);
@@ -266,8 +270,8 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         if(gamepad1.y){
             intakeLeft.setPosition(0.8);
             intakeRight.setPosition(0.8);
-            DelaysAndAutoms hammerLeft = new DelaysAndAutoms(200, intakeLeft, 0.8, intakeDownPos);
-            DelaysAndAutoms hammerRight = new DelaysAndAutoms(200, intakeRight, 0.8, intakeDownPos);
+            /*DelaysAndAutoms hammerLeft = */new DelaysAndAutoms(200, intakeLeft, 0.8, intakeDownPos);
+            /*DelaysAndAutoms hammerRight = */new DelaysAndAutoms(200, intakeRight, 0.8, intakeDownPos);
         }
 
         // drone launcher
@@ -319,19 +323,25 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             }
         }
         //output automation
-        if(gamepad2.y){
+        if(gamepad2.y && !gamepad2prev.y){
+            telemetry.addData("Abcdef", 0);
 
             conveyor.setPower(0.0);
             pLeft.setPosition(plungerReleasePos);
             pRight.setPosition(plungerReleasePos);
             slidePositionTarget = 200.0;
+            telemetry.addData("Abcdef", 1);
 
-            DelaysAndAutoms armManeuver = new DelaysAndAutoms(100.0, armLeft, armOutPos, armInPos);
+            /*DelaysAndAutoms armManeuver = */new DelaysAndAutoms(100.0, armLeft, armOutPos, armInPos);
+            telemetry.addData("Abcdef", 2);
 
-            DelaysAndAutoms slidePositionDelay = new DelaysAndAutoms(200.0, slidePositionTarget, 200.0, 0.0);
+            /*DelaysAndAutoms slidePositionDelay = */new DelaysAndAutoms(200.0, slidePositionTarget, 200.0, 0.0);
+            telemetry.addData("Abcdef", 3);
 
-            DelaysAndAutoms pLeftDelay = new DelaysAndAutoms(400.0, pLeft, plungerReleasePos, plungerGrabPos);
-            DelaysAndAutoms pRightDelay = new DelaysAndAutoms(400.0, pRight, plungerReleasePos, plungerGrabPos);
+            /*DelaysAndAutoms pLeftDelay = */new DelaysAndAutoms(400.0, pLeft, plungerReleasePos, plungerGrabPos);
+            telemetry.addData("Abcdef", 4);
+            /*DelaysAndAutoms pRightDelay = */new DelaysAndAutoms(400.0, pRight, plungerReleasePos, plungerGrabPos);
+            telemetry.addData("Abcdef", 5);
         }
 
         if(gamepad2.left_stick_y < -0.1 && (slidePositionTarget >= 1000) && (armLeft.getPosition() > 0.8) && !zeroing){
@@ -341,10 +351,10 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         gamepad1prev.copy(gamepad1);
         gamepad2prev.copy(gamepad2);
 
-        telemetry.addData("rf", postRF);
+        /*telemetry.addData("rf", postRF);
         telemetry.addData("lf", postLF);
         telemetry.addData("rb", postRB);
-        telemetry.addData("lb", postLB);
+        telemetry.addData("lb", postLB);*/
 
         telemetry.addData("intake", intake.getPower());
         //telemetry.addData("armRight", "Position: " + armRight.getPosition());
@@ -362,7 +372,10 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         telemetry.addData("limit switch", slidesLimit.isPressed());
         telemetry.addData("leftDS", "Distance B from backdrop: " + leftDS.getDistance(DistanceUnit.INCH));
         telemetry.addData("rightDS", "Distance A from backdrop: " + rightDS.getDistance(DistanceUnit.INCH));
-        telemetry.update();
+        telemetry.addData("allDelays: ", DelaysAndAutoms.allDelays.size());
+        if(DelaysAndAutoms.allDelays.size() > 0) {
+            telemetry.addData("ALLLEX", DelaysAndAutoms.allDelays.get(0).delayTimer.milliseconds());
+        }
 
         packet.put("slides target", slidePositionTarget);
         packet.put("slides position rs", rs.getCurrentPosition());
