@@ -20,7 +20,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-
 @Config
 @TeleOp
 public class CenterStageTeleProper extends CenterStageOpMode{
@@ -50,7 +49,6 @@ public class CenterStageTeleProper extends CenterStageOpMode{
 
         //droneLauncher.scaleRange(dronePos1, dronePos2);
         //droneLauncher.setPosition(1.0);
-        intakeOnGround = true;
         plungerLClosed = true;
         plungerRClosed = true;
 
@@ -60,6 +58,9 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         lf.setDirection(DcMotorSimple.Direction.REVERSE); */
 
         imu.resetYaw();
+        intakeRight.setPosition(intakeDownPos);
+        intakeLeft.setPosition(intakeDownPos);
+        intakeOnGround = true;
     }
 
     @Override
@@ -122,6 +123,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }
 
         if (Math.abs(gamepad2.left_stick_y) > 0.01) {
+            zeroing = false;
 
             if (Math.abs(gamepad2.left_stick_y) > 0.01) {slidePositionTarget -= slideTargetGain * gamepad2.left_stick_y;}
 
@@ -140,8 +142,10 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         telemetry.addData("Error RS", "Error RS: " + (slidePositionTarget - rs.getCurrentPosition()));
         telemetry.addData("Error LS", "Error LS: " + (slidePositionTarget - ls.getCurrentPosition()));
 
-        rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
-        ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
+        if (!zeroing) {
+            rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
+            ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
+        }
 
         if (gamepad1.left_bumper && scalar > 0.3){
             scalar = 0.3;
@@ -179,7 +183,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }
 
         //plunger open
-        if (gamepad2.dpad_left) {
+        if (gamepad2.y) {
             pRight.setPosition(plungerGrabPos);
             pLeft.setPosition(plungerGrabPos);
             plungerLClosed = false;
@@ -199,13 +203,11 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }
 
         if (gamepad2.dpad_down && !zeroing && (pLeft.getPosition() > 0.9 && pRight.getPosition() > 0.9)) {
-            if (!dpadDownPressed) {
+            if (!gamepad2prev.dpad_down) {
                 slideSavedPosition = slidePositionTarget;
                 slidePositionTarget = slideMin;
+                zeroing = true;
             }
-            dpadDownPressed = true;
-        } else {
-            dpadDownPressed = false;
         }
 
         //intake spinning
@@ -257,6 +259,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         if (gamepad2.start) {
             zeroing = true;
         }
+
         if (zeroing) {
             slidePositionTarget = 0.0;
             rs.setPower(-0.3);
@@ -304,26 +307,8 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             }
         }
 
-        if(gamepad2.dpad_up && slidePositionTarget < 100){
-            slidePositionTarget = 400.0;
-        }
-        else if(gamepad2.dpad_up && (slidePositionTarget >300 && slidePositionTarget< 500)){
-            slidePositionTarget = 900.0;
-        }
-        else if(gamepad2.dpad_up && (slidePositionTarget >800 && slidePositionTarget< 1000)){
-            slidePositionTarget = 1400;
-        }
-
-        if(gamepad2.dpad_down && (pLeft.getPosition() < 0.2 && pRight.getPosition() < 0.2)){
-            if(slidePositionTarget > 800 && slidePositionTarget < 1000){
-                slidePositionTarget = 400;
-            }
-            else if(slidePositionTarget > 1300 && slidePositionTarget < 1500){
-                slidePositionTarget = 900;
-            }
-        }
         //output automation
-        if(gamepad2.y && !gamepad2prev.y){
+        if(gamepad2.dpad_left && !gamepad2prev.dpad_left){
             telemetry.addData("Abcdef", 0);
 
             conveyor.setPower(0.0);

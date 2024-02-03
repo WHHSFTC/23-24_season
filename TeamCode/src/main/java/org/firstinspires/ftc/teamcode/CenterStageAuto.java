@@ -36,7 +36,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         IDLE
     }
 
-    AutoState currentState = AutoState.PURPLE;
+    AutoState currentState;
     VisionPipeline pipeline;
     ElapsedTime liftTimer = new ElapsedTime();
 
@@ -68,6 +68,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
 
     @Override
     final public void init_loop() {
+        telemetry.addData("state", currentState);
         telemetry.addData("pipeline", pipeline.getPipelineTelemetry() + "     " + pipeline.getOutput());
         telemetry.addData("delay time", delay);
 
@@ -86,6 +87,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
             delay = delay;
         }
 
+        currentState = AutoState.PURPLE;
         telemetry.addData("delay time", delay);
         gamepad1prev.copy(gamepad1);
         gamepad2prev.copy(gamepad2);
@@ -100,13 +102,52 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         }
         super.start();
         elementPosition = pipeline.getOutput();
+        followPurple();
     }
 
 
     @Override
     public void childLoop() {
-        super.childLoop();
+        slidesPidLeft.update(ls.getCurrentPosition(),timePerLoop);
+        slidesPidRight.update(rs.getCurrentPosition(),timePerLoop);
+        rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
+        ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
         drive.update();
+        telemetry.addData("State: ", currentState);
+        telemetry.addData("slides target: ", slidePositionTarget);
+        switch (currentState) {
+            case PURPLE:
+                //followPurple();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.MOVEUP;
+                    followMOVEUP();
+                }
+            case MOVEUP:
+                if (!drive.isBusy()) {
+                    currentState = AutoState.YELLOW;
+                    followYellow();
+                }
+            case YELLOW:
+                if (!drive.isBusy()) {
+                    currentState = AutoState.RESET;
+                    followReset();
+                }
+            case RESET:
+                if (!drive.isBusy()) {
+                    currentState = AutoState.PARK;
+                    //TODO followCycle();
+                }
+            case CYCLE:
+                break;
+            case PARK:
+                followPark();
+                if (!drive.isBusy()) {
+                    currentState = AutoState.IDLE;
+                }
+                break;
+            case IDLE:
+                super.stop();
+        }
     }
     public void followPurple(){
 

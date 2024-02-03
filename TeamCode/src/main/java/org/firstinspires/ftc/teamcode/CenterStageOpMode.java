@@ -164,7 +164,7 @@ abstract public class CenterStageOpMode extends OpMode {
         armLeft.setPosition(0.0);
 
         pRight.scaleRange(0.68, 0.77);
-        pLeft.scaleRange(0.57,0.67);
+        pLeft.scaleRange(0.54,0.67);
 
         pRight.setPosition(1.0);
         pLeft.setPosition(1.0);
@@ -229,9 +229,6 @@ abstract public class CenterStageOpMode extends OpMode {
     }
 
     public void childLoop() {
-        slidesPidLeft.update(ls.getCurrentPosition(),timePerLoop);
-        slidesPidRight.update(rs.getCurrentPosition(),timePerLoop);
-        rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
-        ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
+
     }
 }
