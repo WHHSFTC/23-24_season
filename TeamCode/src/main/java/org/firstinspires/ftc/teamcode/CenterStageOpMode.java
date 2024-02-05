@@ -40,6 +40,7 @@ import java.util.List;
 
 @Disabled
 @TeleOp
+@Config
 abstract public class CenterStageOpMode extends OpMode {
     boolean blue;
 
@@ -48,6 +49,7 @@ abstract public class CenterStageOpMode extends OpMode {
     static TelemetryPacket packet;
     List<LynxModule> bothHubs;
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    ElapsedTime totalRunTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     double timePerLoop;
     double loopCumulativeTime = 0.0;
     double loopCounter = 0.0;
@@ -65,8 +67,8 @@ abstract public class CenterStageOpMode extends OpMode {
     public double slidePositionTarget = 0.0;
     double slideSavedPosition = 1100.0;
 
-    public static double intakeUpPos = 0.64;
-    public static double intakeDownPos = 0.02;
+    public static double intakeUpPos = 0.0;
+    public static double intakeDownPos = 0.64;
     public static double intakeStackPos = 0.18;
 
     public static double armOutPos = 0.01;
