@@ -33,7 +33,6 @@ public class CenterStageTeleProper extends CenterStageOpMode{
     double distancePower;
     double anglePower;
     boolean slidesPressed = true;
-    boolean dpadDownPressed;
 
     double targetYaw = 0.0;
     double timeGap;
@@ -104,7 +103,10 @@ public class CenterStageTeleProper extends CenterStageOpMode{
 
         //heading lock
         if(gamepad1.b){
-            anglePower = DSpid.anglePID(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), timeGap, Math.toRadians(180));
+            if(!gamepad1prev.b) {
+                targetYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            }
+            anglePower = DSpid.anglePID(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), timeGap, targetYaw);
             r = -anglePower;
         }
 
@@ -164,11 +166,6 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         lf.setPower(preLF/max);
         rb.setPower(preRB/max);
         lb.setPower(preLB/max);
-
-        double postRF = preRF/max;
-        double postLF = preLF/max;
-        double postRB = preRB/max;
-        double postLB = preLB/max;
 
         //arm swings out
         if (gamepad2.x) {
@@ -315,18 +312,11 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             pLeft.setPosition(plungerReleasePos);
             pRight.setPosition(plungerReleasePos);
             slidePositionTarget = 200.0;
-            telemetry.addData("Abcdef", 1);
 
             /*DelaysAndAutoms armManeuver = */new DelaysAndAutoms(100.0, armLeft, armOutPos, armInPos);
-            telemetry.addData("Abcdef", 2);
-
             /*DelaysAndAutoms slidePositionDelay = */new DelaysAndAutoms(200.0, slidePositionTarget, 200.0, 0.0);
-            telemetry.addData("Abcdef", 3);
-
             /*DelaysAndAutoms pLeftDelay = */new DelaysAndAutoms(400.0, pLeft, plungerReleasePos, plungerGrabPos);
-            telemetry.addData("Abcdef", 4);
             /*DelaysAndAutoms pRightDelay = */new DelaysAndAutoms(400.0, pRight, plungerReleasePos, plungerGrabPos);
-            telemetry.addData("Abcdef", 5);
         }
 
         if(gamepad2.left_stick_y < -0.1 && (slidePositionTarget >= 1000) && (armLeft.getPosition() > 0.8) && !zeroing){
@@ -376,17 +366,5 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         dashboard.sendTelemetryPacket(packet);
 
         updateDelays();
-    }
-
-    @Override
-    public void stop(){
-        super.stop();
-        rf.setPower(0);
-        lf.setPower(0);
-        rb.setPower(0);
-        lb.setPower(0);
-        intake.setPower(0);
-        ls.setPower(0);
-        rs.setPower(0);
     }
 }

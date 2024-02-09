@@ -24,7 +24,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
-@Autonomous (preselectTeleOp = "CenterStageTele")
+@Autonomous (preselectTeleOp = "CenterStageTeleProper")
 public class RRRedStack extends CenterStageAuto{
 
     FtcDashboard dashboard;

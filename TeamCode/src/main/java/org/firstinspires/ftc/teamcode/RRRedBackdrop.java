@@ -24,25 +24,9 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
-@Autonomous (preselectTeleOp = "CenterStageTele")
-public class RRRedBackdrop extends CenterStageAuto{
+@Autonomous (preselectTeleOp = "CenterStageTeleProper")
+public class RRRedBackdrop extends RRBlueBackdrop{
 
-    FtcDashboard dashboard;
-    TelemetryPacket packet;
-    //public static MultipleTelemetry dashTelemetry = new MultipleTelemetry();
-    boolean slidesPressed;
-    public static double intakeUpPos = 0.64;
-    public static double intakeDownPos = 0.07;
-    public static double armOutPos = 0.1;
-    public static double armInPos = 1.0;
-    public static double plungerGrabPos = 0.0;
-    public static double plungerReleasePos = 1.0;
-    public static double dronePos1 = 0.35;
-    public static double dronePos2 = 0.95;
-
-    /*TrajectorySequence redBackdrop1;
-    TrajectorySequence redBackdrop2;
-    TrajectorySequence redBackdrop3;*/
     Trajectory purplePixel1;
     Trajectory purplePixel2;
     Trajectory purplePixel3;
@@ -367,95 +351,5 @@ public class RRRedBackdrop extends CenterStageAuto{
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
-    }
-    @Override
-    public void start(){
-        super.start();
-    }
-
-    @Override
-    public void childLoop() {
-        super.childLoop();
-        telemetry.addData("target", slidePositionTarget);
-        telemetry.addData("loopvision", pipeline.getOutput());
-    }
-    @Override
-    public void followPurple(){
-        if(elementPosition == 0){
-            drive.followTrajectoryAsync(purplePixel1);
-        }
-        else if(elementPosition == 1){
-            drive.followTrajectoryAsync(purplePixel2);
-        }
-        else{
-            drive.followTrajectoryAsync(purplePixel3);
-        }
-        liftTimer.reset();
-    }
-
-    @Override
-    public void followMOVEUP() {
-        if(elementPosition == 0){
-            drive.followTrajectoryAsync(moveUp1);
-        }
-        else if(elementPosition == 1){
-            drive.followTrajectoryAsync(moveUp2);
-        }
-        else{
-            drive.followTrajectoryAsync(moveUp3);
-        }
-        liftTimer.reset();
-    }
-    @Override
-    public void followYellow(){
-        if(elementPosition == 0){
-            drive.followTrajectoryAsync(yellowPixel1);
-        }
-        else if(elementPosition == 1){
-            drive.followTrajectoryAsync(yellowPixel2);
-        }
-        else{
-            drive.followTrajectoryAsync(yellowPixel3);
-        }
-        liftTimer.reset();
-    }
-    @Override
-    public void followReset(){
-        if(elementPosition == 0){
-            drive.followTrajectoryAsync(reset1);
-        }
-        else if(elementPosition == 1){
-            drive.followTrajectoryAsync(reset2);
-        }
-        else{
-            drive.followTrajectoryAsync(reset3);
-        }
-        liftTimer.reset();
-    }
-    @Override
-    public void followPark(){
-        slidePositionTarget = 0.0;
-        intakeLeft.setPosition(intakeDownPos);
-        intakeRight.setPosition(intakeDownPos);
-        if(elementPosition == 0){
-            drive.followTrajectory(park1);
-        }
-        else if(elementPosition == 1){
-            drive.followTrajectory(park2);
-        }
-        else{
-            drive.followTrajectory(park3);
-        }
-    }
-
-    public void stop(){
-        super.stop();
-        rf.setPower(0);
-        lf.setPower(0);
-        rb.setPower(0);
-        lb.setPower(0);
-        ls.setPower(0);
-        rs.setPower(0);
-        intake.setPower(0);
     }
 }

@@ -52,23 +52,25 @@ public class DelaysAndAutoms extends drivetraintele {
     public static void updateDelays() {
         for (DelaysAndAutoms it : allDelays) {
             if (it.mechanism != null) {
-
                 if (it.delayTimer.milliseconds() < it.delay) {
                     it.mechanism.setPosition(it.initial);
                 } else {
                     it.mechanism.setPosition(it.target);
+                    allDelays.remove(it);
                 }
             } else if (it.mot != null) {
                 if (it.delayTimer.milliseconds() < it.delay) {
                     it.mot.setPower(it.initial);
                 } else {
                     it.mot.setPower(it.target);
+                    allDelays.remove(it);
                 }
             } else {
                 if (it.delayTimer.milliseconds() < it.delay) {
                     it.value = it.initial;
                 } else {
                     it.value = it.target;
+                    allDelays.remove(it);
                 }
             }
         }

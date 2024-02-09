@@ -24,20 +24,8 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
-@Autonomous (preselectTeleOp = "CenterStageTele")
+@Autonomous (preselectTeleOp = "CenterStageTeleProper")
 public class RRBlueBackdrop extends CenterStageAuto{
-
-    FtcDashboard dashboard;
-    TelemetryPacket packet;
-    //public static MultipleTelemetry dashTelemetry = new MultipleTelemetry();
-
-    boolean slidesPressed;
-    public static double intakeUpPos = 0.64;
-    public static double intakeDownPos = 0.02;
-    public static double armOutPos = 0.1;
-    public static double armInPos = 1.0;
-    public static double plungerGrabPos = 0.0;
-    public static double plungerReleasePos = 1.0;
 
     Trajectory purplePixel1;
     Trajectory purplePixel2;
@@ -363,11 +351,6 @@ public class RRBlueBackdrop extends CenterStageAuto{
     }
 
     @Override
-    public void start(){
-        super.start();
-    }
-
-    @Override
     public void childLoop() {
         super.childLoop();
         telemetry.addData("target", slidePositionTarget);
@@ -386,6 +369,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
             drive.followTrajectoryAsync(purplePixel3);
         }
         liftTimer.reset();
+        super.followPurple();
     }
 
     @Override
@@ -400,6 +384,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
             drive.followTrajectoryAsync(moveUp3);
         }
         liftTimer.reset();
+        super.followMOVEUP();
     }
 
     @Override
@@ -414,6 +399,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
             drive.followTrajectoryAsync(yellowPixel3);
         }
         liftTimer.reset();
+        super.followYellow();
     }
     @Override
     public void followReset(){
@@ -427,6 +413,16 @@ public class RRBlueBackdrop extends CenterStageAuto{
             drive.followTrajectoryAsync(reset3);
         }
         liftTimer.reset();
+
+        if (!drive.isBusy()) {
+            currentState = AutoState.PARK;
+            followPark();
+        }
+    }
+
+    @Override
+    public void followToStack(){
+
     }
 
     @Override
@@ -435,14 +431,16 @@ public class RRBlueBackdrop extends CenterStageAuto{
         intakeLeft.setPosition(intakeDownPos);
         intakeRight.setPosition(intakeDownPos);
         if(elementPosition == 0){
-           drive.followTrajectory(park1);
+           drive.followTrajectoryAsync(park1);
         }
         else if(elementPosition == 1){
-            drive.followTrajectory(park2);
+            drive.followTrajectoryAsync(park2);
         }
         else{
-            drive.followTrajectory(park3);
+            drive.followTrajectoryAsync(park3);
         }
+
+        super.followPark();
     }
     public void stop(){
         super.stop();
