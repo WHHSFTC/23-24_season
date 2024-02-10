@@ -29,11 +29,11 @@ public class CenterStageTeleProper extends CenterStageOpMode{
     public static double slidesff = 0.0;
     public static double slideTargetGain = 300.0;
     public static double slideMin = 0.0;
-    public static double slideMax = 2700.0;
+    public static double slideMax = 2850.0;
     double distancePower;
     double anglePower;
     boolean slidesPressed = true;
-
+    int slideIncrement = 0;
     double targetYaw = 0.0;
     double timeGap;
     boolean intakeOnGround;
@@ -179,16 +179,38 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             armLeft.setPosition(armInPos);
         }
 
-        //plunger open
+        //AUTOMATION
         if (gamepad2.y) {
-            pRight.setPosition(plungerGrabPos);
-            pLeft.setPosition(plungerGrabPos);
-            plungerLClosed = false;
-            plungerRClosed = false;
+            pLeft.setPosition(plungerReleasePos);
+            pRight.setPosition(plungerReleasePos);
+            slidePositionTarget = 200.0;
+
+            DelaysAndAutoms armManeuver = new DelaysAndAutoms(100.0, armLeft, armOutPos, armInPos);
+            DelaysAndAutoms slidePositionDelay = new DelaysAndAutoms(200.0, slidePositionTarget, 200.0, 0.0);
+            DelaysAndAutoms pLeftDelay = new DelaysAndAutoms(400.0, pLeft, plungerReleasePos, plungerGrabPos);
+            DelaysAndAutoms pRightDelay =new DelaysAndAutoms(400.0, pRight, plungerReleasePos, plungerGrabPos);
+        }
+        else if(gamepad2prev.y && !gamepad2.y){
+            slidePositionTarget = slideSavedPosition;
+            DelaysAndAutoms armOut = new DelaysAndAutoms(25.0, armLeft, armInPos, armOutPos);
         }
 
         //plunger close
         if (gamepad2.a) {
+            if(!gamepad2prev.a){
+                if(plungerLClosed && plungerRClosed){
+                    pRight.setPosition(plungerGrabPos);
+                    pLeft.setPosition(plungerGrabPos);
+                    plungerLClosed = false;
+                    plungerRClosed = false;
+                }
+                else{
+                    pRight.setPosition(plungerReleasePos);
+                    pLeft.setPosition(plungerReleasePos);
+                    plungerLClosed = true;
+                    plungerRClosed = true;
+                }
+            }
             pRight.setPosition(plungerReleasePos);
             pLeft.setPosition(plungerReleasePos);
             plungerLClosed = true;
@@ -203,7 +225,34 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             if (!gamepad2prev.dpad_down) {
                 slideSavedPosition = slidePositionTarget;
                 slidePositionTarget = slideMin;
+                slideIncrement = 0;
                 zeroing = true;
+            }
+        }
+
+        //slides increments
+        if(gamepad2.dpad_down && !zeroing && pLeft.getPosition() < 0.2 && pRight.getPosition() < 0.2){
+            if(!gamepad2prev.dpad_down){
+                slidePositionTarget -= 400.0;
+                slideIncrement --;
+                if(slidePositionTarget < 600){
+                    slidePositionTarget = 600;
+                }
+            }
+        }
+
+        if(gamepad2.dpad_up){
+            if(!gamepad2prev.dpad_up){
+                if(slidePositionTarget > 2800){
+                    slidePositionTarget = 2800;
+                }
+                if(slideIncrement == 0){
+                    slidePositionTarget += 600.0;
+                }
+                else{
+                    slidePositionTarget += 400.0;
+                }
+                slideIncrement++;
             }
         }
 
@@ -304,22 +353,14 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             }
         }
 
-        //output automation
+        //hang slides position
         if(gamepad2.dpad_left && !gamepad2prev.dpad_left){
-            telemetry.addData("Abcdef", 0);
-
-            conveyor.setPower(0.0);
-            pLeft.setPosition(plungerReleasePos);
-            pRight.setPosition(plungerReleasePos);
-            slidePositionTarget = 200.0;
-
-            /*DelaysAndAutoms armManeuver = */new DelaysAndAutoms(100.0, armLeft, armOutPos, armInPos);
-            /*DelaysAndAutoms slidePositionDelay = */new DelaysAndAutoms(200.0, slidePositionTarget, 200.0, 0.0);
-            /*DelaysAndAutoms pLeftDelay = */new DelaysAndAutoms(400.0, pLeft, plungerReleasePos, plungerGrabPos);
-            /*DelaysAndAutoms pRightDelay = */new DelaysAndAutoms(400.0, pRight, plungerReleasePos, plungerGrabPos);
+            if(!gamepad2prev.dpad_left){
+                slidePositionTarget = 1800.0;
+            }
         }
 
-        if(gamepad2.left_stick_y < -0.1 && (slidePositionTarget >= 1000) && (armLeft.getPosition() > 0.8) && !zeroing){
+        if(gamepad2.left_stick_y < -0.1 && (slidePositionTarget >= 500) && (armLeft.getPosition() > 0.8) && !zeroing){
             armLeft.setPosition(armOutPos);
         }
 

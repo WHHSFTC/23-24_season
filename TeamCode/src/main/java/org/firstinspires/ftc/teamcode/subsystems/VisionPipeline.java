@@ -58,9 +58,9 @@ public class VisionPipeline extends OpenCvPipeline {
       midROI = threshold.submat(new Rect(80, 0, 160, 240));
       rightROI = threshold.submat(new Rect(240, 0, 80, 240));
 
-      means[0] = Core.mean(leftROI).val[0];
-      means[1] = Core.mean(midROI).val[0];
-      means[2] = Core.mean(rightROI).val[0];
+      means[0] = Core.sumElems(leftROI).val[0];
+      means[1] = Core.sumElems(midROI).val[0];
+      means[2] = Core.sumElems(rightROI).val[0];
 
       if(means[0] > means[1]) {
         if(means[0] > means[2]) {

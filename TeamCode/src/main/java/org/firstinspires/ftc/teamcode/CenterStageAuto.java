@@ -171,8 +171,8 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
     }
     public void followReset(){
         if (!drive.isBusy()) {
-            currentState = AutoState.TO_STACK;
-            followToStack();
+            currentState = AutoState.PARK;
+            followPark();
         }
     }
     public void followToStack(){
