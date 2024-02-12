@@ -77,13 +77,14 @@ abstract public class CenterStageOpMode extends OpMode {
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
-    public static double distBackdrop = 6.25;
+    public static double distBackdrop = 6.10;
     //Servo armRight;
     public Servo armLeft;
     public Servo pRight;
     public Servo pLeft;
     public Servo intakeRight;
     public Servo intakeLeft;
+    DelaysAndAutoms slideUpdate;
     Servo droneLauncher;
 
     TouchSensor slidesLimit;
@@ -214,6 +215,13 @@ abstract public class CenterStageOpMode extends OpMode {
         imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         childLoop();
+        updateDelays();
+        if(slideUpdate != null) {
+            slidePositionTarget = slideUpdate.updateVariable();
+            if(slideUpdate.delayTimer.milliseconds() >= slideUpdate.delay){
+                slideUpdate = null;
+            }
+        }
         telemetry.addData("rs position", rs.getCurrentPosition());
         telemetry.addData("ls position", ls.getCurrentPosition());
         telemetry.update();

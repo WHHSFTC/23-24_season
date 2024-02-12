@@ -76,7 +76,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .build();
 
         purplePixel3 = drive.trajectoryBuilder(startPose, true)
-                .lineToLinearHeading(new Pose2d(5.2,35, Math.toRadians(60)),
+                .lineToLinearHeading(new Pose2d(5.2,36, Math.toRadians(60)),
                         SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )

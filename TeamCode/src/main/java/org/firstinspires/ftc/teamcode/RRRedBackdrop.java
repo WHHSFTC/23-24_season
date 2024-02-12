@@ -52,7 +52,7 @@ public class RRRedBackdrop extends RRBlueBackdrop{
         drive.setPoseEstimate(startPose);
 
         purplePixel1 = drive.trajectoryBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(3.2, -35, Math.toRadians(300)),
+                .lineToLinearHeading(new Pose2d(3.2, -36, Math.toRadians(300)),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )

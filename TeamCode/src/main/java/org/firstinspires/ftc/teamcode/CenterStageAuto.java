@@ -77,6 +77,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
     @Override
     final public void init_loop() {
         telemetry.addData("state", currentState);
+        telemetry.addData("robot busy", drive.isBusy());
         telemetry.addData("pipeline", pipeline.getPipelineTelemetry() + "     " + pipeline.getOutput());
         telemetry.addData("delay time", delay);
 
@@ -95,7 +96,6 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
             delay = delay;
         }
 
-        currentState = AutoState.PURPLE;
         telemetry.addData("delay time", delay);
         gamepad1prev.copy(gamepad1);
         gamepad2prev.copy(gamepad2);
@@ -112,6 +112,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         super.start();
         imu.resetYaw();
         elementPosition = pipeline.getOutput();
+        currentState = AutoState.PURPLE;
         followPurple();
     }
 
@@ -122,9 +123,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         slidesPidRight.update(rs.getCurrentPosition(),timePerLoop);
         rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
         ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
-        if (drive.isBusy()) {
-            drive.update();
-        }
+        drive.update();
         telemetry.addData("State: ", currentState);
         telemetry.addData("slides target: ", slidePositionTarget);
         switch (currentState) {
