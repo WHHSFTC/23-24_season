@@ -46,6 +46,7 @@ public class RRRedBackdrop extends RRBlueBackdrop{
     @Override
     public void init(){
         blue = false;
+        isRightSideHardForCameraToSee = false;
         super.init();
         drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(14.96, -63.25,Math.toRadians(270));

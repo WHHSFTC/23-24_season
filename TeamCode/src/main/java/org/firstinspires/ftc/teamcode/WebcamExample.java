@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.subsystems.VisionPipeline;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -64,7 +65,7 @@ public class WebcamExample extends LinearOpMode
          * of a frame from the camera. Note that switching pipelines on-the-fly
          * (while a streaming session is in flight) *IS* supported.
          */
-        webcam.setPipeline(new SamplePipeline());
+        webcam.setPipeline(new VisionPipeline(true, true, false));
 
         /*
          * Open the connection to the camera device. New in v1.4.0 is the ability
@@ -97,7 +98,7 @@ public class WebcamExample extends LinearOpMode
                  * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
                  * away from the user.
                  */
-                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(432, 240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override

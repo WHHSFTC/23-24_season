@@ -42,7 +42,7 @@ import java.util.List;
 @TeleOp
 @Config
 abstract public class CenterStageOpMode extends OpMode {
-    boolean blue;
+    boolean blue, isRightSideHardForCameraToSee;
 
     static SampleMecanumDrive drive;
     FtcDashboard dashboard;
@@ -224,6 +224,7 @@ abstract public class CenterStageOpMode extends OpMode {
         }
         telemetry.addData("rs position", rs.getCurrentPosition());
         telemetry.addData("ls position", ls.getCurrentPosition());
+        telemetry.addData("time per loop", timePerLoop);
         telemetry.update();
     }
 
