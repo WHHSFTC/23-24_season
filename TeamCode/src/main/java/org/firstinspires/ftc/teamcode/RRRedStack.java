@@ -47,6 +47,7 @@ public class RRRedStack extends RRBlueBackdrop{
     public void init(){
 
         blue = false;
+        isRightSideHardForCameraToSee = true;
         super.init();
         drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(-37.36, -63.28,Math.toRadians(270));

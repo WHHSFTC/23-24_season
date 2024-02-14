@@ -46,6 +46,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
     @Override
     public void init(){
         blue = true;
+        isRightSideHardForCameraToSee = true;
         super.init();
         drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(16.4, 63.25,Math.toRadians(90));

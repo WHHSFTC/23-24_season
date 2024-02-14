@@ -11,7 +11,7 @@ public class Camera {
   public VisionPipeline teamPropPipeline;
 
   public Camera(HardwareMap hw, boolean isRedAlliance, boolean isOutputSideCamera, String name) { // hardware map from the base class is a parameter
-    teamPropPipeline = new VisionPipeline(isRedAlliance, isOutputSideCamera); 
+    teamPropPipeline = new VisionPipeline(isRedAlliance, isOutputSideCamera, true); //lol this class is useless so i just bs'd this line so that it would stop its bitching
 
     this.harrdwareMap = hw; //Configure the Camera in hardwaremap
     int cameraMonitorViewId =

@@ -53,7 +53,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         super.init();
         liftTimer.reset();
         slidePositionTarget = 0.0;
-        pipeline = new VisionPipeline(blue, true);
+        pipeline = new VisionPipeline(blue, true, isRightSideHardForCameraToSee);
         webcam.setPipeline(pipeline);
 
         intakeLeft.setPosition(intakeUpPos);
@@ -64,7 +64,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(432, 240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
