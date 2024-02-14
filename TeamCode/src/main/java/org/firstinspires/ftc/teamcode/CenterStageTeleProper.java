@@ -357,6 +357,5 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         packet.put("rightDistBackdrop", rightDS.getDistance(DistanceUnit.INCH));
         dashboard.sendTelemetryPacket(packet);
 
-        updateDelays();
     }
 }
