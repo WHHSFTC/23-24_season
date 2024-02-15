@@ -65,20 +65,20 @@ public class VisionPipeline extends OpenCvPipeline {
         leftROI = threshold.submat(new Rect(x0, y0, w0, h0));
         midROI = threshold.submat(new Rect(x1, y1, w1, h1));
         rightROI = threshold.submat(new Rect(x2, y2, w2, h2));
-
-        Imgproc.rectangle(input, new Point(x0, y0), new Point(x0 + w0, y0 + h0), new Scalar(0, 255, 0), 5);
-        Imgproc.rectangle(input, new Point(x1, y1), new Point(x1 + w1, y1 + h1), new Scalar(0, 255, 0), 5);
-        Imgproc.rectangle(input, new Point(x2, y2), new Point(x2 + w2, y2 + h2), new Scalar(0, 255, 0), 5);
       } else {
         // either blue stack or red backdrop
         leftROI = threshold.submat(new Rect(432 - (x2 + w2), y0, w2, h0));
         midROI = threshold.submat(new Rect(432 - (x1 + w1), y1, w1, h1));
         rightROI = threshold.submat(new Rect(432 - (x0 + w0), y2, w0, h2));
+}
 
-        Imgproc.rectangle(input, new Point(432 - (x2 + w2), y0), new Point(432 - (x2 + w2) + w2, y0 + h0), new Scalar(0, 255, 0), 5);
-        Imgproc.rectangle(input, new Point(432 - (x1 + w1), y1), new Point(432 - (x1 + w1) + w1, y1 + h1), new Scalar(0, 255, 0), 5);
-        Imgproc.rectangle(input, new Point(432 - (x0 + w0), y2), new Point(432 - (x0 + w0) + w0, y2 + h2), new Scalar(0, 255, 0), 5);
-      }
+      Imgproc.rectangle(input, new Point(x0, y0), new Point(x0 + w0, y0 + h0), new Scalar(255, 0, 0), 5);
+      Imgproc.rectangle(input, new Point(x1, y1), new Point(x1 + w1, y1 + h1), new Scalar(255, 0, 0), 5);
+      Imgproc.rectangle(input, new Point(x2, y2), new Point(x2 + w2, y2 + h2), new Scalar(255, 0, 0), 5);
+
+      Imgproc.rectangle(input, new Point(432 - (x2 + w2), y0), new Point(432 - (x2 + w2) + w2, y0 + h0), new Scalar(0, 255, 0), 5);
+      Imgproc.rectangle(input, new Point(432 - (x1 + w1), y1), new Point(432 - (x1 + w1) + w1, y1 + h1), new Scalar(0, 255, 0), 5);
+      Imgproc.rectangle(input, new Point(432 - (x0 + w0), y2), new Point(432 - (x0 + w0) + w0, y2 + h2), new Scalar(0, 255, 0), 5);
 
       means[0] = Core.sumElems(leftROI).val[0];
       means[1] = Core.sumElems(midROI).val[0];
@@ -98,7 +98,7 @@ public class VisionPipeline extends OpenCvPipeline {
         output = 2;
       }
 
-      return input;
+      return threshold;
     } else {
       // frame processing for aligning to stack
       output = -2;
@@ -114,8 +114,7 @@ public class VisionPipeline extends OpenCvPipeline {
     return output;
   }
   public String getPipelineTelemetry() {
-//    telemestring = means[0] + " (L), " + means[1] + " (M), " + means[2] + " (R).";
-    telemestring = "AAHHHHHHHH LOOK" + Core.mean(leftROI) + " (L), " + Core.mean(midROI) + " (M), " + Core.mean(rightROI) + " (R).";
-    return telemestring;
+    //return telemestring;
+      return "hello";
   }
 }

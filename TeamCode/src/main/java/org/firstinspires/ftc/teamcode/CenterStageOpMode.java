@@ -85,6 +85,7 @@ abstract public class CenterStageOpMode extends OpMode {
     public Servo intakeRight;
     public Servo intakeLeft;
     DelaysAndAutoms slideUpdate;
+    DelaysAndAutoms allTheWay;
     Servo droneLauncher;
 
     TouchSensor slidesLimit;
@@ -220,6 +221,12 @@ abstract public class CenterStageOpMode extends OpMode {
             slidePositionTarget = slideUpdate.updateVariable();
             if(slideUpdate.delayTimer.milliseconds() >= slideUpdate.delay){
                 slideUpdate = null;
+            }
+        }
+        if(allTheWay != null) {
+            slidePositionTarget = allTheWay.updateVariable();
+            if(allTheWay.delayTimer.milliseconds() >= allTheWay.delay){
+                allTheWay = null;
             }
         }
         telemetry.addData("rs position", rs.getCurrentPosition());

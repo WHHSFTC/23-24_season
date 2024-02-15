@@ -78,6 +78,8 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
     final public void init_loop() {
         telemetry.addData("state", currentState);
         telemetry.addData("robot busy", drive.isBusy());
+        telemetry.addData("is blue auto?", blue);
+        telemetry.addData("Hard to see right? (Should be true for BB and RS) ", isRightSideHardForCameraToSee);
         telemetry.addData("pipeline", pipeline.getPipelineTelemetry() + "     " + pipeline.getOutput());
         telemetry.addData("delay time", delay);
 
