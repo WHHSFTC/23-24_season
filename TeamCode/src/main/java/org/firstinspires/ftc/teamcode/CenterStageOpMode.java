@@ -42,7 +42,7 @@ import java.util.List;
 @TeleOp
 @Config
 abstract public class CenterStageOpMode extends OpMode {
-    boolean blue, isRightSideHardForCameraToSee;
+    boolean blue = true, isRightSideHardForCameraToSee = true;
 
     static SampleMecanumDrive drive;
     FtcDashboard dashboard;
@@ -85,7 +85,6 @@ abstract public class CenterStageOpMode extends OpMode {
     public Servo intakeRight;
     public Servo intakeLeft;
     DelaysAndAutoms slideUpdate;
-    DelaysAndAutoms allTheWay;
     Servo droneLauncher;
 
     TouchSensor slidesLimit;
@@ -216,23 +215,17 @@ abstract public class CenterStageOpMode extends OpMode {
         imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         childLoop();
-        updateDelays();
+        /*updateDelays();
         if(slideUpdate != null) {
             slidePositionTarget = slideUpdate.updateVariable();
             if(slideUpdate.delayTimer.milliseconds() >= slideUpdate.delay){
                 slideUpdate = null;
             }
         }
-        if(allTheWay != null) {
-            slidePositionTarget = allTheWay.updateVariable();
-            if(allTheWay.delayTimer.milliseconds() >= allTheWay.delay){
-                allTheWay = null;
-            }
-        }
         telemetry.addData("rs position", rs.getCurrentPosition());
         telemetry.addData("ls position", ls.getCurrentPosition());
         telemetry.addData("time per loop", timePerLoop);
-        telemetry.update();
+        telemetry.update();*/
     }
 
     @Override

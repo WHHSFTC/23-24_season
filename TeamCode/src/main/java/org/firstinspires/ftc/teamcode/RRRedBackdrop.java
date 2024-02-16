@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 @Autonomous (preselectTeleOp = "CenterStageTeleProper")
-public class RRRedBackdrop extends RRBlueBackdrop{
+public class RRRedBackdrop extends CenterStageAuto{
 
     Trajectory purplePixel1;
     Trajectory purplePixel2;
@@ -42,6 +42,7 @@ public class RRRedBackdrop extends RRBlueBackdrop{
     Trajectory park1;
     Trajectory park2;
     Trajectory park3;
+
 
     @Override
     public void init(){
@@ -214,5 +215,107 @@ public class RRRedBackdrop extends RRBlueBackdrop{
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
+    }
+
+    @Override
+    public void childLoop() {
+        super.childLoop();
+        telemetry.addData("target", slidePositionTarget);
+        telemetry.addData("loopvision", pipeline.getOutput());
+    }
+
+    @Override
+    public void followPurple(){
+        if(elementPosition == 0){
+            drive.followTrajectoryAsync(purplePixel1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(purplePixel2);
+        }
+        else{
+            drive.followTrajectoryAsync(purplePixel3);
+        }
+        liftTimer.reset();
+        super.followPurple();
+    }
+
+    @Override
+    public void followMOVEUP() {
+        if(elementPosition == 0){
+            drive.followTrajectoryAsync(moveUp1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(moveUp2);
+        }
+        else{
+            drive.followTrajectoryAsync(moveUp3);
+        }
+        liftTimer.reset();
+        super.followMOVEUP();
+    }
+
+    @Override
+    public void followYellow(){
+        if(elementPosition == 0){
+            drive.followTrajectoryAsync(yellowPixel1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(yellowPixel2);
+        }
+        else{
+            drive.followTrajectoryAsync(yellowPixel3);
+        }
+        liftTimer.reset();
+        super.followYellow();
+    }
+    @Override
+    public void followReset(){
+        if(elementPosition == 0){
+            drive.followTrajectoryAsync(reset1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(reset2);
+        }
+        else{
+            drive.followTrajectoryAsync(reset3);
+        }
+        liftTimer.reset();
+
+        if (!drive.isBusy()) {
+            currentState = AutoState.PARK;
+            followPark();
+        }
+    }
+
+    @Override
+    public void followToStack(){
+
+    }
+
+    @Override
+    public void followPark(){
+        slidePositionTarget = 0.0;
+        intakeLeft.setPosition(intakeDownPos);
+        intakeRight.setPosition(intakeDownPos);
+        if(elementPosition == 0){
+            drive.followTrajectoryAsync(park1);
+        }
+        else if(elementPosition == 1){
+            drive.followTrajectoryAsync(park2);
+        }
+        else{
+            drive.followTrajectoryAsync(park3);
+        }
+        super.followPark();
+    }
+    public void stop(){
+        super.stop();
+        rf.setPower(0);
+        lf.setPower(0);
+        rb.setPower(0);
+        lb.setPower(0);
+        ls.setPower(0);
+        rs.setPower(0);
+        intake.setPower(0);
     }
 }

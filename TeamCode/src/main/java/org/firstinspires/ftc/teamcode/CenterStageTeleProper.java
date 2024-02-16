@@ -183,18 +183,6 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }
 //blahhhhh
         //AUTOMATION
-        if (gamepad2.y && gamepad2prev.y) {
-            pLeft.setPosition(plungerReleasePos);
-            pRight.setPosition(plungerReleasePos);
-            slidePositionTarget = 350.0;
-            new DelaysAndAutoms(150.0, armLeft, armOutPos, armInPos);
-            slideUpdate = new DelaysAndAutoms(400.0, slidePositionTarget, 0.0);
-            new DelaysAndAutoms(700.0, pLeft, plungerReleasePos, plungerGrabPos);
-            new DelaysAndAutoms(700.0, pRight, plungerReleasePos, plungerGrabPos);
-            plungerRClosed = false;
-            plungerLClosed = false;
-        }
-
         if(gamepad2prev.y && !gamepad2.y){
             slidePositionTarget = slideSavedPosition;
         }
@@ -209,7 +197,6 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             new DelaysAndAutoms(700.0, pRight, plungerReleasePos, plungerGrabPos);
             plungerRClosed = false;
             plungerLClosed = false;
-            allTheWay = new DelaysAndAutoms(900.0, 0.0, slideSavedPosition);
         }
 
         //plunger close

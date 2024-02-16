@@ -30,6 +30,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
     double delay = 0.0;
     double distancePower;
     double anglePower;
+    boolean isBusy;
 
     enum AutoState {
         PURPLE,
@@ -77,7 +78,6 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
     @Override
     final public void init_loop() {
         telemetry.addData("state", currentState);
-        telemetry.addData("robot busy", drive.isBusy());
         telemetry.addData("is blue auto?", blue);
         telemetry.addData("Hard to see right? (Should be true for BB and RS) ", isRightSideHardForCameraToSee);
         telemetry.addData("pipeline", pipeline.getPipelineTelemetry() + "     " + pipeline.getOutput());
@@ -98,6 +98,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
             delay = delay;
         }
 
+        currentState = AutoState.PURPLE;
         telemetry.addData("delay time", delay);
         gamepad1prev.copy(gamepad1);
         gamepad2prev.copy(gamepad2);
@@ -105,7 +106,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
 
     @Override
     public void start() {
-        webcam.stopStreaming(); //TODO see if this is good
+        //webcam.stopStreaming(); //TODO see if this is good
         ElapsedTime wait = new ElapsedTime();
         while(wait.milliseconds() < delay){
             telemetry.addData("delay time", wait.milliseconds());
@@ -114,7 +115,6 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         super.start();
         imu.resetYaw();
         elementPosition = pipeline.getOutput();
-        currentState = AutoState.PURPLE;
         followPurple();
     }
 
@@ -125,71 +125,85 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         slidesPidRight.update(rs.getCurrentPosition(),timePerLoop);
         rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
         ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
-        drive.update();
+        if(drive.isBusy()) {
+            drive.update();
+        }
         telemetry.addData("State: ", currentState);
         telemetry.addData("slides target: ", slidePositionTarget);
+        telemetry.addData("robot busy", drive.isBusy());
         switch (currentState) {
             case PURPLE:
-
+                if (!drive.isBusy()) {
+                    currentState = AutoState.MOVEUP;
+                    followMOVEUP();
+                }
+                break;
             case MOVEUP:
-
+                if (!drive.isBusy()) {
+                    currentState = AutoState.YELLOW;
+                    followYellow();
+                }
+                break;
             case YELLOW:
-
+                if (!drive.isBusy()) {
+                    currentState = AutoState.RESET;
+                    followReset();
+                }
+                break;
             case RESET:
-
+                if (!drive.isBusy()) {
+                    currentState = AutoState.PARK;
+                    followPark();
+                }
+                break;
             case TO_STACK:
-
+                if (!drive.isBusy()) {
+                    currentState = AutoState.INTAKE;
+                }
+                break;
             case INTAKE:
-
+                if (!drive.isBusy()) {
+                    currentState = AutoState.OUTPUT;
+                }
+                break;
             case FROM_STACK:
 
+                break;
             case OUTPUT:
 
+                break;
             case PARK:
-
+                if (!drive.isBusy()) {
+                    currentState = AutoState.IDLE;
+                }
+                break;
             case IDLE:
                 super.stop();
         }
     }
     public void followPurple(){
-        if (!drive.isBusy()) {
-            currentState = AutoState.MOVEUP;
-            followMOVEUP();
-        }
+
     }
 
     public void followMOVEUP(){
-        if (!drive.isBusy()) {
-            currentState = AutoState.YELLOW;
-            followYellow();
-        }
+
     }
     public void followYellow(){
-        if (!drive.isBusy()) {
-            currentState = AutoState.RESET;
-            followReset();
-        }
+
     }
     public void followReset(){
-        if (!drive.isBusy()) {
-            currentState = AutoState.PARK;
-            followPark();
-        }
+
     }
     public void followToStack(){
-        if (!drive.isBusy()) {
-            currentState = AutoState.INTAKE;
-        }
+
     }
     public void followIntake(){
 
     }
     public void followFromStack(){
-        if (!drive.isBusy()) {
-            currentState = AutoState.OUTPUT;
-        }
+
     }
-    public void followOutput(){
+    /*public void followOutput(){
         //might need to run without encoders
 
         double x, r;
@@ -212,10 +226,8 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         lf.setPower(preLF/max);
         rb.setPower(preRB/max);
         lb.setPower(preLB/max);
-    }
+    }*/
     public void followPark(){
-        if (!drive.isBusy()) {
-            currentState = AutoState.IDLE;
-        }
+
     }
 }
