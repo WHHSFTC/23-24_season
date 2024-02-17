@@ -68,7 +68,7 @@ abstract public class CenterStageOpMode extends OpMode {
     double slideSavedPosition = 1100.0;
 
     public static double intakeUpPos = 0.0;
-    public static double intakeDownPos = 0.64;
+    public static double intakeDownPos = 0.67;
     public static double intakeStackPos = 0.18;
 
     public static double armOutPos = 0.01;
@@ -77,7 +77,7 @@ abstract public class CenterStageOpMode extends OpMode {
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
-    public static double distBackdrop = 6.10;
+    public static double distBackdrop = 6.20;
     //Servo armRight;
     public Servo armLeft;
     public Servo pRight;
@@ -90,6 +90,7 @@ abstract public class CenterStageOpMode extends OpMode {
     TouchSensor slidesLimit;
     DistanceSensor rightDS;
     DistanceSensor leftDS;
+    DelaysAndAutoms waitFor;
 
     VoltageSensor voltageSensor;
     OpenCvWebcam webcam;
@@ -215,17 +216,24 @@ abstract public class CenterStageOpMode extends OpMode {
         imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         childLoop();
-        /*updateDelays();
+        updateDelays();
         if(slideUpdate != null) {
             slidePositionTarget = slideUpdate.updateVariable();
             if(slideUpdate.delayTimer.milliseconds() >= slideUpdate.delay){
                 slideUpdate = null;
             }
         }
+
+        /*if(waitFor != null) {
+            slidePositionTarget = waitFor.updateVariable();
+            if(waitFor.delayTimer.milliseconds() >= waitFor.delay){
+                waitFor = null;
+            }
+        }*/
         telemetry.addData("rs position", rs.getCurrentPosition());
         telemetry.addData("ls position", ls.getCurrentPosition());
         telemetry.addData("time per loop", timePerLoop);
-        telemetry.update();*/
+        telemetry.update();
     }
 
     @Override

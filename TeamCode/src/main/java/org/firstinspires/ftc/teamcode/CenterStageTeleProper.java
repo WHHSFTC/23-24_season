@@ -40,6 +40,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
     boolean intakeOnGround;
     boolean plungerLClosed;
     boolean plungerRClosed;
+    boolean automationDone;
     boolean zeroing = false;
     boolean fieldCentric = false;
 
@@ -86,12 +87,12 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }
 
 
-        if (gamepad1.dpad_up) {
+        /*if (gamepad1.dpad_up) {
             fieldCentric = true;
         }
         if (gamepad1.dpad_down) {
             fieldCentric = false;
-        }
+        }*/
         telemetry.addData("field centric:", fieldCentric);
 
         if (gamepad1.a) {
@@ -181,12 +182,8 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             //armRight.setPosition(1.0);
             armLeft.setPosition(armInPos);
         }
-//blahhhhh
-        //AUTOMATION
-        if(gamepad2prev.y && !gamepad2.y){
-            slidePositionTarget = slideSavedPosition;
-        }
 
+        //AUTOMATION
         if(gamepad2.y && !gamepad2prev.y){
             pLeft.setPosition(plungerReleasePos);
             pRight.setPosition(plungerReleasePos);
@@ -197,6 +194,11 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             new DelaysAndAutoms(700.0, pRight, plungerReleasePos, plungerGrabPos);
             plungerRClosed = false;
             plungerLClosed = false;
+        }
+
+        if(!gamepad2.y && (armLeft.getPosition() > 0.8) && (pRight.getPosition() < 0.2) && (pLeft.getPosition() < 0.2) && (slidePositionTarget < 5)){
+            slidePositionTarget = slideSavedPosition;
+            new DelaysAndAutoms(200.0, armLeft, armInPos, armOutPos);
         }
 
         //plunger close
@@ -237,9 +239,9 @@ public class CenterStageTeleProper extends CenterStageOpMode{
                     slidePositionTarget = 2800;
                 }
                 if (slideIncrement == 0) {
-                    slidePositionTarget += 600.0;
+                    slidePositionTarget += 550.0;
                 } else {
-                    slidePositionTarget += 400.0;
+                    slidePositionTarget += 350.0;
                 }
                 slideIncrement++;
             }
