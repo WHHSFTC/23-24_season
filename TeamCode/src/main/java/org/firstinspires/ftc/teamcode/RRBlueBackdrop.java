@@ -284,11 +284,6 @@ public class RRBlueBackdrop extends CenterStageAuto{
     }
 
     @Override
-    public void followToStack(){
-
-    }
-
-    @Override
     public void followPark(){
         slidePositionTarget = 0.0;
         intakeLeft.setPosition(intakeDownPos);
