@@ -192,7 +192,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
 
                         //parks
         park1 = drive.trajectoryBuilder(reset1.end())
-                .splineToLinearHeading(new Pose2d(55.7,11, Math.toRadians(182)),Math.toRadians(0),
+                .splineToLinearHeading(new Pose2d(55.7,47, Math.toRadians(182)),Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )

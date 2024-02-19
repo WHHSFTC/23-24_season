@@ -21,12 +21,12 @@ public class VisionPipeline extends OpenCvPipeline {
 
   private boolean isHardToSeeRightSpot;
 
-  private Scalar lowBlue =  new Scalar(95,  165, 55);
-  private Scalar highBlue = new Scalar(125, 255, 255);
-  private Scalar lowRed2 =  new Scalar(164, 165, 55);
-  private Scalar highRed2 = new Scalar(179, 255, 255);
-  private Scalar lowRed1 =  new Scalar(0,   165, 55);
-  private Scalar highRed1 = new Scalar(5,   255, 255);
+  private Scalar lowBlue =  new Scalar(105,  155, 35);
+  private Scalar highBlue = new Scalar(130, 255, 255);
+//  private Scalar lowRed2 =  new Scalar(164, 165, 55);
+//  private Scalar highRed2 = new Scalar(179, 255, 255);
+  private Scalar lowRed1 =  new Scalar(5, 165, 55);
+  private Scalar highRed1 = new Scalar(30, 255, 255);
 
   private Mat blurred = new Mat();
   private Mat hsv = new Mat();
@@ -52,10 +52,10 @@ public class VisionPipeline extends OpenCvPipeline {
       Imgproc.GaussianBlur(input, blurred, new Size(15, 15), 0, 0);
       Imgproc.cvtColor(blurred, hsv, Imgproc.COLOR_BGR2HSV);
       
-      if(isBlue) {	
+      if(isBlue) {
         Core.inRange(hsv, lowRed1, highRed1, threshold);
-        Core.inRange(hsv, lowRed2, highRed2, otherThreshold);
-        Core.bitwise_or(threshold, otherThreshold, threshold);
+//        Core.inRange(hsv, lowRed2, highRed2, otherThreshold);
+//        Core.bitwise_or(threshold, otherThreshold, threshold);
       } else {
         Core.inRange(hsv, lowBlue, highBlue, threshold);
       }

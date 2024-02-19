@@ -54,7 +54,7 @@ public class RRRedBackdrop extends CenterStageAuto{
         drive.setPoseEstimate(startPose);
 
         purplePixel1 = drive.trajectoryBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(3.2, -36, Math.toRadians(300)),
+                .lineToLinearHeading(new Pose2d(3.8, -36, Math.toRadians(300)),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -210,7 +210,7 @@ public class RRRedBackdrop extends CenterStageAuto{
                 .build();
 
         park3 = drive.trajectoryBuilder(reset3.end())
-                .lineToLinearHeading(new Pose2d(58.7,-11, Math.toRadians(182)),
+                .lineToLinearHeading(new Pose2d(57.7,-50.0, Math.toRadians(182)),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )

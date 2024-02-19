@@ -40,7 +40,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
     boolean intakeOnGround;
     boolean plungerLClosed;
     boolean plungerRClosed;
-    boolean automationDone;
+    boolean automationDone = false;
     boolean zeroing = false;
     boolean fieldCentric = false;
 
@@ -198,7 +198,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
 
         if(!gamepad2.y && (armLeft.getPosition() > 0.8) && (pRight.getPosition() < 0.2) && (pLeft.getPosition() < 0.2) && (slidePositionTarget < 5)){
             slidePositionTarget = slideSavedPosition;
-            new DelaysAndAutoms(200.0, armLeft, armInPos, armOutPos);
+            new DelaysAndAutoms(250.0, armLeft, armInPos, armOutPos);
         }
 
         //plunger close
@@ -366,10 +366,11 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         telemetry.addData("slides position rs: ", "current rs pos: " + rs.getCurrentPosition());
         telemetry.addData("slides position ls: ", "current ls pos: " + ls.getCurrentPosition());
         telemetry.addData("limit switch", slidesLimit.isPressed());
-        telemetry.addData("leftDS", "Distance B from backdrop: " + leftDS.getDistance(DistanceUnit.INCH));
-        telemetry.addData("rightDS", "Distance A from backdrop: " + rightDS.getDistance(DistanceUnit.INCH));
+        //telemetry.addData("leftDS", "Distance B from backdrop: " + leftDS.getDistance(DistanceUnit.INCH));
+        //telemetry.addData("rightDS", "Distance A from backdrop: " + rightDS.getDistance(DistanceUnit.INCH));
         telemetry.addData("allDelays: ", DelaysAndAutoms.allDelays.size());
         telemetry.addData("slide increment: ", slideIncrement);
+        telemetry.addData("automationDone: ", automationDone);
         if (DelaysAndAutoms.allDelays.size() > 0) {
             telemetry.addData("ALLLEX", DelaysAndAutoms.allDelays.get(0).delayTimer.milliseconds());
         }
@@ -383,8 +384,8 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         packet.put("slide saved position", slideSavedPosition);
         packet.put("scalar", scalar);
         packet.put("target distanceBackdrop", distBackdrop);
-        packet.put("leftDistBackdrop", leftDS.getDistance(DistanceUnit.INCH));
-        packet.put("rightDistBackdrop", rightDS.getDistance(DistanceUnit.INCH));
+        //packet.put("leftDistBackdrop", leftDS.getDistance(DistanceUnit.INCH));
+        //packet.put("rightDistBackdrop", rightDS.getDistance(DistanceUnit.INCH));
         dashboard.sendTelemetryPacket(packet);
     }
 }

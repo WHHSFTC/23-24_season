@@ -77,7 +77,7 @@ abstract public class CenterStageOpMode extends OpMode {
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
-    public static double distBackdrop = 6.20;
+    public static double distBackdrop = 6.15;
     //Servo armRight;
     public Servo armLeft;
     public Servo pRight;
@@ -224,12 +224,13 @@ abstract public class CenterStageOpMode extends OpMode {
             }
         }
 
-        /*if(waitFor != null) {
+       /* if(waitFor != null) {
             slidePositionTarget = waitFor.updateVariable();
             if(waitFor.delayTimer.milliseconds() >= waitFor.delay){
                 waitFor = null;
             }
         }*/
+
         telemetry.addData("rs position", rs.getCurrentPosition());
         telemetry.addData("ls position", ls.getCurrentPosition());
         telemetry.addData("time per loop", timePerLoop);

@@ -18,8 +18,8 @@ public class DelaysAndAutoms extends drivetraintele {
     private Servo mechanism;
     private DcMotor mot;
     private Double value;
-    private double initial;
-    private double target;
+    public double initial;
+    public double target;
     public ElapsedTime delayTimer; //TODO: make private again
     public static ArrayList<DelaysAndAutoms> allDelays = new ArrayList<DelaysAndAutoms>();
 
