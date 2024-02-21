@@ -203,7 +203,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
     public void followFromStack(){
 
     }
-    /*public void followOutput(){
+    public void followOutput(){
         //might need to run without encoders
 
         double x, r;
@@ -226,7 +226,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         lf.setPower(preLF/max);
         rb.setPower(preRB/max);
         lb.setPower(preLB/max);
-    }*/
+    }
     public void followPark(){
 
     }
