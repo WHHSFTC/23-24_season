@@ -17,7 +17,6 @@ public class DelaysAndAutoms extends drivetraintele {
     public double delay;
     private Servo mechanism;
     private DcMotor mot;
-    private Double value;
     private double initial;
     private double target;
     public ElapsedTime delayTimer; //TODO: make private again
@@ -53,23 +52,16 @@ public class DelaysAndAutoms extends drivetraintele {
         for (int i = 0; i < allDelays.size(); i++) {
             if (allDelays.get(i).mechanism != null) {
                 if (allDelays.get(i).delayTimer.milliseconds() < allDelays.get(i).delay) {
-                    allDelays.get(i).mechanism.setPosition(allDelays.get(i).initial);
+                    //allDelays.get(i).mechanism.setPosition(allDelays.get(i).initial);
                 } else {
                     allDelays.get(i).mechanism.setPosition(allDelays.get(i).target);
                     allDelays.remove(i);
                 }
             } else if (allDelays.get(i).mot != null) {
                 if (allDelays.get(i).delayTimer.milliseconds() < allDelays.get(i).delay) {
-                    allDelays.get(i).mot.setPower(allDelays.get(i).initial);
+                    //allDelays.get(i).mot.setPower(allDelays.get(i).initial);
                 } else {
                     allDelays.get(i).mot.setPower(allDelays.get(i).target);
-                    allDelays.remove(i);
-                }
-            } else {
-                if (allDelays.get(i).delayTimer.milliseconds() < allDelays.get(i).delay) {
-                    allDelays.get(i).value = allDelays.get(i).initial;
-                } else {
-                    allDelays.get(i).value = allDelays.get(i).target;
                     allDelays.remove(i);
                 }
             }
