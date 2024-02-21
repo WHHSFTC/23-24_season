@@ -77,7 +77,8 @@ abstract public class CenterStageOpMode extends OpMode {
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
-    public static double distBackdrop = 6.15;
+    public static double distBackdrop = 5.0; //inches
+    public static double leftDSOffset = 1.25;
     //Servo armRight;
     public Servo armLeft;
     public Servo pRight;

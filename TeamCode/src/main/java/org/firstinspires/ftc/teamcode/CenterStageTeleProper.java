@@ -96,7 +96,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         telemetry.addData("field centric:", fieldCentric);
 
         if (gamepad1.a) {
-            distancePower = DSpid.distancePID(rightDS.getDistance(DistanceUnit.INCH), leftDS.getDistance(DistanceUnit.INCH), timeGap, distBackdrop);
+            distancePower = DSpid.distancePID(rightDS.getDistance(DistanceUnit.INCH), leftDS.getDistance(DistanceUnit.INCH) - leftDSOffset, timeGap, distBackdrop);
             anglePower = DSpid.anglePID(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), timeGap, Math.toRadians(0));
             x = x > 0.55 ? x : -distancePower;
             r = -anglePower;
@@ -197,8 +197,8 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }
 
         if(!gamepad2.y && (armLeft.getPosition() > 0.8) && (pRight.getPosition() < 0.2) && (pLeft.getPosition() < 0.2) && (slidePositionTarget < 5)){
-            slidePositionTarget = slideSavedPosition;
-            new DelaysAndAutoms(250.0, armLeft, armInPos, armOutPos);
+            slideUpdate = new DelaysAndAutoms(50.0, slidePositionTarget, slideSavedPosition);
+            new DelaysAndAutoms(300.0, armLeft, armInPos, armOutPos);
         }
 
         //plunger close
