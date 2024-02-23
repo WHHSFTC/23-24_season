@@ -1,70 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.DelaysAndAutoms.allDelays;
-import static org.firstinspires.ftc.teamcode.DelaysAndAutoms.updateDelays;
-
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-@Config
 @TeleOp
-public class CenterStageTeleProper extends CenterStageOpMode{
-
-    //public static MultipleTelemetry dashTelemetry = new MultipleTelemetry();
-
-    public static double slidesff = 0.0;
-    public static double slideTargetGain = 300.0;
-    public static double slideMin = 0.0;
-    public static double slideMax = 3000.0;
-    double distancePower;
-    double anglePower;
-    boolean slidesPressed = true;
-    int slideIncrement = 0;
-    double targetYaw = 0.0;
-    double timeGap;
-    boolean intakeOnGround;
-    boolean plungerLClosed;
-    boolean plungerRClosed;
-    boolean automationDone = false;
-    boolean zeroing = false;
-    boolean fieldCentric = false;
-    boolean outputMode = false;
-
-    @Override
-    public void init(){
-        super.init();
-
-        //droneLauncher.scaleRange(dronePos1, dronePos2);
-        //droneLauncher.setPosition(1.0);
-        plungerLClosed = true;
-        plungerRClosed = true;
-
-        /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
-        rb.setDirection(DcMotorSimple.Direction.REVERSE);
-        lb.setDirection(DcMotorSimple.Direction.REVERSE);
-        lf.setDirection(DcMotorSimple.Direction.REVERSE); */
-
-        imu.resetYaw();
-        intakeRight.setPosition(intakeDownPos);
-        intakeLeft.setPosition(intakeDownPos);
-        intakeOnGround = true;
-    }
-
+public class CenterStageTeleSoloBlue extends CenterStageTeleProper {
     @Override
     public void childLoop() {
         slidesPidRight.update(rs.getCurrentPosition(), timeGap);
@@ -76,7 +18,12 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         double scalar = 1.0;
 
         double y = -gamepad1.left_stick_x; //verticals
-        double x = -gamepad1.left_stick_y * 1.1; //horizontal
+        double x; //horizontal
+        if (!outputMode) {
+            x = -gamepad1.left_stick_y * 1.1;
+        } else {
+            x = 0.0;
+        }
         double r = -gamepad1.right_stick_x; //pivot and rotation
 
         if (fieldCentric) {
@@ -88,21 +35,23 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }
 
 
-        /*if (gamepad1.dpad_up) {
+        if (gamepad1.dpad_up) {
             fieldCentric = true;
         }
         if (gamepad1.dpad_down) {
             fieldCentric = false;
-        }*/
+        }
         telemetry.addData("field centric:", fieldCentric);
 
-        if (gamepad1.a) {
-            double yaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            distancePower = (Math.abs(yaw) < Math.toRadians(45.0)) ? DSpid.distancePID(rightDS.getDistance(DistanceUnit.INCH), leftDS.getDistance(DistanceUnit.INCH) - leftDSOffset, timeGap, distBackdrop): 0.0;
-            anglePower = DSpid.anglePID(yaw, timeGap, Math.toRadians(0.0));
+        if (gamepad1.left_trigger > 0.5) {
+            distancePower = DSpid.distancePID(rightDS.getDistance(DistanceUnit.INCH), leftDS.getDistance(DistanceUnit.INCH) - leftDSOffset, timeGap, distBackdrop);
+            anglePower = DSpid.anglePID(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), timeGap, Math.toRadians(0));
             x = x > 0.55 ? x : -distancePower;
             r = -anglePower;
             scalar = 0.25;
+            outputMode = true;
+        } else {
+            outputMode = false;
         }
 
         //heading lock
@@ -128,21 +77,23 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             slidesPressed = false;
         }
 
-        if (Math.abs(gamepad2.left_stick_y) > 0.01) {
-            zeroing = false;
+        if (outputMode) {
+            if (Math.abs(gamepad1.left_stick_y) > 0.01) {
+                zeroing = false;
 
-            if (Math.abs(gamepad2.left_stick_y) > 0.01) {
-                slidePositionTarget -= slideTargetGain * gamepad2.left_stick_y;
-            }
+                if (Math.abs(gamepad1.left_stick_y) > 0.01) {
+                    slidePositionTarget -= slideTargetGain * gamepad1.left_stick_y;
+                }
 
-            if (slidePositionTarget < slideMin) {
-                slidePositionTarget = slideMin;
-            }
-            if (slidePositionTarget > slideMax) {
-                slidePositionTarget = slideMax;
-            }
-            if (slidePositionTarget > 600.0) {
-                scalar = 1.0 - (Math.sqrt(slidePositionTarget / slideMax) / 1.25);
+                if (slidePositionTarget < slideMin) {
+                    slidePositionTarget = slideMin;
+                }
+                if (slidePositionTarget > slideMax) {
+                    slidePositionTarget = slideMax;
+                }
+                if (slidePositionTarget > 600.0) {
+                    scalar = 1.0 - (Math.sqrt(slidePositionTarget / slideMax) / 1.25);
+                }
             }
         }
 
@@ -173,20 +124,8 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         rb.setPower(preRB / max);
         lb.setPower(preLB / max);
 
-        //arm swings out
-        if (gamepad2.x) {
-            //armRight.setPosition(0.0);
-            armLeft.setPosition(armOutPos);
-        }
-
-        //arm swings in
-        if (gamepad2.b) {
-            //armRight.setPosition(1.0);
-            armLeft.setPosition(armInPos);
-        }
-
         //AUTOMATION
-        if(gamepad2.y && !gamepad2prev.y){
+        if(gamepad1.y && !gamepad1prev.y){
             pLeft.setPosition(plungerReleasePos);
             pRight.setPosition(plungerReleasePos);
             slidePositionTarget = 350.0;
@@ -198,24 +137,38 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             plungerLClosed = false;
         }
 
-        if(!gamepad2.y && (armLeft.getPosition() > 0.8) && (pRight.getPosition() < 0.2) && (pLeft.getPosition() < 0.2) && (slidePositionTarget < 5)){
-            slideUpdate = new DelaysAndAutoms(80.0, slidePositionTarget, slideSavedPosition);
+        if(!gamepad1.y && (armLeft.getPosition() > 0.8) && (pRight.getPosition() < 0.2) && (pLeft.getPosition() < 0.2) && (slidePositionTarget < 5)){
+            slideUpdate = new DelaysAndAutoms(50.0, slidePositionTarget, slideSavedPosition);
             new DelaysAndAutoms(300.0, armLeft, armInPos, armOutPos);
         }
 
-        //plunger close
-        if (gamepad2.a) {
-            pRight.setPosition(plungerReleasePos);
-            pLeft.setPosition(plungerReleasePos);
-            plungerRClosed = true;
-            plungerLClosed = true;
+        if (outputMode) {
+            //arm swings out
+            if (gamepad1.x) {
+                //armRight.setPosition(0.0);
+                armLeft.setPosition(armOutPos);
+            }
+
+            //arm swings in
+            if (gamepad1.b) {
+                //armRight.setPosition(1.0);
+                armLeft.setPosition(armInPos);
+            }
+
+            //plunger close
+            if (gamepad1.x) {
+                pRight.setPosition(plungerReleasePos);
+                pLeft.setPosition(plungerReleasePos);
+                plungerRClosed = true;
+                plungerLClosed = true;
+            }
+
+            if (gamepad1.dpad_right && !zeroing) {
+                slidePositionTarget = slideSavedPosition;
+            }
         }
 
-        if (gamepad2.dpad_right && !zeroing) {
-            slidePositionTarget = slideSavedPosition;
-        }
-
-        if (gamepad2.dpad_down && !zeroing && (pLeft.getPosition() > 0.9 && pRight.getPosition() > 0.9)) {
+        if (gamepad1.dpad_down && !zeroing && (pLeft.getPosition() > 0.9 && pRight.getPosition() > 0.9)) {
             if (!gamepad2prev.dpad_down) {
                 slideSavedPosition = slidePositionTarget;
                 slidePositionTarget = slideMin;
@@ -225,7 +178,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }
 
         //slides increments
-        if (gamepad2.dpad_down && !zeroing && pLeft.getPosition() < 0.2 && pRight.getPosition() < 0.2) {
+        if (gamepad1.dpad_down && !zeroing && pLeft.getPosition() < 0.2 && pRight.getPosition() < 0.2) {
             if (!gamepad2prev.dpad_down) {
                 slidePositionTarget -= 400.0;
                 slideIncrement--;
@@ -235,7 +188,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             }
         }
 
-        if (gamepad2.dpad_up) {
+        if (gamepad1.dpad_up) {
             if (!gamepad2prev.dpad_up) {
                 if (slidePositionTarget > 2800) {
                     slidePositionTarget = 2800;
@@ -250,51 +203,49 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }
 
         //intake spinning
-        if (gamepad1.left_trigger > 0.2) {
-            intake.setPower(-0.3 * gamepad1.left_trigger); //reverse
-        } else if (gamepad1.right_trigger > 0.2) {
-            intake.setPower(gamepad1.right_trigger * 0.5); //forward
-        } else {
-            intake.setPower(0.0);
-        }
+        if (!outputMode) {
+            if (gamepad1.right_bumper) {
+                intake.setPower(-0.3 * gamepad1.left_trigger); //reverse
+                conveyor.setPower(0.9);
+            } else if (gamepad1.right_trigger > 0.2) {
+                intake.setPower(gamepad1.right_trigger * 0.5); //forward
+                conveyor.setPower(-0.9);
+            } else {
+                intake.setPower(0.0);
+                conveyor.setPower(0.0);
+            }
 
-        //intake swinging out and swinging in
-        if (gamepad1.right_bumper && !gamepad1prev.right_bumper) {
-            if (intakeOnGround) {
+            //intake swinging out and swinging in
+            if (gamepad1.right_bumper || gamepad1.right_trigger > 0.2) {
+                if (gamepad1.right_trigger > 0.9) {
+                    intakeRight.setPosition(intakeDownPos);
+                    intakeLeft.setPosition(intakeDownPos);
+                } else {
+                    intakeRight.setPosition(intakeStackPos);
+                    intakeLeft.setPosition(intakeStackPos);
+                }
+            } else {
                 intakeRight.setPosition(intakeUpPos);
                 intakeLeft.setPosition(intakeUpPos);
-                intakeOnGround = false;
-            } else {
-                intakeRight.setPosition(intakeDownPos);
-                intakeLeft.setPosition(intakeDownPos);
-                intakeOnGround = true;
             }
-        }
 
-        if (gamepad2.right_trigger > 0.05) {
-            conveyor.setPower(-0.9);
-        } else if (gamepad2.left_trigger > 0.05) {
-            conveyor.setPower(0.9);
-        } else {
-            conveyor.setPower(0.0);
-        }
-
-        //stack position intake
-        if (gamepad1.dpad_right) {
-            if (!intakeOnGround) {
-                intakeOnGround = true;
+            //stack position intake
+            if (gamepad1.dpad_right) {
+                if (!intakeOnGround) {
+                    intakeOnGround = true;
+                }
+                intakeRight.setPosition(intakeStackPos);
+                intakeLeft.setPosition(intakeStackPos);
             }
-            intakeRight.setPosition(intakeStackPos);
-            intakeLeft.setPosition(intakeStackPos);
         }
 
         //reset imu
-        if (gamepad1.back) {
+        if (gamepad1.start || gamepad2.start) {
             imu.resetYaw();
         }
 
         //manual reset for slides
-        if (gamepad2.start) {
+        if (gamepad1.start) {
             zeroing = true;
         }
 
@@ -308,41 +259,42 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }
 
         // drone launcher
-        if (gamepad2.back) {
+        if (gamepad1.back) {
             droneLauncher.setPosition(dronePos1);
         } else {
             droneLauncher.setPosition(dronePos2);
         }
 
-        //manual release for plungers
-        if (gamepad2.right_bumper && !gamepad2prev.right_bumper) {
-            if (plungerLClosed) {
-                pLeft.setPosition(plungerGrabPos);
-                plungerLClosed = false;
-            } else {
-                pLeft.setPosition(plungerReleasePos);
-                plungerLClosed = true;
-            }
-        }
 
-        if (gamepad2.left_bumper && !gamepad2prev.left_bumper) {
-            if (plungerRClosed) {
-                pRight.setPosition(plungerGrabPos);
-                plungerRClosed = false;
-            } else {
-                pRight.setPosition(plungerReleasePos);
-                plungerRClosed = true;
+        if (outputMode) {
+            //manual release for plungers
+            if (gamepad1.right_bumper && !gamepad1prev.right_bumper) {
+                if (plungerLClosed) {
+                    pLeft.setPosition(plungerGrabPos);
+                    plungerLClosed = false;
+                } else {
+                    pLeft.setPosition(plungerReleasePos);
+                    plungerLClosed = true;
+                }
+            }
+
+            if (gamepad1.left_bumper && !gamepad1prev.left_bumper) {
+                if (plungerRClosed) {
+                    pRight.setPosition(plungerGrabPos);
+                    plungerRClosed = false;
+                } else {
+                    pRight.setPosition(plungerReleasePos);
+                    plungerRClosed = true;
+                }
             }
         }
 
         //hang slides position
-        if (gamepad2.dpad_left && !gamepad2prev.dpad_left) {
-            if (!gamepad2prev.dpad_left) {
+        if (gamepad1.dpad_left) {
                 slidePositionTarget = 1800.0;
-            }
         }
 
-        if (gamepad2.left_stick_y < -0.1 && (slidePositionTarget >= 400) && (armLeft.getPosition() > 0.8) && !zeroing) {
+        if (gamepad1.left_stick_y < -0.1 && (slidePositionTarget >= 400) && (armLeft.getPosition() > 0.8) && !zeroing) {
             armLeft.setPosition(armOutPos);
         }
 
