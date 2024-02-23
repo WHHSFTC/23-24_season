@@ -70,6 +70,10 @@ abstract public class CenterStageOpMode extends OpMode {
     public static double intakeUpPos = 0.0;
     public static double intakeDownPos = 0.67;
     public static double intakeStackPos = 0.18;
+    public static double intakeLeftUpScale = 0.0;
+    public static double intakeLeftDownScale = 1.0;
+    public static double intakeRightDownScale = 1.0;
+    public static double intakeRightUpScale = 0.0;
 
     public static double armOutPos = 0.01;
     public static double armInPos = 0.94;
@@ -154,10 +158,6 @@ abstract public class CenterStageOpMode extends OpMode {
 
         intakeRight = hardwareMap.get(Servo.class, "intakeRight");
         intakeLeft = hardwareMap.get(Servo.class, "intakeLeft");
-
-        intakeLeft.scaleRange(0.0, 1.0);
-        intakeRight.scaleRange(0.0, 1.0);
-
         intakeRight.setDirection(Servo.Direction.REVERSE);
 
         // intakeLeft.setPosition(1.0);
@@ -174,6 +174,9 @@ abstract public class CenterStageOpMode extends OpMode {
         pRight.setPosition(1.0);
         pLeft.setPosition(1.0);
 
+        intakeLeft.scaleRange(0.3, 0.8);
+        intakeRight.scaleRange(0.0, 1.0);
+
         droneLauncher.scaleRange(0.3, 0.9);
         //camera
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -189,7 +192,6 @@ abstract public class CenterStageOpMode extends OpMode {
 
     @Override
     final public void loop() {
-
         //timing stuff
         timePerLoop = timer.milliseconds();
         timer.reset();

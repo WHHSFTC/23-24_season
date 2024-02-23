@@ -197,7 +197,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }
 
         if(!gamepad2.y && (armLeft.getPosition() > 0.8) && (pRight.getPosition() < 0.2) && (pLeft.getPosition() < 0.2) && (slidePositionTarget < 5)){
-            slideUpdate = new DelaysAndAutoms(50.0, slidePositionTarget, slideSavedPosition);
+            slideUpdate = new DelaysAndAutoms(80.0, slidePositionTarget, slideSavedPosition);
             new DelaysAndAutoms(300.0, armLeft, armInPos, armOutPos);
         }
 
