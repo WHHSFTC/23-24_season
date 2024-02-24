@@ -100,10 +100,10 @@ public class RRRedStack extends CenterStageAuto{
                 )
                 .back(25.0,SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .splineToLinearHeading(new Pose2d(-28.9, -10.3, Math.toRadians(184)), 0,
-                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .splineToLinearHeading(new Pose2d(-28.9, -10.3, Math.toRadians(181)), 0,
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .back(60.0,SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .back(60.0,SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
@@ -117,10 +117,10 @@ public class RRRedStack extends CenterStageAuto{
                 .back(20.0, SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .splineToLinearHeading(new Pose2d(-28.9, -10.3, Math.toRadians(183)), 0,
-                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .splineToLinearHeading(new Pose2d(-28.9, -10.3, Math.toRadians(180)), 0,
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .back(60.0,SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .back(60.0,SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         moveUp3 = drive.trajectorySequenceBuilder(purplePixel3.end())
@@ -128,22 +128,22 @@ public class RRRedStack extends CenterStageAuto{
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .splineToLinearHeading(new Pose2d(-28.9, -10.3, Math.toRadians(180)), 0,
-                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .back(60.0,SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .back(60.0,SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         //yellow pixels
         yellowPixel1 = drive.trajectoryBuilder(moveUp1.end())
-                .lineToLinearHeading(new Pose2d(53.3,-30.0, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(53.3,-30.7, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .addTemporalMarker(0.2,0,()->{
                     slidePositionTarget = 700.0;
                 })
-                .addTemporalMarker(0.8,0,()->{
-                    armLeft.setPosition(armOutPos);
+                .addTemporalMarker(0.5,0,()->{
+                    armLeft.setPosition(0.05);
                 })
                 .addDisplacementMarker(()->{
                     pLeft.setPosition(plungerReleasePos);
@@ -152,15 +152,15 @@ public class RRRedStack extends CenterStageAuto{
                 .build();
 
         yellowPixel2 = drive.trajectoryBuilder(moveUp2.end())
-                .lineToLinearHeading(new Pose2d(53.3,-35.5, Math.toRadians(183)),
+                .lineToLinearHeading(new Pose2d(52.8,-36.5, Math.toRadians(180.0)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .addTemporalMarker(0.2,0,()->{
                     slidePositionTarget = 700.0;
                 })
-                .addDisplacementMarker(0.8,0,()->{
-                    armLeft.setPosition(armOutPos);
+                .addDisplacementMarker(0.5,0,()->{
+                    armLeft.setPosition(0.05);
                 })
                 .addDisplacementMarker(()->{
                     pLeft.setPosition(plungerReleasePos);
@@ -176,8 +176,8 @@ public class RRRedStack extends CenterStageAuto{
                 .addTemporalMarker(0.2,0,()->{
                     slidePositionTarget = 700.0;
                 })
-                .addDisplacementMarker(0.8,0,()->{
-                    armLeft.setPosition(armOutPos);
+                .addDisplacementMarker(0.5,0,()->{
+                    armLeft.setPosition(0.05);
                 })
                 .addDisplacementMarker(()->{
                     pLeft.setPosition(plungerReleasePos);

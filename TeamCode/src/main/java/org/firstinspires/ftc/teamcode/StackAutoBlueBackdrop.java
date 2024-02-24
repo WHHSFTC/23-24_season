@@ -126,8 +126,8 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .addTemporalMarker(0.2,0,()->{
                     slidePositionTarget = 700.0;
                 })
-                .addTemporalMarker(0.8,0,()->{
-                    armLeft.setPosition(armOutPos);
+                .addTemporalMarker(0.5,0,()->{
+                    armLeft.setPosition(0.05);
                 })
                 .addDisplacementMarker(()->{
                     pLeft.setPosition(plungerReleasePos);
@@ -143,8 +143,8 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .addTemporalMarker(0.2,0,()->{
                     slidePositionTarget = 700.0;
                 })
-                .addDisplacementMarker(0.8,0,()->{
-                    armLeft.setPosition(armOutPos);
+                .addDisplacementMarker(0.5,0,()->{
+                    armLeft.setPosition(0.05);
                 })
                 .addDisplacementMarker(()->{
                     pLeft.setPosition(plungerReleasePos);
@@ -160,8 +160,8 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .addTemporalMarker(0.2,0,()->{
                     slidePositionTarget = 700.0;
                 })
-                .addDisplacementMarker(0.8,0,()->{
-                    armLeft.setPosition(armOutPos);
+                .addDisplacementMarker(0.5,0,()->{
+                    armLeft.setPosition(0.05);
                 })
                 .addDisplacementMarker(()->{
                     pLeft.setPosition(plungerReleasePos);
@@ -206,8 +206,8 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 )
                 .forward(60.0)
                 .UNSTABLE_addTemporalMarkerOffset(2, () -> {
-                    intakeLeft.setPosition(0.45);
-                    intakeRight.setPosition(0.45);
+                    intakeLeft.setPosition(intakeStackPos);
+                    intakeRight.setPosition(intakeStackPos);
                 })
                 .splineToConstantHeading(new Vector2d(-60, 40), Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -221,23 +221,23 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .build();
 
         driveToStack2 = drive.trajectorySequenceBuilder(reset2.end())
-                .splineToConstantHeading(new Vector2d(10, 10), Math.toRadians(0),
+                .splineToConstantHeading(new Vector2d(10, 0), Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .forward(60.0)
-                .UNSTABLE_addTemporalMarkerOffset(2, () -> {
-                    intakeLeft.setPosition(0.45);
-                    intakeRight.setPosition(0.45);
+                .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
+                    intakeLeft.setPosition(intakeStackPos);
+                    intakeRight.setPosition(intakeStackPos);
                 })
-                .splineToConstantHeading(new Vector2d(-60, 40), Math.toRadians(0),
-                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                )
+                .forward(45.0)
                 .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
                     intake.setPower(0.7);
                 })
-                .forward(10, SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .splineToConstantHeading(new Vector2d(-50, 40), Math.toRadians(0),
+                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .forward(5, SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
@@ -248,8 +248,8 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 )
                 .forward(60.0)
                 .UNSTABLE_addTemporalMarkerOffset(2, () -> {
-                    intakeLeft.setPosition(0.45);
-                    intakeRight.setPosition(0.45);
+                    intakeLeft.setPosition(intakeStackPos);
+                    intakeRight.setPosition(intakeStackPos);
                 })
                 .splineToConstantHeading(new Vector2d(-60, 40), Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -491,26 +491,26 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
             case TO_STACK:
                 if (!drive.isBusy()) {
                     currentState = AutoState.INTAKE;
+                    followIntake();
                 }
-                followIntake();
                 break;
             case INTAKE:
                 if (!drive.isBusy()) {
                     currentState = AutoState.FROM_STACK;
+                    followFromStack();
                 }
-                followFromStack();
                 break;
             case FROM_STACK:
                 if (!drive.isBusy()) {
                     currentState = AutoState.OUTPUT;
+                    followOutput();
                 }
-                followOutput();
                 break;
             case OUTPUT:
                 if (!drive.isBusy()) {
                     currentState = AutoState.PARK;
+                    followPark();
                 }
-                followPark();
                 break;
             case PARK:
                 if (!drive.isBusy()) {

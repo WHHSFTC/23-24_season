@@ -69,7 +69,7 @@ abstract public class CenterStageOpMode extends OpMode {
 
     public static double intakeUpPos = 0.0;
     public static double intakeDownPos = 0.67;
-    public static double intakeStackPos = 0.18;
+    public static double intakeStackPos = 0.59;
     public static double intakeLeftUpScale = 0.0;
     public static double intakeLeftDownScale = 1.0;
     public static double intakeRightDownScale = 1.0;

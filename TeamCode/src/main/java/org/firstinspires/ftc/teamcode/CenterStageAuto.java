@@ -125,9 +125,7 @@ public abstract class CenterStageAuto extends CenterStageOpMode implements AutoI
         slidesPidRight.update(rs.getCurrentPosition(),timePerLoop);
         rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
         ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
-        if(drive.isBusy()) {
-            drive.update();
-        }
+        drive.update();
         telemetry.addData("State: ", currentState);
         telemetry.addData("slides target: ", slidePositionTarget);
         telemetry.addData("robot busy", drive.isBusy());
