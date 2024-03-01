@@ -26,7 +26,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 @Autonomous (preselectTeleOp = "CenterStageTeleProper")
-public class StackAutoBlueBackdrop extends RRBlueBackdrop {
+public class StackAutoRedBackdrop extends RRBlueBackdrop {
 
     Trajectory purplePixel1;
     Trajectory purplePixel2;
@@ -60,11 +60,11 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
         isRightSideHardForCameraToSee = false;
         super.init();
         drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(16.4, 63.25, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(14.96, -63.25, Math.toRadians(270));
         drive.setPoseEstimate(startPose);
 
         purplePixel1 = drive.trajectoryBuilder(startPose)
-                .lineTo(new Vector2d(23.5, 35),
+                .lineToLinearHeading(new Pose2d(3.8, -36, Math.toRadians(300)),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -76,7 +76,7 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .build();
 
         purplePixel2 = drive.trajectoryBuilder(startPose, true)
-                .lineTo(new Vector2d(9,32.5),
+                .lineTo(new Vector2d(9,-32.5),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -88,7 +88,7 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .build();
 
         purplePixel3 = drive.trajectoryBuilder(startPose, true)
-                .lineToLinearHeading(new Pose2d(5.2,36, Math.toRadians(60)),
+                .lineTo(new Vector2d(23.5,-35),
                         SampleMecanumDrive.getVelocityConstraint(36, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -119,8 +119,8 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .build();
         //yellow pixels
         yellowPixel1 = drive.trajectoryBuilder(moveUp1.end())
-                .lineToLinearHeading(new Pose2d(48.0,45, Math.toRadians(180)),
-                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(new Pose2d(51.3,-34.5, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .addTemporalMarker(0.2,0,()->{
@@ -132,12 +132,12 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .addDisplacementMarker(()->{
                     pLeft.setPosition(plungerReleasePos);
                     pRight.setPosition(plungerReleasePos);
-                })
+                })//
                 .build();
 
         yellowPixel2 = drive.trajectoryBuilder(moveUp2.end())
-                .lineToLinearHeading(new Pose2d(45.0,35.6, Math.toRadians(180)),
-                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(new Pose2d(51.3,-41, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .addTemporalMarker(0.2,0,()->{
@@ -153,8 +153,8 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .build();
 
         yellowPixel3 = drive.trajectoryBuilder(moveUp3.end())
-                .lineToSplineHeading(new Pose2d(48.0,30.3, Math.toRadians(184)),
-                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToSplineHeading(new Pose2d(51.3,-48.0, Math.toRadians(181)),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .addTemporalMarker(0.2,0,()->{
@@ -169,39 +169,40 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 })
                 .build();
 
+        //resets
         reset1 = drive.trajectoryBuilder(yellowPixel1.end())
-                .forward(5,
+                .forward(8,
                         SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(0.8, 0, () -> {
+                .addDisplacementMarker(0.8,0,()->{
                     slidePositionTarget = 0.0;
                 })
                 .build();
 
         reset2 = drive.trajectoryBuilder(yellowPixel2.end())
-                .forward(5,
+                .forward(8,
                         SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(0.8, 0, () -> {
+                .addDisplacementMarker(0.8,0,()->{
                     slidePositionTarget = 0.0;
                 })
                 .build();
 
         reset3 = drive.trajectoryBuilder(yellowPixel3.end())
-                .forward(5,
+                .forward(10,
                         SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .addDisplacementMarker(0.8, 0, () -> {
+                .addDisplacementMarker(0.8,0,()->{
                     slidePositionTarget = 0.0;
                 })
                 .build();
 
         driveToStack1 = drive.trajectorySequenceBuilder(reset1.end())
-                .lineToLinearHeading(new Pose2d(43.65, 10.55, Math.toRadians(180)),
-                        SampleMecanumDrive.getVelocityConstraint(17, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(new Pose2d(43.65, -10.55, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
@@ -209,7 +210,7 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                     intakeRight.setPosition(intakeStackPos);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
-                    intake.setPower(0.9);
+                    intake.setPower(0.7);
                     conveyor.setPower(-0.9);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.45, ()->{
@@ -221,17 +222,17 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .UNSTABLE_addTemporalMarkerOffset(0.75,()->{
                     slidePositionTarget = 150.0;
                 })
-                .lineToLinearHeading(new Pose2d(-42.38, 17.2, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(-42.38, -17.2, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .lineToLinearHeading(new Pose2d(-56.00,17.15, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(new Pose2d(-55.68,-17.15, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         driveToStack2 = drive.trajectorySequenceBuilder(reset2.end())
-                .lineToLinearHeading(new Pose2d(43.65, 10.55, Math.toRadians(180)),
-                        SampleMecanumDrive.getVelocityConstraint(17, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(new Pose2d(43.65, -10.55, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
@@ -239,7 +240,7 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                     intakeRight.setPosition(intakeStackPos);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
-                    intake.setPower(0.9);
+                    intake.setPower(0.7);
                     conveyor.setPower(-0.9);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.45, ()->{
@@ -251,24 +252,24 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .UNSTABLE_addTemporalMarkerOffset(0.75,()->{
                     slidePositionTarget = 150.0;
                 })
-                .lineToLinearHeading(new Pose2d(-42.38, 17.2, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(-42.38, -17.2, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .lineToLinearHeading(new Pose2d(-56.00,17.15, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(new Pose2d(-55.68,-17.15, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         driveToStack3 = drive.trajectorySequenceBuilder(reset3.end())
-                .lineToLinearHeading(new Pose2d(43.65, 10.55, Math.toRadians(180)),
-                        SampleMecanumDrive.getVelocityConstraint(17, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(new Pose2d(43.65, -10.55, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 ).UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
                     intakeLeft.setPosition(intakeStackPos);
                     intakeRight.setPosition(intakeStackPos);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.4, () -> {
-                    intake.setPower(0.9);
+                    intake.setPower(0.7);
                     conveyor.setPower(-0.9);
                 })
 
@@ -281,11 +282,11 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .UNSTABLE_addTemporalMarkerOffset(0.75,()->{
                     slidePositionTarget = 150.0;
                 })
-                .lineToLinearHeading(new Pose2d(-42.38, 17.2, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(-42.38, -17.2, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .lineToLinearHeading(new Pose2d(-56.00,17.15, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(new Pose2d(-55.68,-17.15, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
@@ -298,11 +299,12 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                     intakeLeft.setPosition(intakeDownPos);
                     intakeRight.setPosition(intakeDownPos);
                 })
-                .back(9, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .back(7, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .forward(4.5, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .forward(5, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
+
         intake2 = drive.trajectorySequenceBuilder(driveToStack2.end())
                 .UNSTABLE_addTemporalMarkerOffset(0.01,()->{
                     intakeLeft.setPosition(intakeUpPos);
@@ -312,9 +314,9 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                     intakeLeft.setPosition(intakeDownPos);
                     intakeRight.setPosition(intakeDownPos);
                 })
-                .back(9, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .back(7, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .forward(4.5, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .forward(5, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
@@ -327,9 +329,9 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                     intakeLeft.setPosition(intakeDownPos);
                     intakeRight.setPosition(intakeDownPos);
                 })
-                .back(9, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .back(7, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .forward(4.5, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .forward(5, SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
@@ -360,16 +362,16 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                     armLeft.setPosition(armOutPos);
                     conveyor.setPower(0.0);
                 })
-                .lineToLinearHeading(new Pose2d(37.65, 10.55, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(37.65, -10.55, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .UNSTABLE_addTemporalMarkerOffset(1.8, ()->{
+                .lineToLinearHeading(new Pose2d(50.5, -45, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .addDisplacementMarker(()->{
                     pRight.setPosition(plungerReleasePos);
                     pLeft.setPosition(plungerReleasePos);
                 })
-                .lineToLinearHeading(new Pose2d(51.7, 45, Math.toRadians(180)),
-                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         driveFromStack2 = drive.trajectorySequenceBuilder(intake2.end())
@@ -398,16 +400,16 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                     armLeft.setPosition(armOutPos);
                     conveyor.setPower(0.0);
                 })
-                .lineToLinearHeading(new Pose2d(37.65, 10.55, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(37.65, -10.55, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .UNSTABLE_addTemporalMarkerOffset(1.8, ()->{
+                .lineToLinearHeading(new Pose2d(50.5, -38, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .addDisplacementMarker(()->{
                     pRight.setPosition(plungerReleasePos);
                     pLeft.setPosition(plungerReleasePos);
                 })
-                .lineToLinearHeading(new Pose2d(51.7, 36, Math.toRadians(180)),
-                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         driveFromStack3 = drive.trajectorySequenceBuilder(intake3.end())
@@ -436,16 +438,16 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                     armLeft.setPosition(armOutPos);
                     conveyor.setPower(0.0);
                 })
-                .lineToLinearHeading(new Pose2d(37.65, 10.55, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(37.65, -10.55, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .UNSTABLE_addTemporalMarkerOffset(1.8, ()->{
+                .lineToLinearHeading(new Pose2d(50.5, -30.3, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .addDisplacementMarker(()->{
                     pRight.setPosition(plungerReleasePos);
                     pLeft.setPosition(plungerReleasePos);
                 })
-                .lineToLinearHeading(new Pose2d(51.7, 30.3, Math.toRadians(180)),
-                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         //parks
@@ -457,7 +459,7 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .addDisplacementMarker(()->{
                     slidePositionTarget = 0.0;
                 })
-                .splineToLinearHeading(new Pose2d(50.7, 8, Math.toRadians(180)), Math.toRadians(0),
+                .splineToLinearHeading(new Pose2d(55.7, -11, Math.toRadians(180)), Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -471,7 +473,7 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .addDisplacementMarker(()->{
                     slidePositionTarget = 0.0;
                 })
-                .splineToLinearHeading(new Pose2d(50.7, 8, Math.toRadians(180)), Math.toRadians(0),
+                .splineToLinearHeading(new Pose2d(55.7, -11, Math.toRadians(180)), Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -485,7 +487,7 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .addDisplacementMarker(()->{
                     slidePositionTarget = 0.0;
                 })
-                .lineToLinearHeading(new Pose2d(50.7, 8, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(55.7, -50.0, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -603,8 +605,8 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
     public void followOutput(){
         super.followOutput();
         if(rightDS.getDistance(DistanceUnit.INCH) < 6.5 && leftDS.getDistance(DistanceUnit.INCH) < 6.5){
-        pLeft.setPosition(plungerReleasePos);
-        pRight.setPosition(plungerReleasePos);
+            pLeft.setPosition(plungerReleasePos);
+            pRight.setPosition(plungerReleasePos);
         }
     }
 

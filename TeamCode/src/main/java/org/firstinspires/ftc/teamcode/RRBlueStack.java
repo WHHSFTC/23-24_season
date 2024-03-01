@@ -143,7 +143,7 @@ public class RRBlueStack extends CenterStageAuto{
                     slidePositionTarget = 700.0;
                 })
                 .addTemporalMarker(0.5,0,()->{
-                    armLeft.setPosition(0.05);
+                    armLeft.setPosition(armOutPos);
                 })
                 .addDisplacementMarker(()->{
                     pLeft.setPosition(plungerReleasePos);
@@ -160,7 +160,7 @@ public class RRBlueStack extends CenterStageAuto{
                     slidePositionTarget = 700.0;
                 })
                 .addDisplacementMarker(0.5,0,()->{
-                    armLeft.setPosition(0.05);
+                    armLeft.setPosition(armOutPos);
                 })
                 .addDisplacementMarker(()->{
                     pLeft.setPosition(plungerReleasePos);
@@ -177,7 +177,7 @@ public class RRBlueStack extends CenterStageAuto{
                     slidePositionTarget = 700.0;
                 })
                 .addDisplacementMarker(0.5,0,()->{
-                    armLeft.setPosition(0.05);
+                    armLeft.setPosition(armOutPos);
                 })
                 .addDisplacementMarker(()->{
                     pLeft.setPosition(plungerReleasePos);

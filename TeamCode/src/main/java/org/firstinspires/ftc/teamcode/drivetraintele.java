@@ -5,28 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp
-public class drivetraintele extends OpMode {
-
-    DcMotor rf;
-    DcMotor lf;
-    DcMotor rb;
-    DcMotor lb;
+public class drivetraintele extends CenterStageTeleProper {
 
     @Override
-    public void init(){
-        rf = hardwareMap.get(DcMotor.class, "motorRF");
-        lf = hardwareMap.get(DcMotor.class, "motorLF");
-        rb = hardwareMap.get(DcMotor.class, "motorRB");
-        lb = hardwareMap.get(DcMotor.class, "motorLB");
-
-        rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    }
-
-    @Override
-    public void loop(){
+    public void childLoop(){
         double y = -gamepad1.left_stick_x; //verticals
         double x = -gamepad1.left_stick_y*1.1; //horizontal
         double r = -gamepad1.right_stick_x; //pivot and rotation
@@ -53,6 +35,12 @@ public class drivetraintele extends OpMode {
         telemetry.addData("rb", postRB);
         telemetry.addData("lb", postLB);
         telemetry.update();
+
+        //controls
+
+        if (gamepad1.back){
+
+        }
     }
 
     @Override
