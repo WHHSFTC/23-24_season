@@ -116,7 +116,7 @@ public class RRRedBackdrop extends CenterStageAuto{
                 .addTemporalMarker(0.2,0,()->{
                     slidePositionTarget = 700.0;
                 })
-                .addTemporalMarker(0.8,0,()->{
+                .addTemporalMarker(0.5,0,()->{
                     armLeft.setPosition(armOutPos);
                 })
                 .addDisplacementMarker(()->{
@@ -133,7 +133,7 @@ public class RRRedBackdrop extends CenterStageAuto{
                 .addTemporalMarker(0.2,0,()->{
                     slidePositionTarget = 700.0;
                 })
-                .addDisplacementMarker(0.8,0,()->{
+                .addDisplacementMarker(0.5,0,()->{
                     armLeft.setPosition(armOutPos);
                 })
                 .addDisplacementMarker(()->{
@@ -150,7 +150,7 @@ public class RRRedBackdrop extends CenterStageAuto{
                 .addTemporalMarker(0.2,0,()->{
                     slidePositionTarget = 700.0;
                 })
-                .addDisplacementMarker(0.8,0,()->{
+                .addDisplacementMarker(0.5,0,()->{
                     armLeft.setPosition(armOutPos);
                 })
                 .addDisplacementMarker(()->{

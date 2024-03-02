@@ -68,14 +68,14 @@ abstract public class CenterStageOpMode extends OpMode {
     double slideSavedPosition = 1100.0;
 
     public static double intakeUpPos = 0.0;
-    public static double intakeDownPos = 0.67;
-    public static double intakeStackPos = 0.18;
+    public static double intakeDownPos = 0.71;
+    public static double intakeStackPos = 0.58;
     public static double intakeLeftUpScale = 0.0;
     public static double intakeLeftDownScale = 1.0;
     public static double intakeRightDownScale = 1.0;
     public static double intakeRightUpScale = 0.0;
 
-    public static double armOutPos = 0.01;
+    public static double armOutPos = 0.05;
     public static double armInPos = 0.94;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
@@ -163,13 +163,13 @@ abstract public class CenterStageOpMode extends OpMode {
         // intakeLeft.setPosition(1.0);
         // intakeRight.setPosition(1.0);
 
-        armLeft.scaleRange(0.0, 0.245);
+        armLeft.scaleRange(0.03, 0.245);
         //armRight.scaleRange(0.0, 0.245);
 //
         armLeft.setPosition(0.0);
 
-        pRight.scaleRange(0.68, 0.77);
-        pLeft.scaleRange(0.54,0.67);
+        pRight.scaleRange(0.65, 0.77);
+        pLeft.scaleRange(0.51,0.67);
 
         pRight.setPosition(1.0);
         pLeft.setPosition(1.0);
@@ -178,6 +178,8 @@ abstract public class CenterStageOpMode extends OpMode {
         intakeRight.scaleRange(0.0, 1.0);
 
         droneLauncher.scaleRange(0.3, 0.9);
+        droneLauncher.setPosition(dronePos2);
+
         //camera
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "outputCamera"), cameraMonitorViewId);

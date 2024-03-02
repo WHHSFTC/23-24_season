@@ -330,7 +330,6 @@ public class CenterStageTeleSolo extends CenterStageTeleProper {
         //telemetry.addData("rightDS", "Distance A from backdrop: " + rightDS.getDistance(DistanceUnit.INCH));
         telemetry.addData("allDelays: ", DelaysAndAutoms.allDelays.size());
         telemetry.addData("slide increment: ", slideIncrement);
-        telemetry.addData("automationDone: ", automationDone);
         if (DelaysAndAutoms.allDelays.size() > 0) {
             telemetry.addData("ALLLEX", DelaysAndAutoms.allDelays.get(0).delayTimer.milliseconds());
         }
