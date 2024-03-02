@@ -64,7 +64,7 @@ abstract public class CenterStageOpMode extends OpMode {
     DcMotor ls;
     DcMotor rs;
 
-    public double slidePositionTarget = 0.0;
+    public static double slidePositionTarget = 0.0;
     double slideSavedPosition = 1100.0;
 
     public static double intakeUpPos = 0.0;
@@ -81,7 +81,7 @@ abstract public class CenterStageOpMode extends OpMode {
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
-    public static double distBackdrop = 5.0; //inches
+    public static double distBackdrop = 4.75; //inches
     public static double leftDSOffset = 1.25;
     //Servo armRight;
     public Servo armLeft;
