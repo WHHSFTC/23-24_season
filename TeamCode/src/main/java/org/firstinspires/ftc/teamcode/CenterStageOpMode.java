@@ -64,7 +64,7 @@ abstract public class CenterStageOpMode extends OpMode {
     DcMotor ls;
     DcMotor rs;
 
-    public double slidePositionTarget = 0.0;
+    public static double slidePositionTarget = 0.0;
     double slideSavedPosition = 1100.0;
 
     public static double intakeUpPos = 0.0;

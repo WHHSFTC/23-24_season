@@ -75,7 +75,7 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 })
                 .build();
 
-        purplePixel2 = drive.trajectoryBuilder(startPose, true)
+        purplePixel2 = drive.trajectoryBuilder(new Pose2d(16.4, 63.25, Math.toRadians(89.6)), true)
                 .lineTo(new Vector2d(9,32.5),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
