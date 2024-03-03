@@ -62,7 +62,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         intakeRight.setPosition(intakeDownPos);
         intakeLeft.setPosition(intakeDownPos);
         intakeOnGround = true;
-        slideSavedPosition = 550.0;
+        slideSavedPosition = 500.0;
     }
 
     @Override
@@ -199,7 +199,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             pRight.setPosition(plungerReleasePos);
             slidePositionTarget = 350.0;
             new DelaysAndAutoms(150.0, armLeft, armOutPos, armInPos);
-            slideUpdate = new DelaysAndAutoms(400.0, slidePositionTarget, 100.0);
+            slideUpdate = new DelaysAndAutoms(400.0, slidePositionTarget, 120.0);
         }
 
         if(gamepad2.b && !gamepad2prev.b){
@@ -208,9 +208,12 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             slideUpdate = new DelaysAndAutoms(400.0, slidePositionTarget, 0.0);
         }
 
+        if(slideSavedPosition == 0){
+            slideSavedPosition = 500.0;
+        }
         if(!gamepad2.y && (armLeft.getPosition() > 0.8) && (pRight.getPosition() < 0.2) && (pLeft.getPosition() < 0.2) && (slidePositionTarget < 5)){
             slideUpdate = new DelaysAndAutoms(100.0, slidePositionTarget, slideSavedPosition);
-            new DelaysAndAutoms(400.0, armLeft, armInPos, armOutPos);
+            new DelaysAndAutoms(550.0, armLeft, armInPos, armOutPos);
         }
 
         //plunger close
@@ -347,9 +350,9 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             }
         }
 
-        if (gamepad2.left_stick_y < -0.1 && (slidePositionTarget >= 550) && (armLeft.getPosition() > 0.8) && !zeroing) {
+        /*if (gamepad2.left_stick_y < -0.1 && (slidePositionTarget >= 500) && (armLeft.getPosition() > 0.8) && !zeroing) {
             armLeft.setPosition(armOutPos);
-        }
+        }*/
 
         gamepad1prev.copy(gamepad1);
         gamepad2prev.copy(gamepad2);
@@ -377,6 +380,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         //telemetry.addData("rightDS", "Distance A from backdrop: " + rightDS.getDistance(DistanceUnit.INCH));
         telemetry.addData("allDelays: ", DelaysAndAutoms.allDelays.size());
         telemetry.addData("slide increment: ", slideIncrement);
+        telemetry.addData("slide saved position", slideSavedPosition);
         if (DelaysAndAutoms.allDelays.size() > 0) {
             telemetry.addData("ALLLEX", DelaysAndAutoms.allDelays.get(0).delayTimer.milliseconds());
         }

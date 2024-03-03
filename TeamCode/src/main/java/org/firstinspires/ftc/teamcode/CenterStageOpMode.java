@@ -69,19 +69,19 @@ abstract public class CenterStageOpMode extends OpMode {
 
     public static double intakeUpPos = 0.0;
     public static double intakeDownPos = 0.71;
-    public static double intakeStackPos = 0.58;
+    public static double intakeStackPos = 0.57;
     public static double intakeLeftUpScale = 0.0;
     public static double intakeLeftDownScale = 1.0;
     public static double intakeRightDownScale = 1.0;
     public static double intakeRightUpScale = 0.0;
 
-    public static double armOutPos = 0.05;
+    public static double armOutPos = 0.0;
     public static double armInPos = 0.94;
     public static double plungerGrabPos = 0.0;
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
-    public static double distBackdrop = 4.90; //inches
+    public static double distBackdrop = 4.75; //inches
     public static double leftDSOffset = 1.25;
     //Servo armRight;
     public Servo armLeft;

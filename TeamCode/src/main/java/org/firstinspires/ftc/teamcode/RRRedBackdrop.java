@@ -109,7 +109,7 @@ public class RRRedBackdrop extends CenterStageAuto{
                 .build();
         //yellow pixels
         yellowPixel1 = drive.trajectoryBuilder(moveUp1.end())
-                .lineToLinearHeading(new Pose2d(51.3,-34.5, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(51.3,-30.5, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -126,7 +126,7 @@ public class RRRedBackdrop extends CenterStageAuto{
                 .build();
 
         yellowPixel2 = drive.trajectoryBuilder(moveUp2.end())
-                .lineToLinearHeading(new Pose2d(51.3,-41, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(51.3,-39, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -143,7 +143,7 @@ public class RRRedBackdrop extends CenterStageAuto{
                 .build();
 
         yellowPixel3 = drive.trajectoryBuilder(moveUp3.end())
-                .lineToSplineHeading(new Pose2d(51.3,-48.0, Math.toRadians(181)),
+                .lineToSplineHeading(new Pose2d(51.3,-43.0, Math.toRadians(181)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -192,7 +192,7 @@ public class RRRedBackdrop extends CenterStageAuto{
 
         //parks
         park1 = drive.trajectoryBuilder(reset1.end())
-                .splineToLinearHeading(new Pose2d(58.7,-11, Math.toRadians(182)),Math.toRadians(0),
+                .splineToLinearHeading(new Pose2d(56.7,-11, Math.toRadians(182)),Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -203,14 +203,14 @@ public class RRRedBackdrop extends CenterStageAuto{
                 .build();
 
         park2 = drive.trajectoryBuilder(reset2.end())
-                .splineToLinearHeading(new Pose2d(58.7,-11, Math.toRadians(182)),Math.toRadians(0),
+                .splineToLinearHeading(new Pose2d(56.7,-11, Math.toRadians(182)),Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         park3 = drive.trajectoryBuilder(reset3.end())
-                .lineToLinearHeading(new Pose2d(57.7,-50.0, Math.toRadians(182)),
+                .lineToLinearHeading(new Pose2d(56.7,-50.0, Math.toRadians(182)),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
