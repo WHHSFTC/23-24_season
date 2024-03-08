@@ -136,7 +136,7 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .build();
 
         yellowPixel2 = drive.trajectoryBuilder(moveUp2.end())
-                .lineToLinearHeading(new Pose2d(45.0,35.6, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(52.0,36.5, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -218,8 +218,8 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .UNSTABLE_addTemporalMarkerOffset(2.6, ()->{
                     armLeft.setPosition(armInPos);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(2.7,()->{
-                    slidePositionTarget = 100.0;
+                .UNSTABLE_addTemporalMarkerOffset(2.8,()->{
+                    slidePositionTarget = 117.0;
                 })
                 .lineToLinearHeading(new Pose2d(-42.38, 17.2, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -248,8 +248,8 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .UNSTABLE_addTemporalMarkerOffset(2.6, ()->{
                     armLeft.setPosition(armInPos);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(2.7,()->{
-                    slidePositionTarget = 100.0;
+                .UNSTABLE_addTemporalMarkerOffset(2.8,()->{
+                    slidePositionTarget = 117.0;
                 })
                 .lineToLinearHeading(new Pose2d(-42.38, 17.2, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -278,8 +278,8 @@ public class StackAutoBlueBackdrop extends RRBlueBackdrop {
                 .UNSTABLE_addTemporalMarkerOffset(2.6, ()->{
                     armLeft.setPosition(armInPos);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(2.7,()->{
-                    slidePositionTarget = 100.0;
+                .UNSTABLE_addTemporalMarkerOffset(2.8,()->{
+                    slidePositionTarget = 117.0;
                 })
                 .lineToLinearHeading(new Pose2d(-42.38, 16.2, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),

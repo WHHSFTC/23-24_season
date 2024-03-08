@@ -53,7 +53,7 @@ public class RRRedStack extends CenterStageAuto{
         drive.setPoseEstimate(startPose);
 
         purplePixel1 = drive.trajectoryBuilder(startPose)
-                .lineTo(new Vector2d(-46.8, -34.5),
+                .lineTo(new Vector2d(-46.0, -34.5),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )

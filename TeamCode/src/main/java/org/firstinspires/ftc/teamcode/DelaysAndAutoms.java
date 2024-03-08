@@ -45,7 +45,6 @@ public class DelaysAndAutoms extends drivetraintele {
         this.target = target;
         this.delay = delay;
         this.initial = initial;
-        allDelays.add(this);
     }
 
     public static void updateDelays() {
@@ -69,11 +68,10 @@ public class DelaysAndAutoms extends drivetraintele {
     }
 
     public double updateVariable(){
-        if (delayTimer.milliseconds() < delay){
+        if (this.delayTimer.milliseconds() < delay){
             return initial;
         }
         else{
-            allDelays.remove(this);
             return target;
         }
     }

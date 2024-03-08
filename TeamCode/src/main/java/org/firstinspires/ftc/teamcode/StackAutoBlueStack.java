@@ -138,8 +138,8 @@ public class StackAutoBlueStack extends RRBlueStack {
                 .UNSTABLE_addTemporalMarkerOffset(0.1, ()->{
                     conveyor.setPower(-0.9);
                     intake.setPower(0.9);
-                    intakeLeft.setPosition(0.54);
-                    intakeRight.setPosition(0.54);
+                    intakeLeft.setPosition(0.51);
+                    intakeRight.setPosition(0.51);
                     slidePositionTarget = 175.0;
                 })
                 .lineToLinearHeading(new Pose2d(-51.38,13.00, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -150,8 +150,8 @@ public class StackAutoBlueStack extends RRBlueStack {
                 .UNSTABLE_addTemporalMarkerOffset(0.1, ()->{
                     conveyor.setPower(-0.9);
                     intake.setPower(0.9);
-                    intakeLeft.setPosition(0.54);
-                    intakeRight.setPosition(0.54);
+                    intakeLeft.setPosition(0.51);
+                    intakeRight.setPosition(0.51);
                     slidePositionTarget = 175.0;
                 })
                 .lineToLinearHeading(new Pose2d(-51.38,13.00, Math.toRadians(178)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -162,8 +162,8 @@ public class StackAutoBlueStack extends RRBlueStack {
                 .UNSTABLE_addTemporalMarkerOffset(0.1, ()->{
                     conveyor.setPower(-0.9);
                     intake.setPower(0.9);
-                    intakeLeft.setPosition(0.54);
-                    intakeRight.setPosition(0.54);
+                    intakeLeft.setPosition(0.51);
+                    intakeRight.setPosition(0.51);
                     slidePositionTarget = 175.0;
                 })
                 .lineToLinearHeading(new Pose2d(-50.7,13.00, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),

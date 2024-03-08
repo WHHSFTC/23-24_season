@@ -126,7 +126,7 @@ public class RRBlueBackdrop extends CenterStageAuto{
                 .build();
 
         yellowPixel2 = drive.trajectoryBuilder(moveUp2.end())
-                .lineToLinearHeading(new Pose2d(52.5,37.5, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(52.5,36.5, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )

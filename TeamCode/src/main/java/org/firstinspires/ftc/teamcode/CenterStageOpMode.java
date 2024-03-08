@@ -69,7 +69,8 @@ abstract public class CenterStageOpMode extends OpMode {
 
     public static double intakeUpPos = 0.0;
     public static double intakeDownPos = 0.71;
-    public static double intakeStackPos = 0.57;
+    public static double intakeStackPos = 0.54;
+    public static double intakeSecondStackPos = 0.57;
     public static double intakeLeftUpScale = 0.0;
     public static double intakeLeftDownScale = 1.0;
     public static double intakeRightDownScale = 1.0;
@@ -81,7 +82,7 @@ abstract public class CenterStageOpMode extends OpMode {
     public static double plungerReleasePos = 1.0;
     public static double dronePos1 = 0.35;
     public static double dronePos2 = 0.95;
-    public static double distBackdrop = 4.75; //inches
+    public static double distBackdrop = 4.35; //inches
     public static double leftDSOffset = 1.25;
     //Servo armRight;
     public Servo armLeft;
@@ -90,6 +91,7 @@ abstract public class CenterStageOpMode extends OpMode {
     public Servo intakeRight;
     public Servo intakeLeft;
     DelaysAndAutoms slideUpdate;
+    DelaysAndAutoms slideDelay;
     Servo droneLauncher;
 
     TouchSensor slidesLimit;
@@ -163,7 +165,7 @@ abstract public class CenterStageOpMode extends OpMode {
         // intakeLeft.setPosition(1.0);
         // intakeRight.setPosition(1.0);
 
-        armLeft.scaleRange(0.03, 0.245);
+        armLeft.scaleRange(0.01, 0.245);
         //armRight.scaleRange(0.0, 0.245);
 //
         armLeft.setPosition(0.0);
@@ -173,9 +175,6 @@ abstract public class CenterStageOpMode extends OpMode {
 
         pRight.setPosition(1.0);
         pLeft.setPosition(1.0);
-
-        intakeLeft.scaleRange(0.3, 0.8);
-        intakeRight.scaleRange(0.0, 1.0);
 
         droneLauncher.scaleRange(0.3, 0.9);
         droneLauncher.setPosition(dronePos2);
@@ -206,6 +205,8 @@ abstract public class CenterStageOpMode extends OpMode {
             loopCumulativeTime = 0.0;
         }
 
+        intakeRight.scaleRange(intakeRightUpScale, intakeRightDownScale);
+        intakeLeft.scaleRange(intakeLeftUpScale, intakeLeftDownScale);
 
         for (LynxModule hub : bothHubs) {
             hub.clearBulkCache();
@@ -229,12 +230,12 @@ abstract public class CenterStageOpMode extends OpMode {
             }
         }
 
-       /* if(waitFor != null) {
-            slidePositionTarget = waitFor.updateVariable();
-            if(waitFor.delayTimer.milliseconds() >= waitFor.delay){
-                waitFor = null;
+        if(slideDelay != null) {
+            slidePositionTarget = slideDelay.updateVariable();
+            if(slideDelay.delayTimer.milliseconds() >= slideDelay.delay){
+                slideDelay = null;
             }
-        }*/
+        }
 
         telemetry.addData("rs position", rs.getCurrentPosition());
         telemetry.addData("ls position", ls.getCurrentPosition());
