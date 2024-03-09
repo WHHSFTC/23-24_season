@@ -58,7 +58,7 @@ public class StackAutoRedStack extends RRRedStack {
         drive.setPoseEstimate(startPose);
 
         purplePixel1 = drive.trajectoryBuilder(startPose)
-                .lineTo(new Vector2d(-46.0, -34.5),
+                .lineTo(new Vector2d(-45.3, -34.5),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -138,9 +138,9 @@ public class StackAutoRedStack extends RRRedStack {
                     intake.setPower(0.9);
                     intakeLeft.setPosition(0.51);
                     intakeRight.setPosition(0.51);
-                    slidePositionTarget = 150.0;
+                    slidePositionTarget = 117.0;
                 })
-                .lineToLinearHeading(new Pose2d(-54.6,-13.00, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(new Pose2d(-55.2,-13.00, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
@@ -150,9 +150,9 @@ public class StackAutoRedStack extends RRRedStack {
                     intake.setPower(0.9);
                     intakeLeft.setPosition(0.51);
                     intakeRight.setPosition(0.51);
-                    slidePositionTarget = 150.0;
+                    slidePositionTarget = 117.0;
                 })
-                .lineToLinearHeading(new Pose2d(-54.6,-13.00, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(new Pose2d(-55.2,-13.00, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
@@ -162,9 +162,9 @@ public class StackAutoRedStack extends RRRedStack {
                     intake.setPower(0.9);
                     intakeLeft.setPosition(0.535);
                     intakeRight.setPosition(0.542);
-                    slidePositionTarget = 150.0;
+                    slidePositionTarget = 117.0;
                 })
-                .lineToLinearHeading(new Pose2d(-54.6,-13.00, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(new Pose2d(-55.2,-13.00, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
@@ -280,11 +280,11 @@ public class StackAutoRedStack extends RRRedStack {
                 .lineToLinearHeading(new Pose2d(37.65, -10.55, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .UNSTABLE_addTemporalMarkerOffset(2.2, ()->{
+                .UNSTABLE_addTemporalMarkerOffset(2.0, ()->{
                     pRight.setPosition(plungerReleasePos);
                     pLeft.setPosition(plungerReleasePos);
                 })
-                .lineToLinearHeading(new Pose2d(55.2, -33.0, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(55.2, -29.0, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
@@ -318,11 +318,11 @@ public class StackAutoRedStack extends RRRedStack {
                 .lineToLinearHeading(new Pose2d(37.65, -10.55, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .UNSTABLE_addTemporalMarkerOffset(2.2, ()->{
+                .UNSTABLE_addTemporalMarkerOffset(2.0, ()->{
                     pRight.setPosition(plungerReleasePos);
                     pLeft.setPosition(plungerReleasePos);
                 })
-                .lineToLinearHeading(new Pose2d(55.2, -40.0, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(55.2, -33.0, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();

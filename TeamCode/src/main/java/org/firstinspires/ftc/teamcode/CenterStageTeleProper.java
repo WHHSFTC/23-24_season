@@ -151,8 +151,8 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         telemetry.addData("Error LS", "Error LS: " + (slidePositionTarget - ls.getCurrentPosition()));
 
         if (!zeroing) {
-            rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
-            ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
+            rs.setPower(slidesPidRight.calculatePower(slidePositionTarget) * 3.0);
+            ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget) * 3.0);
         }
 
         if (gamepad1.left_bumper && scalar > 0.3) {
@@ -218,7 +218,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
 
         if(gamepad2.y && !gamepad2prev.y && slidePositionTarget > 450){
             new DelaysAndAutoms(100.0, armLeft, armOutPos, armInPos);
-            new DelaysAndAutoms(200.0, armLeft, armInPos, armOutPos);
+            new DelaysAndAutoms(400.0, armLeft, armInPos, armOutPos);
         }
 /*if ((slidePositionTarget >= 500) && (armLeft.getPosition() > 0.8) && !zeroing && pLeft.getPosition() < 0.2 && pRight.getPosition() < 0.2) {
             armLeft.setPosition(armOutPos);
@@ -315,8 +315,8 @@ public class CenterStageTeleProper extends CenterStageOpMode{
 
         if (zeroing) {
             slidePositionTarget = 0.0;
-            rs.setPower(-0.3);
-            ls.setPower(-0.3);
+            rs.setPower(-0.6);
+            ls.setPower(-0.6);
         }
         if (slidesLimit.isPressed()) {
             zeroing = false;
