@@ -242,7 +242,7 @@ public class CenterStageTeleSolo extends CenterStageTeleProper {
         } else {
             droneLauncher.setPosition(dronePos2);
         }
-
+//
         //manual release for plungers
         if (gamepad1.right_bumper && !gamepad1prev.right_bumper) {
             if (plungerLClosed) {
