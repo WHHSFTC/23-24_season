@@ -47,16 +47,8 @@ public class CenterStageTeleProper extends CenterStageOpMode{
     @Override
     public void init(){
         super.init();
-
-        //droneLauncher.scaleRange(dronePos1, dronePos2);
-        //droneLauncher.setPosition(1.0);
         plungerLClosed = true;
         plungerRClosed = true;
-
-        /*rf.setDirection(DcMotorSimple.Direction.REVERSE);
-        rb.setDirection(DcMotorSimple.Direction.REVERSE);
-        lb.setDirection(DcMotorSimple.Direction.REVERSE);
-        lf.setDirection(DcMotorSimple.Direction.REVERSE); */
 
         imu.resetYaw();
         intakeRight.setPosition(intakeDownPos);
@@ -86,7 +78,6 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             x = tempX * Math.cos(-angle) - tempY * Math.sin(-angle);
             y = tempX * Math.sin(-angle) + tempY * Math.cos(-angle);
         }
-
 
         /*if (gamepad1.dpad_up) {
             fieldCentric = true;
@@ -151,8 +142,8 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         telemetry.addData("Error LS", "Error LS: " + (slidePositionTarget - ls.getCurrentPosition()));
 
         if (!zeroing) {
-            rs.setPower(slidesPidRight.calculatePower(slidePositionTarget) * 3.0);
-            ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget) * 3.0);
+            rs.setPower(slidesPidRight.calculatePower(slidePositionTarget));
+            ls.setPower(slidesPidLeft.calculatePower(slidePositionTarget));
         }
 
         if (gamepad1.left_bumper && scalar > 0.3) {
@@ -211,6 +202,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         if(slideSavedPosition == 0){
             slideSavedPosition = 500.0;
         }
+
         if(!gamepad2.y && (armLeft.getPosition() > 0.8) && (pRight.getPosition() < 0.2) && (pLeft.getPosition() < 0.2) && (slidePositionTarget < 5) && slideDelay == null){
             new DelaysAndAutoms(500.0, armLeft, armInPos, armOutPos);
             slideDelay = new DelaysAndAutoms(200.0, slidePositionTarget, slideSavedPosition);
@@ -218,11 +210,9 @@ public class CenterStageTeleProper extends CenterStageOpMode{
 
         if(gamepad2.y && !gamepad2prev.y && slidePositionTarget > 450){
             new DelaysAndAutoms(100.0, armLeft, armOutPos, armInPos);
-            new DelaysAndAutoms(400.0, armLeft, armInPos, armOutPos);
+            new DelaysAndAutoms(300.0, armLeft, armInPos, armOutPos);
         }
-/*if ((slidePositionTarget >= 500) && (armLeft.getPosition() > 0.8) && !zeroing && pLeft.getPosition() < 0.2 && pRight.getPosition() < 0.2) {
-            armLeft.setPosition(armOutPos);
-        }*/
+
         //plunger close
         if (gamepad2.a) {
             pRight.setPosition(plungerReleasePos);
@@ -357,14 +347,8 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             }
         }
 
-
         gamepad1prev.copy(gamepad1);
         gamepad2prev.copy(gamepad2);
-
-        /*telemetry.addData("rf", postRF);
-        telemetry.addData("lf", postLF);
-        telemetry.addData("rb", postRB);
-        telemetry.addData("lb", postLB);*/
 
         telemetry.addData("intake", intake.getPower());
         //telemetry.addData("armRight", "Position: " + armRight.getPosition());
@@ -376,18 +360,12 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         telemetry.addData("rs", "Power: " + rs.getPower());
         telemetry.addData("ls", "Power: " + ls.getPower());
         telemetry.addData("drone", "Position: " + droneLauncher.getPosition());
-        //telemetry.addData("slides target", "target: " + slidePositionTarget);
         telemetry.addData("slides position rs: ", "current rs pos: " + rs.getCurrentPosition());
         telemetry.addData("slides position ls: ", "current ls pos: " + ls.getCurrentPosition());
         telemetry.addData("limit switch", slidesLimit.isPressed());
-        //telemetry.addData("leftDS", "Distance B from backdrop: " + leftDS.getDistance(DistanceUnit.INCH));
-        //telemetry.addData("rightDS", "Distance A from backdrop: " + rightDS.getDistance(DistanceUnit.INCH));
         telemetry.addData("allDelays: ", DelaysAndAutoms.allDelays.size());
         telemetry.addData("slide increment: ", slideIncrement);
         telemetry.addData("slide saved position", slideSavedPosition);
-        if (DelaysAndAutoms.allDelays.size() > 0) {
-            //telemetry.addData("ALLLEX", DelaysAndAutoms.allDelays.get(0).delayTimer.milliseconds());
-        }
 
         packet.put("slides target", slidePositionTarget);
         packet.put("slides position rs", rs.getCurrentPosition());
@@ -398,8 +376,6 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         packet.put("slide saved position", slideSavedPosition);
         packet.put("scalar", scalar);
         packet.put("target distanceBackdrop", distBackdrop);
-        //packet.put("leftDistBackdrop", leftDS.getDistance(DistanceUnit.INCH));
-        //packet.put("rightDistBackdrop", rightDS.getDistance(DistanceUnit.INCH));
         dashboard.sendTelemetryPacket(packet);
     }
 }
