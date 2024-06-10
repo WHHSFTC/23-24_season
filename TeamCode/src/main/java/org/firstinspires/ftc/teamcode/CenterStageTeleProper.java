@@ -23,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Config
 @TeleOp
-public class CenterStageTeleProper extends CenterStageOpMode{
+public class CenterStageTeleProper extends CenterStageOpMode {
 
     //public static MultipleTelemetry dashTelemetry = new MultipleTelemetry();
 
@@ -45,7 +45,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
     boolean outputMode = false;
 
     @Override
-    public void init(){
+    public void init() {
         super.init();
         plungerLClosed = true;
         plungerRClosed = true;
@@ -89,7 +89,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
 
         if (gamepad1.a) {
             double yaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            distancePower = (Math.abs(yaw) < Math.toRadians(45.0)) ? DSpid.distancePID(rightDS.getDistance(DistanceUnit.INCH), leftDS.getDistance(DistanceUnit.INCH) - leftDSOffset, timeGap, distBackdrop + 2.0 * gamepad1.left_trigger - 2.0 * gamepad1.right_trigger): 0.0;
+            distancePower = (Math.abs(yaw) < Math.toRadians(45.0)) ? DSpid.distancePID(rightDS.getDistance(DistanceUnit.INCH), leftDS.getDistance(DistanceUnit.INCH) - leftDSOffset, timeGap, distBackdrop + 2.0 * gamepad1.left_trigger - 2.0 * gamepad1.right_trigger) : 0.0;
             anglePower = DSpid.anglePID(yaw, timeGap, Math.toRadians(0.0));
             x = x > 0.55 ? x : -distancePower;
             r = -anglePower;
@@ -177,7 +177,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         }*/
 
         //AUTOMATION
-        if(gamepad2.y && !gamepad2prev.y && slidePositionTarget < 250.0){
+        if (gamepad2.y && !gamepad2prev.y && slidePositionTarget < 250.0) {
             slidePositionTarget = 0.0;
             new DelaysAndAutoms(300.0, pLeft, plungerReleasePos, plungerGrabPos);
             new DelaysAndAutoms(300.0, pRight, plungerReleasePos, plungerGrabPos);
@@ -185,7 +185,7 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             plungerLClosed = false;
         }
 
-        if(gamepad2.x && !gamepad2prev.x){
+        if (gamepad2.x && !gamepad2prev.x) {
             pLeft.setPosition(plungerReleasePos);
             pRight.setPosition(plungerReleasePos);
             slidePositionTarget = 350.0;
@@ -193,22 +193,22 @@ public class CenterStageTeleProper extends CenterStageOpMode{
             slideUpdate = new DelaysAndAutoms(400.0, slidePositionTarget, 117.0);
         }
 
-        if(gamepad2.b && !gamepad2prev.b){
+        if (gamepad2.b && !gamepad2prev.b) {
             slidePositionTarget = 350.0;
             new DelaysAndAutoms(300.0, armLeft, armInPos, armOutPos);
             slideUpdate = new DelaysAndAutoms(400.0, slidePositionTarget, 0.0);
         }
 
-        if(slideSavedPosition == 0){
+        if (slideSavedPosition == 0) {
             slideSavedPosition = 500.0;
         }
 
-        if(!gamepad2.y && (armLeft.getPosition() > 0.8) && (pRight.getPosition() < 0.2) && (pLeft.getPosition() < 0.2) && (slidePositionTarget < 5) && slideDelay == null){
+        if (!gamepad2.y && (armLeft.getPosition() > 0.8) && (pRight.getPosition() < 0.2) && (pLeft.getPosition() < 0.2) && (slidePositionTarget < 5) && slideDelay == null) {
             new DelaysAndAutoms(500.0, armLeft, armInPos, armOutPos);
             slideDelay = new DelaysAndAutoms(200.0, slidePositionTarget, slideSavedPosition);
         }
 
-        if(gamepad2.y && !gamepad2prev.y && slidePositionTarget > 450){
+        if (gamepad2.y && !gamepad2prev.y && slidePositionTarget > 450) {
             new DelaysAndAutoms(100.0, armLeft, armOutPos, armInPos);
             new DelaysAndAutoms(300.0, armLeft, armInPos, armOutPos);
         }
@@ -379,5 +379,3 @@ public class CenterStageTeleProper extends CenterStageOpMode{
         dashboard.sendTelemetryPacket(packet);
     }
 }
-
-// alex was here
