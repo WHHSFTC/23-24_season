@@ -164,7 +164,7 @@ public class CenterStageTeleSolo extends CenterStageTeleProper {
         //slides increments
         if (gamepad1.dpad_down && !zeroing && (pLeft.getPosition() < 0.2 || pRight.getPosition() < 0.2)) {
             if (!gamepad2prev.dpad_down) {
-                slidePositionTarget -= 315.0;
+                slidePositionTarget -= 115.0;
                 slideIncrement--;
                 if (slidePositionTarget < 550) {
                     slidePositionTarget = 550;
@@ -177,7 +177,7 @@ public class CenterStageTeleSolo extends CenterStageTeleProper {
                 if (slidePositionTarget > 2800) {
                     slidePositionTarget = 2800;
                 }
-                slidePositionTarget += 315.0;
+                slidePositionTarget += 115.0;
                 slideIncrement++;
             }
         }
@@ -219,7 +219,6 @@ public class CenterStageTeleSolo extends CenterStageTeleProper {
         //reset imu
         if (gamepad1.start) {
             imu.resetYaw();
-            zeroing = true;
         }
 
         //manual reset for slides
