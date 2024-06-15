@@ -27,10 +27,17 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 public class StretchyMecanumTele extends OpMode {
 
     public static double strafeScalar = 1.1;
+    public static double rScalar = 1.3;
     DcMotor rf;
     DcMotor lf;
     DcMotor rb;
     DcMotor lb;
+
+    IMU imu;
+
+    int methodIdx = 0;
+    boolean prevLeft = false;
+    boolean prevRight = false;
 
     public void init() {
 
@@ -45,6 +52,8 @@ public class StretchyMecanumTele extends OpMode {
         rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        imu = hardwareMap.get(IMU.class, "imu");
     }
     public void loop() {
         rf.getCurrentPosition();
@@ -56,10 +65,63 @@ public class StretchyMecanumTele extends OpMode {
     }
     public void childLoop(){
 
-        double ly = gamepad1.left_stick_y;
-        double lx = -gamepad1.left_stick_x * strafeScalar;
-        double ry = gamepad2.right_stick_y;
-        double rx = -gamepad2.right_stick_x * strafeScalar;
+        double ly = 0, lx = 0, ry = 0, rx = 0;
+
+        //increment or decrement method index as needed
+        if(gamepad1.right_bumper && !prevRight) {
+            prevRight = true;
+            methodIdx++;
+        } else if(!gamepad1.right_bumper){
+            prevRight = false;
+        }
+        if(gamepad1.left_bumper && !prevLeft) {
+            prevLeft = true;
+            methodIdx--;
+        } else if(!gamepad1.left_bumper){
+            prevLeft = false;
+        }
+
+        switch(methodIdx % 4) {
+            case 0:
+                telemetry.addData("Method:", "Double Joystick");
+                ly = gamepad1.left_stick_y;
+                lx = -gamepad1.left_stick_x * strafeScalar;
+                ry = gamepad1.right_stick_y;
+                rx = -gamepad1.right_stick_x * strafeScalar;
+                break;
+            case 1:
+                telemetry.addData("Method:", "Enhanced Mecanum");
+                double y = gamepad1.left_stick_y;
+                double x = -gamepad1.left_stick_x * strafeScalar;
+                double r = -gamepad1.right_stick_x * rScalar;
+                double ext = gamepad1.right_stick_y;
+                ly = y + r;
+                lx = x - ext;
+                ry = y - r;
+                rx = x + ext;
+                break;
+            case 2:
+                telemetry.addData("Method:", "Buttons");
+                x = 0; // positive x is right
+                y = 0; // positive y is forward
+                ly = y;
+                lx = -x * strafeScalar;
+                ry = y;
+                rx = -x * strafeScalar;
+                break;
+            case 3:
+                telemetry.addData("Method:", "Two Controllers");
+                ly = gamepad1.left_stick_y;
+                lx = -gamepad1.left_stick_x * strafeScalar;
+                ry = gamepad2.right_stick_y;
+                rx = -gamepad2.right_stick_x * strafeScalar;
+                break;
+        }
+
+        //reset imu
+        if (gamepad1.back) {
+            imu.resetYaw();
+        }
 
         double preRF = ry - rx;
         double preRB = ry + rx;
@@ -78,14 +140,11 @@ public class StretchyMecanumTele extends OpMode {
         lf.setPower(postLF);
         lb.setPower(postLB);
 
-        telemetry.addData("rf", postRF);
-        telemetry.addData("rb", postRB);
-        telemetry.addData("lf", postLF);
-        telemetry.addData("lb", postLB);
         telemetry.addData("rx", rx);
         telemetry.addData("ry", ry);
         telemetry.addData("lx", lx);
         telemetry.addData("ly", ly);
+        telemetry.addData("roll", imu.getRobotYawPitchRollAngles().getRoll(AngleUnit.RADIANS));
         telemetry.update();
     }
 
